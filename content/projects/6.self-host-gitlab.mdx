@@ -1,0 +1,44 @@
+---
+
+title: Self-Hosted Gitlab Deployment
+tags: Gitlab, Docker, EC2
+sorting: 3
+
+---
+
+# Project Background
+
+Our company relied on Gitlab for source code hosting, but after Gitlab’s official service was banned in Hong Kong, the vendor recommended switching to a local hosting provider. However, we wanted to avoid recurring hosting costs, so the decision was made to roll out a fully self-hosted Gitlab solution. I was given full technical ownership of this migration.
+
+# My Responsibilities
+
+- Conducted detailed research and designed a robust, production-grade self-hosted Gitlab infrastructure using Docker, including both the Gitlab server and CI Runner.
+- Led the setup and configuration of the Gitlab Runner to enable seamless, automated CI/CD pipelines for the team.
+- Developed custom CI/CD workflows tailored to our company’s requirements, encompassing code build, automated testing, and deployment.
+- Engineered a comprehensive backup strategy, leveraging Amazon EC2 both as the primary Gitlab server and for resilient backup storage.
+- Continuously monitored and maintained the Gitlab environment to ensure high reliability and system uptime.
+- Authored thorough documentation for installation, configuration, and ongoing maintenance, ensuring operational continuity and smooth handover within the team.
+
+# Key Contributions
+
+- **Docker-Based Gitlab Deployment**
+  - Integrated official Gitlab Docker containers, implemented persistent storage and an external backup plan for enterprise-grade resilience.
+  - Designed custom firewall rules and port forwarding strategies to address the unstable and restrictive local (HK) network environment.
+
+- **CI Runner Provisioning and Automated Workflow Design**
+  - Deployed and configured Gitlab Runner clusters to support scalable, multi-project CI pipelines.
+  - Collaborated with engineering stakeholders to architect and optimize pipeline YAMLs, enabling reliable, automated, and consistent DevOps processes across projects.
+
+- **Backup Strategy and Disaster Recovery Workflows**
+  - Implemented scheduled automated backups of Gitlab repositories, metadata, and build artifacts.
+  - Leveraged AWS S3/EC2 storage for daily/weekly backup automation, ensuring robust disaster recovery capabilities.
+  - Prepared fully-documented procedures for backup execution and rapid restoration, safeguarding critical IP.
+
+## Technical Skills Demonstrated
+
+- Advanced Docker orchestration for scalable, fully-customized Gitlab environments
+- Expert configuration and operational management of Gitlab Runners, delivering CI/CD automation at team and org scale
+- EC2 infrastructure provisioning and automation, including integration with S3/EC2 for comprehensive backup and DR solutions
+- Authoring of maintainable pipeline YAMLs, custom backup scripts, and monitoring automation to ensure service reliability
+- End-to-end system documentation and knowledge sharing to guarantee sustainable team operations
+
