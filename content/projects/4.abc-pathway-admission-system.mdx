@@ -1,0 +1,57 @@
+---
+
+title: ABC Pathway Admission System
+tags: PHP, Yii2, MySQL
+sorting: 3
+
+---
+
+# Project Background
+
+ABC Pathway is a children’s English education school that provides their own proprietary English learning materials. Due to their unique business model, we adapted our existing admission system to build a new system specifically tailored for their school operations. My responsibilities included system enhancements and ongoing maintenance. One key requirement was that ABC Pathway has another branch, and they wanted a single system to manage operations for both branches while keeping their data completely separated so that neither branch could access the other's information. We designed and implemented the necessary data separation mechanisms in the system.
+
+# My Responsibilities
+
+- Took ownership of ongoing system maintenance, promptly investigating and resolving bugs that affected critical business operations.
+- Designed and implemented new features tailored to the unique needs of the client, such as inventory management, mobile payment processing, and digital certificate workflows.
+- Conducted in-depth code reviews and performed targeted refactoring to improve system stability, readability, and maintainability, especially for legacy business logic with limited documentation.
+- Developed secure, reliable RESTful APIs to support both web and mobile frontends, enabling smooth appointment booking, digital assessments, and real-time analytics.
+- Collaborated closely with customers and internal teams to understand requirements, plan system enhancements, and ensure successful deployments.
+- Coordinated and tested new features and bug fixes to prevent regressions and maintain data integrity, especially across separated branch data.
+- Automated operational processes, reducing manual tasks for staff and improving overall system efficiency.
+
+# Key Contributions
+
+- **System Maintenance and Refactoring**
+  - At the start of the project, the system inherited a highly complex business logic and suffered from architectural and resourcing challenges, resulting in a large number of bugs. My key responsibility was to investigate, diagnose, and resolve these issues efficiently and thoroughly. For example, the custom attendance and class transfer logic — written by previous developers with minimal automated testing or documentation — frequently produced discrepancies in attendance data, impacting customer operations. I performed code reviews, isolated root causes, and implemented precise fixes while rigorously ensuring that my changes did not introduce regressions in existing stable cases.
+
+- **Inventory Management Automation**
+  - The school needed to place semi-annual orders for learning materials, but could not accurately forecast required quantities without system support. I engineered an inventory management function that analyzes both current enrollments and future reservations to predict and log optimal textbook ordering levels. The system facilitates approval workflows among colleagues and provides real-time stock checking. The principal technical challenge was to guarantee forecasted inventory never underestimated actual future demand, as shortages would interrupt student learning and place accountability on our team. My solution delivered reliable predictions and audit trails for procurement activities.
+
+- **Mobile Payment Integration**
+  - I implemented a feature allowing administrators to flag specific invoices in the backend for payment. Upon activation, parents could view and settle invoices directly from their mobile devices. The process is seamless and optimized for mobile UX.
+
+- **Automated Appointment Scheduling**
+  - I developed robust APIs to facilitate student assessment and appointment booking. The solution includes logic for dynamically evaluating student levels based on submitted forms to recommend appropriate courses and automatically find suitable appointment slots. The frontend integrates directly with these APIs to deliver a smooth workflow for both parents and staff.
+
+- **Electronic Certificate (E-Cert) Issuance**
+    - I created a rule-based system that automatically grants access to digital certificates via mobile app when students satisfy defined criteria — for example, achieving over 90% attendance. This streamlined certificate delivery and improved parent satisfaction.
+
+- **Assessment Digitization**
+    - Historically, student assessments were administered on paper during in-person sessions. I enabled a digital transformation by building APIs that power teacher-facing mobile apps to record evaluations electronically. Assessment data is processed on the backend to analyze student levels and generate trial class recommendations. My APIs handle all necessary data exchange with the frontend securely and efficiently.
+
+- **Progress Chart and Analytics**
+    - I designed and delivered an API-driven analytics solution that generates progress charts for parents, visualizing their child’s learning trajectory in real time within the mobile app. On the backend, I enabled admins to upload relevant data via Excel, which is then processed to compute each student’s progress. The system transforms these results into informative visuals, exposed to the frontend through scalable APIs.
+
+## Technical Skills Demonstrated
+
+- Backend and frontend development using **PHP** (with Yii2 framework) and **MySQL**
+- Building and maintaining robust, secure **RESTful APIs** for both web and mobile applications
+- Refactoring and debugging legacy systems with complex business logic
+- Developing modular business logic for features like inventory forecasting, appointment systems, online payments, and digital assessments
+- Ensuring strict data separation and security when handling multi-branch operational data
+- Integrating third-party payment solutions optimized for mobile users
+- Automating business workflows for operational efficiency (e.g., inventory, certificates, assessment data, analytics)
+- Implementing dynamic analytics and visual reporting (including real-time data transformation and Excel data ingestion)
+- Applying thorough regression testing and quality assurance to maintain system integrity during enhancements and maintenance
+
