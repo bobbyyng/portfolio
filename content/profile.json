@@ -38,10 +38,11 @@
     }
   ],
   "skills": {
-    "Frontend": ["TypeScript", "JavaScript", "React"],
-    "Backend": ["Python", "PHP"],
-    "Cloud & DevOps": ["AWS Lambda", "AWS EC2", "AWS CloudFront", "Docker", "Terraform"],
-    "Database & AI": ["PostgreSQL", "AI Agents"]
+    "Backend": ["TypeScript", "PHP", "Python"],
+    "Framework": ["NestJS", "Hono", "Laravel", "Yii2", "Wordpress"],
+    "AI": ["RAG", "LangChain", "LangGraph"],
+    "Cloud & DevOps": ["AWS", "Docker", "SST", "Terraform"],
+    "Database": ["PostgreSQL", "MySQL", "MongoDB"]
   },
   "languages": [
     {
