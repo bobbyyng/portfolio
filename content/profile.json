@@ -43,6 +43,20 @@
     "Cloud & DevOps": ["AWS Lambda", "AWS EC2", "AWS CloudFront", "Docker", "Terraform"],
     "Database & AI": ["PostgreSQL", "AI Agents"]
   },
+  "languages": [
+    {
+      "name": "English",
+      "proficiency": "Professional"
+    },
+    {
+      "name": "Cantonese",
+      "proficiency": "Native"
+    },
+    {
+      "name": "Mandarin",
+      "proficiency": "Fluent"
+    }
+  ],
   "contact": {
     "email": "bobbyyeung81@gmail.com",
     "phone": "+852 6674 7755",

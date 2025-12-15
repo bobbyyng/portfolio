@@ -121,6 +121,29 @@ function TechnicalSkills() {
   );
 }
 
+function Languages() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
+          Languages
+        </h2>
+        <div className="w-full h-px bg-border"></div>
+      </div>
+      <div className="space-y-4">
+        {profile.languages?.map((language, index) => (
+          <div key={index} className="flex justify-between items-center">
+            <span className="font-medium text-foreground">{language.name}</span>
+            <span className="text-sm text-muted-foreground">
+              {language.proficiency}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ContentSection() {
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -130,8 +153,9 @@ export function ContentSection() {
           <Education />
           <SelectedProjects />
         </div>
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 lg:col-span-4 space-y-12">
           <TechnicalSkills />
+          <Languages />
         </div>
       </div>
     </section>
