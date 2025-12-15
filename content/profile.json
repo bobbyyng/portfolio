@@ -17,6 +17,26 @@
       "period": "2018 - 2020"
     }
   ],
+  "selectedProjects": [
+    {
+      "title": "Nexus LMS Platform",
+      "category": "SaaS",
+      "description": "A comprehensive Learning Management System for enterprise training.",
+      "technologies": ["React", "Node.js", "PostgreSQL", "AWS S3"]
+    },
+    {
+      "title": "Sentient AI Agent",
+      "category": "AI Agents",
+      "description": "Autonomous customer support agent platform driven by LLMs.",
+      "technologies": ["Python", "OpenAI API", "FastAPI", "Redis"]
+    },
+    {
+      "title": "CloudScale Infra",
+      "category": "Cloud",
+      "description": "Infrastructure as Code modules for rapid AWS deployment.",
+      "technologies": ["Terraform", "AWS", "Go", "GitHub Actions"]
+    }
+  ],
   "contact": {
     "email": "bobbyyeung@gmail.com",
     "phone": "+1234567890",

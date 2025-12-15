@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import profile from "@/content/profile.json";
 import { Badge } from "@/components/ui/badge";
 
@@ -47,6 +49,48 @@ function Education() {
   );
 }
 
+function SelectedProjects() {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide">
+          Selected Projects
+        </h2>
+        <Link
+          href="/projects"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          View All
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+      <div className="w-full h-px bg-border"></div>
+      <div className="space-y-6">
+        {profile.selectedProjects?.map((project, index) => (
+          <div key={index} className="space-y-3">
+            <div className="flex justify-between items-start gap-4">
+              <h3 className="text-lg font-semibold text-foreground">
+                {project.title}
+              </h3>
+              <Badge variant="secondary">{project.category}</Badge>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {project.technologies?.map((tech, techIndex) => (
+                <Badge key={techIndex} variant="secondary" className="text-xs">
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ContentSection() {
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -54,6 +98,7 @@ export function ContentSection() {
         <div className="col-span-12 lg:col-span-8 space-y-12">
           <ProfessionalSummary />
           <Education />
+          <SelectedProjects />
         </div>
         <div className="col-span-12 lg:col-span-4">2</div>
       </div>
