@@ -91,6 +91,36 @@ function SelectedProjects() {
   );
 }
 
+function TechnicalSkills() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
+          Technical Skills
+        </h2>
+        <div className="w-full h-px bg-border"></div>
+      </div>
+      <div className="space-y-6">
+        {profile.skills &&
+          Object.entries(profile.skills).map(([category, skills]) => (
+            <div key={category} className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground uppercase">
+                {category}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+
 export function ContentSection() {
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -100,7 +130,9 @@ export function ContentSection() {
           <Education />
           <SelectedProjects />
         </div>
-        <div className="col-span-12 lg:col-span-4">2</div>
+        <div className="col-span-12 lg:col-span-4">
+          <TechnicalSkills />
+        </div>
       </div>
     </section>
   );

@@ -37,6 +37,12 @@
       "technologies": ["Terraform", "AWS", "Go", "GitHub Actions"]
     }
   ],
+  "skills": {
+    "Frontend": ["TypeScript", "JavaScript", "React"],
+    "Backend": ["Python", "PHP"],
+    "Cloud & DevOps": ["AWS Lambda", "AWS EC2", "AWS CloudFront", "Docker", "Terraform"],
+    "Database & AI": ["PostgreSQL", "AI Agents"]
+  },
   "contact": {
     "email": "bobbyyeung81@gmail.com",
     "phone": "+852 6674 7755",
