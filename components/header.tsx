@@ -43,10 +43,10 @@ export function Header() {
           </nav>
           <div className="w-px h-6 bg-border" />
           <div className="flex items-center gap-4">
-            <Link href={profile.contact.github}>
+            <Link href={profile.contact.github} target="_blank">
               <Github className="w-6 h-6 transition-opacity hover:opacity-80" />
             </Link>
-            <Link href={profile.contact.linkedin}>
+            <Link href={profile.contact.linkedin} target="_blank">
               <Linkedin className="w-6 h-6 transition-opacity hover:opacity-80" />
             </Link>
             <Button asChild>
