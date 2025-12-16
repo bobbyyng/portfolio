@@ -42,7 +42,7 @@
     "Framework": ["NestJS", "Hono", "Laravel", "Yii2", "Wordpress"],
     "AI": ["RAG", "LangChain", "LangGraph"],
     "Cloud & DevOps": ["AWS", "Docker", "SST", "Terraform"],
-    "Database": ["PostgreSQL", "MySQL", "MongoDB"]
+    "Database": ["PostgreSQL", "MySQL", "Redis", "MongoDB"]
   },
   "languages": [
     {
