@@ -127,7 +127,7 @@ export default function Page() {
                 className={`px-4 py-3 ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground rounded-3xl max-w-full"
-                    : "bg-muted text-foreground rounded-3xl max-w-[80%] min-w-[400px]"
+                    : "bg-muted text-foreground rounded-3xl max-w-full sm:max-w-[80%] sm:min-w-[400px]"
                 }`}
               >
                 {message.parts.map((part, partIndex) => {
