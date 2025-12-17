@@ -9,6 +9,7 @@ import { Send, Bot } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { chatMDXComponents } from "@/lib/chat-mdx-components";
 import { Badge } from "@/components/ui/badge";
+import { ContactCard } from "@/components/tool/contact-card";
 
 const WELCOME_MESSAGE =
   "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!";
@@ -40,6 +41,7 @@ export default function Page() {
 
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, isStreaming]);
 
   const handleSend = async () => {
@@ -99,7 +101,7 @@ export default function Page() {
                 className={`px-4 py-3 ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground rounded-3xl max-w-full"
-                    : "bg-muted text-foreground rounded-3xl max-w-[80%]"
+                    : "bg-muted text-foreground rounded-3xl max-w-[80%] min-w-[400px]"
                 }`}
               >
                 {message.parts.map((part, partIndex) => {
@@ -118,6 +120,28 @@ export default function Page() {
                   return null;
                 })}
               </div>
+              {/* Custom Tool UI */}
+              {message.parts.map((part, partIndex) => {
+                if (part.type.startsWith("tool-")) {
+                  switch (part.type.replace("tool-", "")) {
+                    case "get_profile":
+                      return (
+                        <ContactCard
+                          key={`${message.id}-profile-${partIndex}`}
+                        />
+                      );
+                    case "get_contact":
+                      return (
+                        <ContactCard
+                          key={`${message.id}-contact-${partIndex}`}
+                        />
+                      );
+                    default:
+                      return null;
+                  }
+                }
+                return null;
+              })}
             </div>
           </div>
         ))}

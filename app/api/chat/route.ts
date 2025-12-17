@@ -6,6 +6,7 @@ import {
   stepCountIs,
 } from "ai";
 import { getProfileTool } from "@/lib/tools/get-profile.tool";
+import { getContactTool } from "@/lib/tools/get-contact.tool";
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
         Please use markdown to format the answer.
         Please must using ZH_HK language to answer the question.
     `,
-    tools: { get_profile: getProfileTool },
+    tools: { get_profile: getProfileTool, get_contact: getContactTool },
     stopWhen: stepCountIs(5),
     messages: convertToModelMessages(messages),
     prepareStep: async ({ messages }) => {
