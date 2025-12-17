@@ -83,38 +83,35 @@ export default function Page() {
             }`}
           >
             <div>
+              <div className="flex flex-wrap gap-2">
+                {message.parts.map((part, partIndex) => {
+                  if (part.type.startsWith("tool-")) {
+                    return (
+                      <Badge
+                        variant="yellow"
+                        key={`${message.id}-tool-${partIndex}`}
+                        className="px-4 py-1 mb-2"
+                      >
+                        {part.type.replace("tool-", "")}
+                      </Badge>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+
+              {/* Before Custom Tool UI */}
               {message.parts.map((part, partIndex) => {
-                if (part.type.startsWith("tool-")) {
-                  return (
-                    <Badge
-                      variant="yellow"
-                      key={`${message.id}-tool-${partIndex}`}
-                      className="px-4 py-1 mb-2"
-                    >
-                      {part.type.replace("tool-", "")}
-                    </Badge>
-                  );
-                }
-                return null;
-              })}
-               {/* Before Custom Tool UI */}
-               {message.parts.map((part, partIndex) => {
                 if (part.type.startsWith("tool-")) {
                   switch (part.type.replace("tool-", "")) {
                     case "get_profile":
-                      return (
-                        <div className="mb-2">
-                            <ContactCard
-                            key={`${message.id}-profile-${partIndex}`}
-                            />
-                        </div>
-                      );
+                      return <></>;
                     case "get_contact":
                       return (
                         <div className="mb-2">
-                            <ContactCard
+                          <ContactCard
                             key={`${message.id}-contact-${partIndex}`}
-                            />
+                          />
                         </div>
                       );
                     default:
@@ -151,13 +148,9 @@ export default function Page() {
                 if (part.type.startsWith("tool-")) {
                   switch (part.type.replace("tool-", "")) {
                     case "get_profile":
-                      return (
-                        <></>
-                      );
+                      return <></>;
                     case "get_contact":
-                      return (
-                        <></>
-                      );
+                      return <></>;
                     default:
                       return null;
                   }
