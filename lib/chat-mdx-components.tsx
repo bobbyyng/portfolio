@@ -60,5 +60,20 @@ export const chatMDXComponents: Components = {
   ),
   em: ({ children }) => <em className="italic">{children}</em>,
   hr: () => <hr className="my-3 border-current/20" />,
+  table: ({ children }) => (
+    <table className="w-full border-collapse my-3 text-sm">{children}</table>
+  ),
+  thead: ({ children }) => (
+    <thead className="bg-muted">{children}</thead>
+  ),
+  tbody: ({ children }) => <tbody>{children}</tbody>,
+  tr: ({ children }) => (
+    <tr className="border-b last:border-0 border-muted">{children}</tr>
+  ),
+  th: ({ children }) => (
+    <th className="font-semibold text-left px-3 py-2 bg-muted/60">{children}</th>
+  ),
+  td: ({ children }) => (
+    <td className="px-3 py-2 align-top">{children}</td>
+  ),
 };
-

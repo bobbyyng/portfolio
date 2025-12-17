@@ -97,6 +97,32 @@ export default function Page() {
                 }
                 return null;
               })}
+               {/* Before Custom Tool UI */}
+               {message.parts.map((part, partIndex) => {
+                if (part.type.startsWith("tool-")) {
+                  switch (part.type.replace("tool-", "")) {
+                    case "get_profile":
+                      return (
+                        <div className="mb-2">
+                            <ContactCard
+                            key={`${message.id}-profile-${partIndex}`}
+                            />
+                        </div>
+                      );
+                    case "get_contact":
+                      return (
+                        <div className="mb-2">
+                            <ContactCard
+                            key={`${message.id}-contact-${partIndex}`}
+                            />
+                        </div>
+                      );
+                    default:
+                      return null;
+                  }
+                }
+                return null;
+              })}
               <div
                 className={`px-4 py-3 ${
                   message.role === "user"
@@ -120,21 +146,17 @@ export default function Page() {
                   return null;
                 })}
               </div>
-              {/* Custom Tool UI */}
+              {/* After Custom Tool UI */}
               {message.parts.map((part, partIndex) => {
                 if (part.type.startsWith("tool-")) {
                   switch (part.type.replace("tool-", "")) {
                     case "get_profile":
                       return (
-                        <ContactCard
-                          key={`${message.id}-profile-${partIndex}`}
-                        />
+                        <></>
                       );
                     case "get_contact":
                       return (
-                        <ContactCard
-                          key={`${message.id}-contact-${partIndex}`}
-                        />
+                        <></>
                       );
                     default:
                       return null;

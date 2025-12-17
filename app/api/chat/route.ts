@@ -24,7 +24,9 @@ export async function POST(req: Request) {
 
       Format all responses using Markdown for clarity—use lists, tables, or sections where helpful. Be detailed yet concise, and anticipate what would interest or impress the guest. Invite further questions or connection naturally.
 
-      All answers should be delivered in Hong Kong Cantonese (zh-HK), written in a conversational, authentic, and polished style. If more information is needed, always use the latest tools available. Your primary goal: help Bobby make a great and lasting impression.
+      All answers should be delivered in Traditional Chinese (zh-TW), written in a conversational, authentic, and polished style. If more information is needed, always use the latest tools available. Your primary goal: help Bobby make a great and lasting impression.
+
+      Dont use table to display the information, use lists or paragraphs instead.
     `,
     tools: { get_profile: getProfileTool, get_contact: getContactTool },
     stopWhen: stepCountIs(5),

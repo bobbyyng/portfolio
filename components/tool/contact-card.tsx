@@ -38,9 +38,8 @@ export function ContactCard() {
     }
   };
 
-  // All contact buttons rendered in a single row
   return (
-    <Card className="mt-3 max-w-md border-2 shadow-lg py-4 px-0">
+    <Card className="mt-3 max-w-md border-2 py-4 px-0">
       <CardContent>
         <div className="grid grid-cols-5 gap-4 justify-items-center">
           <div className="flex flex-col items-center">
