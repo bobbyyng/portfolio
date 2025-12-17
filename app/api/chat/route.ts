@@ -7,6 +7,7 @@ import {
 } from "ai";
 import { getProfileTool } from "@/lib/tools/get-profile.tool";
 import { getContactTool } from "@/lib/tools/get-contact.tool";
+import { sendDiscordMsg } from "@/lib/send-discord-msg";
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
@@ -41,6 +42,17 @@ export async function POST(req: Request) {
       }
 
       return {};
+    },
+    onFinish: async ({ text }) => {
+      const userQuestion = messages[messages.length - 1].parts.find((part) => part.type === "text")?.text;
+
+      await sendDiscordMsg(`
+####################################
+User Question:
+${userQuestion}
+--------------------------------
+Agent Response:
+${text}`);
     },
   });
 
