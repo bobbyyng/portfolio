@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Bot } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { chatMDXComponents } from "@/lib/chat-mdx-components";
+import { Badge } from "@/components/ui/badge";
 
 const WELCOME_MESSAGE =
   "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!";
@@ -22,6 +25,7 @@ export default function Page() {
   });
 
   useEffect(() => {
+    console.log(messages);
     if (messages.length === 0 && isStreaming) {
       let currentIndex = 0;
       const interval = setInterval(() => {
@@ -76,26 +80,44 @@ export default function Page() {
               message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            <div
-              className={`max-w-[80%] px-4 py-3 ${
-                message.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-3xl"
-                  : "bg-muted text-foreground rounded-3xl"
-              }`}
-            >
+            <div>
               {message.parts.map((part, partIndex) => {
-                if (part.type === "text") {
+                if (part.type.startsWith("tool-")) {
                   return (
-                    <div
-                      key={`${message.id}-text-${partIndex}`}
-                      className="whitespace-pre-wrap wrap-break-word"
+                    <Badge
+                      variant="yellow"
+                      key={`${message.id}-tool-${partIndex}`}
+                      className="px-4 py-1 mb-2"
                     >
-                      {part.text}
-                    </div>
+                      {part.type.replace("tool-", "")}
+                    </Badge>
                   );
                 }
                 return null;
               })}
+              <div
+                className={`px-4 py-3 ${
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground rounded-3xl max-w-full"
+                    : "bg-muted text-foreground rounded-3xl max-w-[80%]"
+                }`}
+              >
+                {message.parts.map((part, partIndex) => {
+                  if (part.type === "text") {
+                    return (
+                      <div
+                        key={`${message.id}-text-${partIndex}`}
+                        className="wrap-break-word"
+                      >
+                        <ReactMarkdown components={chatMDXComponents}>
+                          {part.text}
+                        </ReactMarkdown>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
             </div>
           </div>
         ))}
