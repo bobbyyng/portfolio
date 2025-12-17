@@ -1,5 +1,6 @@
 {
   "name": "Bobby Yeung",
+  "chineseName": "楊泳文",
   "title": "Software Developer",
   "location": "Hong Kong",
   "experience": "5 years Experience",
@@ -19,22 +20,30 @@
   ],
   "selectedProjects": [
     {
-      "title": "Nexus LMS Platform",
-      "category": "SaaS",
-      "description": "A comprehensive Learning Management System for enterprise training.",
-      "technologies": ["React", "Node.js", "PostgreSQL", "AWS S3"]
-    },
-    {
-      "title": "Sentient AI Agent",
+      "title": "Catalo Health AI Agent",
       "category": "AI Agents",
-      "description": "Autonomous customer support agent platform driven by LLMs.",
-      "technologies": ["Python", "OpenAI API", "FastAPI", "Redis"]
+      "description": "I built a multi-agent system for a client's health supplements business. The system is built with LangChain and LangGraph, and is deployed on AWS. The system is able to answer questions about the products, and the system will output a personal report to the users.",
+      "technologies": [
+        "monorepo",
+        "Typescript",
+        "LangChain",
+        "PostgreSQL",
+        "AWS S3",
+        "SST",
+        "Terraform"
+      ]
     },
     {
-      "title": "CloudScale Infra",
-      "category": "Cloud",
-      "description": "Infrastructure as Code modules for rapid AWS deployment.",
-      "technologies": ["Terraform", "AWS", "Go", "GitHub Actions"]
+      "title": "Zinomall E-Commerce",
+      "category": "E-Commerce",
+      "description": "An online store selling health supplements built with WordPress and WooCommerce. Customized complex discount and promotion features that weren't supported out of the box, including buy X get X% off, shipping adjustments, and referral discounts. Implemented UI improvements and performance optimizations.",
+      "technologies": ["PHP", "Wordpress", "MySQL", "WooCommerce"]
+    },
+    {
+      "title": "ABC Pathway Admission System",
+      "category": "Education",
+      "description": "A customized admission system for a children's English education school with proprietary learning materials. Implemented multi-branch data separation, inventory management automation, mobile payment integration, automated appointment scheduling, electronic certificate issuance, and digital assessment workflows with RESTful APIs.",
+      "technologies": ["PHP", "Yii2", "MySQL"]
     }
   ],
   "skills": {
