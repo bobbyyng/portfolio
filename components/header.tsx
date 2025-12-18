@@ -18,6 +18,7 @@ export function Header() {
   const navLinks = [
     { href: "/", label: "CV" },
     { href: "/projects", label: "Projects" },
+    { href: "/chat", label: "AI Portfolio Agent" },
   ];
 
   const isActive = (href: string) => {
