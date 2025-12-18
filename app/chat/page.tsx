@@ -14,6 +14,31 @@ import { ContactCard } from "@/components/tool/contact-card";
 const WELCOME_MESSAGE =
   "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!";
 
+const EXAMPLE_MESSAGES = [
+  "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!",
+  "What are Bobby Yeung's skills?",
+  "What are Bobby Yeung's projects?",
+  "What is Bobby Yeung's professional history?",
+  "What is Bobby Yeung's contact information?",
+  "What is Bobby Yeung's email?",
+  "What is Bobby Yeung's phone number?",
+];
+
+function useStableRandomizedMessages(messages: string[]) {
+  const [shuffled, setShuffled] = useState<string[] | null>(null);
+  useEffect(() => {
+    // Only run on client to avoid SSR/CSR mismatch!
+    const copied = messages.slice();
+    for (let i = copied.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copied[i], copied[j]] = [copied[j], copied[i]];
+    }
+    setShuffled(copied);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once after mount
+  return shuffled;
+}
+
 export default function Page() {
   const [input, setInput] = useState("");
   const [streamingText, setStreamingText] = useState("");
@@ -24,6 +49,8 @@ export default function Page() {
       api: "/api/chat",
     }),
   });
+
+  const shuffledExampleMessages = useStableRandomizedMessages(EXAMPLE_MESSAGES);
 
   useEffect(() => {
     console.log(messages);
@@ -51,6 +78,17 @@ export default function Page() {
       });
       setInput("");
     }
+  };
+
+  // NEW: Handle clicking on example message button
+  const handleExampleClick = async (message: string) => {
+    if (status === "submitted" || status === "streaming") return;
+    setInput(message);
+    // Immediately send when clicking
+    await sendMessage({
+      parts: [{ type: "text", text: message }],
+    });
+    setInput("");
   };
 
   return (
@@ -105,7 +143,7 @@ export default function Page() {
                 if (part.type.startsWith("tool-")) {
                   switch (part.type.replace("tool-", "")) {
                     case "get_profile":
-                      return <></>;
+                      return null;
                     case "get_contact":
                       return (
                         <div className="mb-2">
@@ -176,6 +214,26 @@ export default function Page() {
 
       {/* Input Area */}
       <div className="bg-background p-2 space-y-2">
+        <div
+          className="flex gap-2 overflow-x-auto custom-scrollbar"
+          style={{
+            scrollbarWidth: "none",
+          }}
+        >
+          {(shuffledExampleMessages ?? EXAMPLE_MESSAGES).map(
+            (message, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="text-xs"
+                onClick={() => handleExampleClick(message)}
+                disabled={status === "submitted" || status === "streaming"}
+              >
+                {message}
+              </Button>
+            )
+          )}
+        </div>
         <div className="flex gap-2 items-center">
           <Input
             value={input}
