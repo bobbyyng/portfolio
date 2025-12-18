@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Bot } from "lucide-react";
@@ -15,7 +15,6 @@ const WELCOME_MESSAGE =
   "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!";
 
 const EXAMPLE_MESSAGES = [
-  "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!",
   "What are Bobby Yeung's skills?",
   "What are Bobby Yeung's projects?",
   "What is Bobby Yeung's professional history?",
@@ -43,6 +42,7 @@ export default function Page() {
   const [input, setInput] = useState("");
   const [streamingText, setStreamingText] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -71,6 +71,14 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, isStreaming]);
 
+  // Auto scroll to bottom when new messages arrive or when streaming
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages, status]);
+
   const handleSend = async () => {
     if (input.trim() && status !== "submitted" && status !== "streaming") {
       await sendMessage({
@@ -94,7 +102,10 @@ export default function Page() {
   return (
     <div className="flex flex-col h-[calc(100vh-64px-80px)] container mx-auto">
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+      >
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center space-y-2 max-w-md w-full">
