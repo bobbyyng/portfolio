@@ -12,6 +12,7 @@ import {
   MapPin,
   Briefcase,
   Circle,
+  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -52,7 +53,13 @@ export function HeroSection() {
 
           {/* Contact Buttons */}
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button asChild>
+            <Button asChild className="bg-primary hover:bg-primary/90">
+              <Link href="/chat">
+                <MessageCircle className="h-4 w-4" />
+                Chat with AI Agent
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
               <Link href={`mailto:${profile.contact.email}`}>
                 <Mail className="h-4 w-4" />
                 Email Me
