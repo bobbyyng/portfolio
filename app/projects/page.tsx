@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllProjects } from "@/lib/projects";
+import { ChatButton } from "@/components/chat-button";
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
@@ -54,6 +55,8 @@ export default function ProjectsPage() {
           </div>
         )}
       </div>
+      
+      <ChatButton />
     </div>
   );
 }
