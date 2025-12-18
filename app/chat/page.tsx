@@ -22,6 +22,9 @@ const EXAMPLE_MESSAGES = [
   "What is Bobby Yeung's email?",
   "What is Bobby Yeung's phone number?",
   "I have a job opportunity that might be suitable for Bobby",
+  "What projects has Bobby Yeung completed that are related to building APIs?",
+  "What projects are related to AI?",
+  "What projects are related to serverless architecture?",
 ];
 
 function useStableRandomizedMessages(messages: string[]) {
