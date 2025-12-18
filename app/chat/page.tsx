@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { chatMDXComponents } from "@/lib/chat-mdx-components";
 import { Badge } from "@/components/ui/badge";
 import { ContactCard } from "@/components/tool/contact-card";
+import { OpportunityCard } from "@/components/tool/opportunity-card";
 
 const WELCOME_MESSAGE =
   "Hello! I am your agent for Bobby Yeung's CV portfolio. Ask me anything about his skills, projects, or professional history—I'm here to help!";
@@ -170,17 +171,33 @@ export default function Page() {
               {/* Before Custom Tool UI */}
               {message.parts.map((part, partIndex) => {
                 if (part.type.startsWith("tool-")) {
-                  switch (part.type.replace("tool-", "")) {
+                  const toolName = part.type.replace("tool-", "");
+                  switch (toolName) {
                     case "get_profile":
                       return null;
                     case "get_contact":
                       return (
-                        <div className="mb-2">
-                          <ContactCard
-                            key={`${message.id}-contact-${partIndex}`}
-                          />
+                        <div className="mb-2" key={`${message.id}-contact-${partIndex}`}>
+                          <ContactCard />
                         </div>
                       );
+                    case "create_opportunity":
+                      const toolResult = part as { output?: { details?: { companyName: string; roleDescription: string; contactName: string; contactEmail: string; timestamp: string } } };
+                      if (toolResult?.output?.details) {
+                        const details = toolResult.output.details;
+                        return (
+                          <div className="mb-2" key={`${message.id}-opportunity-${partIndex}`}>
+                            <OpportunityCard
+                              companyName={details.companyName}
+                              roleDescription={details.roleDescription}
+                              contactName={details.contactName}
+                              contactEmail={details.contactEmail}
+                              timestamp={details.timestamp}
+                            />
+                          </div>
+                        );
+                      }
+                      return null;
                     default:
                       return null;
                   }
