@@ -96,3 +96,74 @@ export function getAllProjects(): Project[] {
       return sortingA - sortingB;
     });
 }
+
+/**
+ * Get related projects by tags
+ * @param tags - Array of tags or a single tag string to match
+ * @param excludeSlug - Optional slug to exclude from results (e.g., current project)
+ * @param limit - Optional limit on number of results to return
+ * @returns Array of projects sorted by relevance (more matching tags = higher relevance)
+ */
+export function getRelatedProjectsByTags(
+  tags: string | string[],
+  excludeSlug?: string,
+  limit?: number
+): Project[] {
+  const tagsArray = Array.isArray(tags) ? tags : [tags];
+  const normalizedTags = tagsArray.map((tag) => tag.trim().toLowerCase());
+
+  const allProjects = getAllProjects();
+  const projectsWithScores = allProjects
+    .filter((project) => {
+      // Exclude the specified project if provided
+      if (excludeSlug && project.slug === excludeSlug) {
+        return false;
+      }
+
+      // Only include projects that have tags
+      const projectTags = project.metadata.tags || [];
+      if (projectTags.length === 0) {
+        return false;
+      }
+
+      // Check if project has at least one matching tag
+      const normalizedProjectTags = projectTags.map((tag) =>
+        tag.trim().toLowerCase()
+      );
+      return normalizedTags.some((searchTag) =>
+        normalizedProjectTags.includes(searchTag)
+      );
+    })
+    .map((project) => {
+      // Calculate relevance score based on number of matching tags
+      const projectTags = project.metadata.tags || [];
+      const normalizedProjectTags = projectTags.map((tag) =>
+        tag.trim().toLowerCase()
+      );
+      const matchingTagsCount = normalizedTags.filter((searchTag) =>
+        normalizedProjectTags.includes(searchTag)
+      ).length;
+
+      return {
+        project,
+        score: matchingTagsCount,
+      };
+    })
+    .sort((a, b) => {
+      // Sort by relevance score (higher first), then by sorting field
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      const sortingA = a.project.metadata.sorting || 0;
+      const sortingB = b.project.metadata.sorting || 0;
+      return sortingA - sortingB;
+    })
+    .map((item) => item.project);
+
+  // Apply limit if specified
+  if (limit && limit > 0) {
+    return projectsWithScores.slice(0, limit);
+  }
+
+  return projectsWithScores;
+}

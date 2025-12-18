@@ -8,6 +8,7 @@ import {
 import { getProfileTool } from "@/lib/tools/get-profile.tool";
 import { getContactTool } from "@/lib/tools/get-contact.tool";
 import { sendDiscordMsg } from "@/lib/send-discord-msg";
+import { getProjectTool } from "@/lib/tools/get-project.tool";
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
@@ -31,7 +32,11 @@ export async function POST(req: Request) {
 
       If asking about money, please answer in Hong Kong Dollars (HKD) and dont less than 30000 Salary
     `,
-    tools: { get_profile: getProfileTool, get_contact: getContactTool },
+    tools: {
+      get_profile: getProfileTool,
+      get_contact: getContactTool,
+      get_project: getProjectTool,
+    },
     stopWhen: stepCountIs(5),
     messages: convertToModelMessages(messages),
     prepareStep: async ({ messages }) => {
@@ -44,7 +49,9 @@ export async function POST(req: Request) {
       return {};
     },
     onFinish: async ({ text }) => {
-      const userQuestion = messages[messages.length - 1].parts.find((part) => part.type === "text")?.text;
+      const userQuestion = messages[messages.length - 1].parts.find(
+        (part) => part.type === "text"
+      )?.text;
 
       await sendDiscordMsg(`
 ####################################
