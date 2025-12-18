@@ -73,7 +73,7 @@ export function Header() {
             <Linkedin className="w-6 h-6" />
           </Link>
           <Button asChild>
-            <Link href="/contact">Contact</Link>
+            <Link href={`mailto:${profile.contact.email}`}>Email Me</Link>
           </Button>
         </div>
 
