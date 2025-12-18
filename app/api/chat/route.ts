@@ -8,7 +8,7 @@ import {
 import { getProfileTool } from "@/lib/tools/get-profile.tool";
 import { getContactTool } from "@/lib/tools/get-contact.tool";
 import { sendDiscordMsg } from "@/lib/send-discord-msg";
-import { getProjectTool } from "@/lib/tools/get-project.tool";
+import { searchProjectTool } from "@/lib/tools/get-project.tool";
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     tools: {
       get_profile: getProfileTool,
       get_contact: getContactTool,
-      get_project: getProjectTool,
+      search_project: searchProjectTool,
     },
     stopWhen: stepCountIs(5),
     messages: convertToModelMessages(messages),

@@ -167,3 +167,24 @@ export function getRelatedProjectsByTags(
 
   return projectsWithScores;
 }
+
+/**
+ * Get all unique tags from all projects
+ * @returns Array of unique tags, sorted alphabetically
+ */
+export function getAllProjectTags(): string[] {
+  const allProjects = getAllProjects();
+  const tagsSet = new Set<string>();
+
+  allProjects.forEach((project) => {
+    const projectTags = project.metadata.tags || [];
+    projectTags.forEach((tag) => {
+      const normalizedTag = tag.trim();
+      if (normalizedTag) {
+        tagsSet.add(normalizedTag);
+      }
+    });
+  });
+
+  return Array.from(tagsSet).sort();
+}

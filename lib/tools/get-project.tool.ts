@@ -1,24 +1,12 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { getRelatedProjectsByTags } from "@/lib/projects";
+import { getRelatedProjectsByTags, getAllProjectTags } from "@/lib/projects";
 
-export const getProjectTool = tool({
-  name: "get_project",
-  description: "Get Bobby Yeung's projects",
+export const searchProjectTool = tool({
+  name: "search_project",
+  description: "Search Bobby Yeung's projects by tags",
   inputSchema: z.object({
-    tags: z.enum([
-      "PHP",
-      "Yii2",
-      "MySQL",
-      "Wordpress",
-      "NestJS",
-      "Hono",
-      "Laravel",
-      "LangChain",
-      "LangGraph",
-      "AWS",
-      "Docker",
-    ]),
+    tags: z.enum(getAllProjectTags()),
   }),
   execute: async ({ tags }) => {
     const projects = getRelatedProjectsByTags(tags);
