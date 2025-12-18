@@ -3,7 +3,6 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Bot } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +20,7 @@ const EXAMPLE_MESSAGES = [
   "What is Bobby Yeung's contact information?",
   "What is Bobby Yeung's email?",
   "What is Bobby Yeung's phone number?",
+  "I have a job opportunity that might be suitable for Bobby",
 ];
 
 function useStableRandomizedMessages(messages: string[]) {
@@ -43,6 +43,7 @@ export default function Page() {
   const [streamingText, setStreamingText] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -85,8 +86,25 @@ export default function Page() {
         parts: [{ type: "text", text: input }],
       });
       setInput("");
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
     }
   };
+
+  // Auto adjust textarea height
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const maxHeight = 200; // Max height in pixels
+      textareaRef.current.style.height = `${Math.min(
+        scrollHeight,
+        maxHeight
+      )}px`;
+    }
+  }, [input]);
 
   // NEW: Handle clicking on example message button
   const handleExampleClick = async (message: string) => {
@@ -245,20 +263,29 @@ export default function Page() {
             )
           )}
         </div>
-        <div className="flex gap-2 items-center">
-          <Input
+        <div className="flex gap-2 items-end">
+          <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={async (e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              // Ctrl/Cmd + Enter to send
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
                 await handleSend();
               }
+              // Enter alone will create a new line (default behavior)
             }}
-            placeholder="Ask anything..."
+            placeholder="Ask anything... (Press Ctrl/Cmd+Enter to send)"
             disabled={status === "submitted" || status === "streaming"}
-            className="flex-1 rounded-full text-xs px-4 py-3 h-12"
-            style={{ fontSize: "0.875rem", minHeight: "2.25rem" }}
+            className="flex-1 rounded-lg text-xs px-4 py-3 resize-none overflow-y-auto"
+            style={{
+              fontSize: "0.875rem",
+              minHeight: "2.25rem",
+              maxHeight: "200px",
+              lineHeight: "1.5",
+            }}
+            rows={1}
           />
           <Button
             onClick={handleSend}

@@ -9,6 +9,7 @@ import { getProfileTool } from "@/lib/tools/get-profile.tool";
 import { getContactTool } from "@/lib/tools/get-contact.tool";
 import { sendDiscordMsg } from "@/lib/send-discord-msg";
 import { searchProjectTool } from "@/lib/tools/get-project.tool";
+import { createOpportunityTool } from "@/lib/tools/create-opportunity.tool";
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
@@ -31,11 +32,14 @@ export async function POST(req: Request) {
       Dont use table to display the information, use lists or paragraphs instead.
 
       If asking about money, please answer in Hong Kong Dollars (HKD) and dont less than 30000 Salary
+
+      IMPORTANT: When someone mentions a job opening, position opportunity, or recruitment opportunity, proactively ask for their company name, role description (JD), contact person name, and email address. Once you have collected all this information, use the create_opportunity tool to record it. This helps Bobby follow up on potential opportunities and shows your proactive business value.
     `,
     tools: {
       get_profile: getProfileTool,
       get_contact: getContactTool,
       search_project: searchProjectTool,
+      create_opportunity: createOpportunityTool,
     },
     stopWhen: stepCountIs(5),
     messages: convertToModelMessages(messages),
