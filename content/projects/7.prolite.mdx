@@ -1,0 +1,47 @@
+---
+title: Pro-lite Digital Board Web Application
+tags: NestJS, MySQL, Typescript, API, Docker
+sorting: 3
+---
+
+# Project Background
+Pro-Lite, Inc., a US-based hardware and digital signage solutions provider, engaged our company to develop a new web application for managing and controlling their digital menu boards deployed at multiple store locations. Their requirements included support for multiple user roles (Super Admin, Regional Admin, Corporate Admin, Store Admin), a unified CMS, and the ability to synchronize menu content in real time with IoT-powered LCD displays.
+
+As the vendor, we took ownership of the backend development for this project. I served as the primary backend engineer, architecting and implementing the NestJS-based API platform to ensure scalability, robust role-based access control, secure and efficient data flows, and reliable high-speed synchronization between the CMS and the digital signage displays.
+
+# My Responsibilities
+
+- Designed and implemented a modular NestJS backend connected to a MySQL database, including entities, repositories, and service layers for all major modules (users, regions, corporates, stores, templates, menus, devices, logs).
+- Built RESTful API endpoints to support CMS operations such as user management, region/corporate/store hierarchy maintenance, template and menu management, device registration, and content operations.
+- Implemented role-based access control (RBAC) to strictly enforce permissions for Super Admin, Regional Admin, Corporate Admin, and Store Admin.
+- Developed the backend logic for real-time menu updates, ensuring LCD displays refresh configuration and content within around 10 seconds after any change in the CMS or store control panel.
+- Implemented time zone–aware data handling, so all date-time values are displayed correctly according to each user’s configured time zone.
+- Collaborated with the frontend team to define API contracts, validation rules (DTOs), and error formats, ensuring smooth integration with the web-based CMS and control panel.
+- Built and optimized database schemas and indexes in MySQL to handle multi-tenant style access across regions, corporates, and stores efficiently.
+- Implemented comprehensive audit logging for CMS user actions, with a 30-day log retention policy to support troubleshooting and compliance.
+
+# Key Contributions
+**Multi-Role CMS & Hierarchy Design**
+    - Designed and implemented a multi-level RBAC model (Super, Regional, Corporate, Store Admin) to control access by region, corporate, and store, ensuring each user only sees and manages their own scope.
+    - Modeled Region → Corporate → Store hierarchy in MySQL with proper foreign keys and constraints, enabling efficient, secure queries for all CMS operations.
+
+**Template, Menu & Content APIs**
+    - Built NestJS APIs for managing templates, menu boards, and scrolling messages, supporting multiple layouts, margins, and visual properties like “Hot”, “New”, “Sold Out”, and “Deleted”.
+    - Implemented content upload, album-style listing, and Excel/URL-based import workflows to streamline bulk graphic and product management.
+
+**Device & Display Control**
+    - Developed device registration and management APIs with MAC-based search, bulk import, and multi-store assignment to support large-scale digital signage deployments.
+    - Implemented LCD display connection via store code + access code and a lightweight refresh mechanism so updated menus appear on screens within seconds.
+
+**Audit Logging & Reliability**
+    - Added a centralized action log module capturing key CMS operations with a 30-day retention policy for security and troubleshooting.
+    - Implemented scheduled background jobs, structured logging, and time zone–aware responses to keep the system maintainable and reliable in production.
+
+## Technical Skills Demonstrated
+
+- Backend Development: NestJS module design, controllers, services, providers, guards, interceptors, DTO validation, Swagger/OpenAPI documentation.
+- Database: MySQL schema design, relational modeling (Region/Corporate/Store hierarchy), indexing strategy, and query optimization for multi-tenant-style access patterns.
+- Security & RBAC: JWT-based authentication, role-based access control for complex admin hierarchies, and scoped data access controls.
+- Digital Signage & Real-Time Updates: Backend support for digital signage, content publishing flows, and low-latency update patterns for LCD displays in a multi-location environment.
+- Bulk Operations & Integrations: Excel import/export handling, URL-based asset ingestion, and batch processing on the backend.
+- Maintainability: Structured logging, audit trails, background jobs for retention policies, and clear separation of concerns within the NestJS codebase.
