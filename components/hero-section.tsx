@@ -3,7 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import profile from "@/content/profile.json";
+import carouselData from "@/content/carousel.json";
 import {
   Mail,
   Linkedin,
@@ -13,11 +15,27 @@ import {
   Briefcase,
   Circle,
   MessageCircle,
+  ArrowRight,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export function HeroSection() {
   const [imageError, setImageError] = useState(false);
+
+  // Sort carousel items by position
+  const sortedItems = [...carouselData].sort((a, b) => a.position - b.position);
+
+  // Helper function to get project data by slug
+  const getProjectBySlug = (slug: string) => {
+    return profile.selectedProjects?.find((p) => p.slug === slug);
+  };
 
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -98,27 +116,79 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Right Section - Profile Picture */}
+        {/* Right Section - Carousel */}
         <div className="flex justify-center lg:justify-end">
-          <div className="relative w-full max-w-md aspect-square">
-            <div className="relative w-full h-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-              {!imageError ? (
-                <Image
-                  src="/profile.jpg"
-                  alt={profile.name}
-                  fill
-                  className="object-cover"
-                  priority
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="flex items-center justify-center w-full h-full">
-                  <span className="text-4xl text-muted-foreground">
-                    {profile.name.charAt(0)}
-                  </span>
-                </div>
-              )}
-            </div>
+          <div className="relative w-full max-w-md">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {sortedItems.map((item, index) => {
+                  if (item.type === "image" && item.url) {
+                    return (
+                      <CarouselItem key={index}>
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-muted">
+                          <Image
+                            src={item.url}
+                            alt={item.alt || profile.name}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                            onError={() => {
+                              if (index === 0) setImageError(true);
+                            }}
+                          />
+                          {imageError && index === 0 && (
+                            <div className="flex items-center justify-center w-full h-full">
+                              <span className="text-4xl text-muted-foreground">
+                                {profile.name.charAt(0)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </CarouselItem>
+                    );
+                  } else if (item.type === "project" && item.projectSlug) {
+                    const project = getProjectBySlug(item.projectSlug);
+                    if (!project) return null;
+
+                    return (
+                      <CarouselItem key={index}>
+                        <div className="space-y-3 p-6 aspect-square flex flex-col justify-between rounded-lg border bg-card">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-start gap-4">
+                              <h3 className="text-lg font-semibold text-foreground">
+                                {project.title}
+                              </h3>
+                              <Badge variant="secondary">{project.category}</Badge>
+                            </div>
+                            <p className="text-muted-foreground text-sm line-clamp-4">
+                              {project.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {project.technologies?.map((tech, techIndex) => (
+                                <Badge key={techIndex} variant="secondary" className="text-xs">
+                                  {tech}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          {project.slug && (
+                            <Link href={`/projects/${project.slug}`} className="mt-auto">
+                              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                                View Details
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+                      </CarouselItem>
+                    );
+                  }
+                  return null;
+                })}
+              </CarouselContent>
+              <CarouselPrevious className="left-0" />
+              <CarouselNext className="right-0" />
+            </Carousel>
           </div>
         </div>
       </div>
