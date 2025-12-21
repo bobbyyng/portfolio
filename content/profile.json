@@ -5,7 +5,7 @@
   "location": "Hong Kong",
   "experience": "5 years Experience",
   "available": true,
-  "summary": "Building scalable cloud solutions and intuitive web applications. Specialized in modern frontend architectures and serverless backend systems. A highly motivated developer with a strong foundation in algorithmic problem solving and a proven track record of delivering high-quality software solutions. Dedicated to writing clean, maintainable code and staying up-to-date with emerging technologies.",
+  "summary": "Software developer with ~5 years’ experience building highly available, scalable RESTful services and internal platforms for B2B/B2C clients in education and e‑commerce. Experienced in AI/RAG agents, admission systems, digital signage and e‑commerce platforms, covering complex business rules, RBAC, tenant‑level data isolation and 3rd‑party integrations. Strong in TypeScript/PHP, MySQL/PostgreSQL, AWS, Docker and Terraform, with hands‑on cloud deployment, CI/CD and close collaboration with PMs and product teams to deliver stable, performant systems.",
   "education": [
     {
       "institution": "Hong Kong Polytechnic University",
