@@ -1,6 +1,25 @@
 import Link from "next/link";
-import { getAllProjects } from "@/lib/projects";
+import { getAllProjects, type Project } from "@/lib/projects";
 import { ChatButton } from "@/components/chat-button";
+
+function formatDateRange(project: Project) {
+  // If startDate and endDate are provided, use them
+  if (project.metadata.startDate) {
+    const endDate = project.metadata.endDate || "Present";
+    return `${project.metadata.startDate} - ${endDate}`;
+  }
+  
+  // Fallback to date or period if they exist
+  if (project.metadata.date) {
+    return project.metadata.date;
+  }
+  
+  if (project.metadata.period) {
+    return project.metadata.period;
+  }
+  
+  return null;
+}
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
@@ -32,9 +51,16 @@ export default function ProjectsPage() {
                 href={`/projects/${project.slug}`}
                 className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
               >
-                <h2 className="text-xl font-semibold text-black dark:text-zinc-50 mb-2">
-                  {project.metadata.title}
-                </h2>
+                <div className="flex justify-between items-start mb-2">
+                  <h2 className="text-xl font-semibold text-black dark:text-zinc-50">
+                    {project.metadata.title}
+                  </h2>
+                  {formatDateRange(project) && (
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap ml-4">
+                      {formatDateRange(project)}
+                    </span>
+                  )}
+                </div>
                 {project.metadata.description && (
                   <p className="text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-3">
                     {project.metadata.description}
