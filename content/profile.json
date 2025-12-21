@@ -22,28 +22,48 @@
     {
       "title": "Catalo Health AI Agent",
       "category": "AI Agents",
-      "description": "I built a multi-agent system for a client's health supplements business. The system is built with LangChain and LangGraph, and is deployed on AWS. The system is able to answer questions about the products, and the system will output a personal report to the users.",
+      "description": "Built an AI RAG agent integrated with e-commerce and customer portal flows (questionnaire/report → structured health insights → personalized product recommendations → add-to-cart). Implemented knowledge-base ingestion (PDF/Word/image/CSV) with vector search and secure user/admin authentication. Deployed on AWS with IaC for scalable, production-grade delivery.",
       "technologies": [
-        "monorepo",
-        "Typescript",
+        "TypeScript",
+        "Hono",
         "LangChain",
+        "RAG",
+        "Qdrant",
         "PostgreSQL",
-        "AWS S3",
+        "AWS (CloudFront/Lambda/S3/EC2)",
         "SST",
-        "Terraform"
+        "Terraform",
+        "Docker",
+        "Monorepo"
       ]
     },
     {
-      "title": "Zinomall E-Commerce",
-      "category": "E-Commerce",
-      "description": "An online store selling health supplements built with WordPress and WooCommerce. Customized complex discount and promotion features that weren't supported out of the box, including buy X get X% off, shipping adjustments, and referral discounts. Implemented UI improvements and performance optimizations.",
-      "technologies": ["PHP", "Wordpress", "MySQL", "WooCommerce"]
+      "title": "Pro-lite Digital Board Web Application",
+      "category": "B2B SaaS",
+      "description": "Designed and implemented a backend platform for multi-location digital signage CMS. Delivered multi-level RBAC (Super/Regional/Corporate/Store Admin), multi-tenant style data access, audit logging, and low-latency content refresh (around 10 seconds) to IoT LCD displays, backed by optimized MySQL schema and indexes.",
+      "technologies": [
+        "TypeScript",
+        "NestJS",
+        "MySQL",
+        "Docker",
+        "REST API",
+        "RBAC",
+        "JWT",
+        "Swagger/OpenAPI"
+      ]
     },
     {
       "title": "ABC Pathway Admission System",
       "category": "Education",
-      "description": "A customized admission system for a children's English education school with proprietary learning materials. Implemented multi-branch data separation, inventory management automation, mobile payment integration, automated appointment scheduling, electronic certificate issuance, and digital assessment workflows with RESTful APIs.",
-      "technologies": ["PHP", "Yii2", "MySQL"]
+      "description": "Maintained and evolved a customized admission system with strict multi-branch data separation. Delivered automation and APIs for inventory forecasting, mobile payment, appointment booking, digital assessments, e-certificate issuance, and parent-facing analytics, while stabilizing legacy business logic through targeted refactoring and regression-safe fixes.",
+      "technologies": [
+        "PHP",
+        "Yii2",
+        "MySQL",
+        "REST API",
+        "Data Isolation",
+        "Legacy Refactoring"
+      ]
     }
   ],
   "skills": {
