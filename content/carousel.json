@@ -4,21 +4,6 @@
     "url": "/profile.jpg",
     "alt": "Bobby Yeung",
     "position": 1
-  },
-  {
-    "type": "project",
-    "projectSlug": "8.catalo-health-ai-agent",
-    "position": 2
-  },
-  {
-    "type": "project",
-    "projectSlug": "7.prolite",
-    "position": 3
-  },
-  {
-    "type": "project",
-    "projectSlug": "4.abc-pathway-admission-system",
-    "position": 4
   }
 ]
 

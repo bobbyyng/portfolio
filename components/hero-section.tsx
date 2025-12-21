@@ -27,12 +27,22 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 
+type CarouselItemType = {
+  type: "image" | "project";
+  url?: string;
+  projectSlug?: string;
+  alt?: string;
+  position: number;
+};
+
 export function HeroSection() {
   const [imageError, setImageError] = useState(false);
   const [api, setApi] = useState<CarouselApi>();
 
   // Sort carousel items by position
-  const sortedItems = [...carouselData].sort((a, b) => a.position - b.position);
+  const sortedItems = ([...carouselData] as CarouselItemType[]).sort(
+    (a, b) => a.position - b.position
+  );
 
   // Helper function to get project data by slug
   const getProjectBySlug = (slug: string) => {
@@ -139,7 +149,7 @@ export function HeroSection() {
           <div className="relative w-full max-w-md">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
-                {sortedItems.map((item, index) => {
+                {sortedItems.map((item: CarouselItemType, index: number) => {
                   if (item.type === "image" && item.url) {
                     return (
                       <CarouselItem key={index}>
