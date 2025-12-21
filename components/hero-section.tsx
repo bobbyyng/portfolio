@@ -17,17 +17,19 @@ import {
   MessageCircle,
   ArrowRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 
 export function HeroSection() {
   const [imageError, setImageError] = useState(false);
+  const [api, setApi] = useState<CarouselApi>();
 
   // Sort carousel items by position
   const sortedItems = [...carouselData].sort((a, b) => a.position - b.position);
@@ -36,6 +38,22 @@ export function HeroSection() {
   const getProjectBySlug = (slug: string) => {
     return profile.selectedProjects?.find((p) => p.slug === slug);
   };
+
+  // Auto scroll functionality
+  useEffect(() => {
+    if (!api) return;
+
+    const interval = setInterval(() => {
+      if (api.canScrollNext()) {
+        api.scrollNext();
+      } else {
+        // Loop back to the first slide
+        api.scrollTo(0);
+      }
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [api]);
 
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -119,7 +137,7 @@ export function HeroSection() {
         {/* Right Section - Carousel */}
         <div className="flex justify-center lg:justify-end">
           <div className="relative w-full max-w-md">
-            <Carousel className="w-full">
+            <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {sortedItems.map((item, index) => {
                   if (item.type === "image" && item.url) {
@@ -158,22 +176,35 @@ export function HeroSection() {
                               <h3 className="text-lg font-semibold text-foreground">
                                 {project.title}
                               </h3>
-                              <Badge variant="secondary">{project.category}</Badge>
+                              <Badge variant="secondary">
+                                {project.category}
+                              </Badge>
                             </div>
                             <p className="text-muted-foreground text-sm line-clamp-4">
                               {project.description}
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {project.technologies?.map((tech, techIndex) => (
-                                <Badge key={techIndex} variant="secondary" className="text-xs">
+                                <Badge
+                                  key={techIndex}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
                                   {tech}
                                 </Badge>
                               ))}
                             </div>
                           </div>
                           {project.slug && (
-                            <Link href={`/projects/${project.slug}`} className="mt-auto">
-                              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                            <Link
+                              href={`/projects/${project.slug}`}
+                              className="mt-auto"
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full sm:w-auto"
+                              >
                                 View Details
                                 <ArrowRight className="h-4 w-4" />
                               </Button>
