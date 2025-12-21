@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import profile from "@/content/profile.json";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/utils";
 export function Header() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -31,9 +33,30 @@ export function Header() {
   return (
     <header className="w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center px-4 justify-between relative">
-        {/* Left: Logo */}
-        <Link href="/" className="font-bold text-xl" onClick={closeMenu}>
-          {profile.name}
+        {/* Left: Logo with Avatar */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 font-bold text-xl hover:opacity-80 transition-opacity"
+          onClick={closeMenu}
+        >
+          <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex-shrink-0">
+            {!imageError ? (
+              <Image
+                src="/profile.jpg"
+                alt={profile.name}
+                fill
+                className="object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full">
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {profile.name.charAt(0)}
+                </span>
+              </div>
+            )}
+          </div>
+          <span className="hidden sm:inline">{profile.name}</span>
         </Link>
 
         {/* Center: Desktop Navigation */}
