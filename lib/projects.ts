@@ -5,7 +5,8 @@ export interface ProjectMetadata {
   title: string;
   tags?: string[];
   sorting?: number;
-  [key: string]: string | string[] | number | undefined;
+  show?: boolean | string;
+  [key: string]: string | string[] | number | boolean | undefined;
 }
 
 export interface Project {
@@ -65,6 +66,10 @@ export function getProjectBySlug(slug: string): Project | null {
           metadata[key] = value.split(",").map((t) => t.trim());
         } else if (key === "sorting") {
           metadata[key] = parseInt(value, 10) || 0;
+        } else if (key === "show") {
+          // Parse boolean values: true, false, "true", "false", "1", "0"
+          const lowerValue = value.toLowerCase();
+          metadata[key] = lowerValue === "true" || lowerValue === "1";
         } else {
           metadata[key] = value;
         }
@@ -90,6 +95,14 @@ export function getAllProjects(): Project[] {
   return slugs
     .map((slug) => getProjectBySlug(slug))
     .filter((project): project is Project => project !== null)
+    .filter((project) => {
+      // Show project if 'show' field is not set (default true) or explicitly set to true
+      const show = project.metadata.show;
+      if (show === undefined) return true; // Default: show
+      if (show === true || show === "true" || show === "1") return true;
+      if (show === false || show === "false" || show === "0") return false;
+      return true; // Default to show if value is unclear
+    })
     .sort((a, b) => {
       const sortingA = a.metadata.sorting || 0;
       const sortingB = b.metadata.sorting || 0;
