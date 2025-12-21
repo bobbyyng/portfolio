@@ -64,6 +64,9 @@ export function getProjectBySlug(slug: string): Project | null {
         
         if (key === "tags") {
           metadata[key] = value.split(",").map((t) => t.trim());
+        } else if (key === "images") {
+          // Parse images as comma-separated array
+          metadata[key] = value.split(",").map((t) => t.trim());
         } else if (key === "sorting") {
           metadata[key] = parseInt(value, 10) || 0;
         } else if (key === "show") {

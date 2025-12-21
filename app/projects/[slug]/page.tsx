@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProjectBySlug, getAllProjectSlugs } from "@/lib/projects";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
+import { ProjectCarousel } from "@/components/project-carousel";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -21,6 +22,12 @@ export default async function ProjectPage({ params }: PageProps) {
   if (!project) {
     notFound();
   }
+
+  const images = Array.isArray(project.metadata.images)
+    ? project.metadata.images
+    : typeof project.metadata.images === "string"
+    ? [project.metadata.images]
+    : [];
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-16 px-4">
@@ -52,6 +59,12 @@ export default async function ProjectPage({ params }: PageProps) {
             )}
           </div>
         </header>
+        
+        {/* Project Images Carousel */}
+        {images.length > 0 && (
+          <ProjectCarousel images={images} title={project.metadata.title} />
+        )}
+
         <div className="prose prose-zinc dark:prose-invert max-w-none">
           <MDXRemote source={project.content} components={createMDXComponents()} />
         </div>
