@@ -21,6 +21,7 @@
   "selectedProjects": [
     {
       "title": "Catalo Health AI Agent",
+      "slug": "8.catalo-health-ai-agent",
       "category": "AI Agents",
       "description": "Built an AI RAG agent integrated with e-commerce and customer portal flows (questionnaire/report → structured health insights → personalized product recommendations → add-to-cart). Implemented knowledge-base ingestion (PDF/Word/image/CSV) with vector search and secure user/admin authentication. Deployed on AWS with IaC for scalable, production-grade delivery.",
       "technologies": [
@@ -39,6 +40,7 @@
     },
     {
       "title": "Pro-lite Digital Board Web Application",
+      "slug": "7.prolite",
       "category": "B2B SaaS",
       "description": "Designed and implemented a backend platform for multi-location digital signage CMS. Delivered multi-level RBAC (Super/Regional/Corporate/Store Admin), multi-tenant style data access, audit logging, and low-latency content refresh (around 10 seconds) to IoT LCD displays, backed by optimized MySQL schema and indexes.",
       "technologies": [
@@ -54,6 +56,7 @@
     },
     {
       "title": "ABC Pathway Admission System",
+      "slug": "4.abc-pathway-admission-system",
       "category": "Education",
       "description": "Maintained and evolved a customized admission system with strict multi-branch data separation. Delivered automation and APIs for inventory forecasting, mobile payment, appointment booking, digital assessments, e-certificate issuance, and parent-facing analytics, while stabilizing legacy business logic through targeted refactoring and regression-safe fixes.",
       "technologies": [

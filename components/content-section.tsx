@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import profile from "@/content/profile.json";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 function ProfessionalSummary() {
   return (
@@ -84,6 +85,14 @@ function SelectedProjects() {
                 </Badge>
               ))}
             </div>
+            {project.slug && (
+              <Link href={`/projects/${project.slug}`}>
+                <Button variant="outline" size="sm" className="mt-2">
+                  View Details
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </div>
         ))}
       </div>
