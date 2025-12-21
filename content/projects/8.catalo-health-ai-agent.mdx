@@ -1,0 +1,52 @@
+---
+title: Catalo AI RAG Agent for Personalized Health Insights
+tags: AI, RAG, Hono, Typescript, API, SST, AWS, Docker, Monorepo, Knowledge Base, Qdrant, Terraform
+sorting: 1
+---
+
+# Project Background
+
+Catalo, a Hong Kong-based health and wellness brand specializing in nutritional supplements, partnered with our team to develop an AI Health Agent — an intelligent chat system integrated into their e-commerce platform and customer portal. The core user flow enables customers to complete health questionnaires or update health reports, which feed into the Qwen AI model to generate structured "health objects" (health summaries, recommended exercises, required nutrients). These insights then drive personalized product recommendations from Catalo's catalog, with seamless add-to-cart integration to their e-commerce system.
+
+A secondary flow supports general health advice chats. The system includes an AI Chat Widget for users and an Admin Panel for knowledge base management. 
+
+As the backend engineer, I architected the monorepo using SST + Hono + AWS (CloudFront → Lambda → S3/EC2 with Docker) + Qdrant + LangChain + Qwen, with Better Auth for secure authentication.
+
+# My Responsibilities
+
+- Designed a SST monorepo backend architecture, modularizing chat APIs, questionnaire/report services, knowledge base, and admin endpoints deployed via AWS Lambda and Dockerized EC2.
+- Implemented Hono-based HTTP APIs handling chat widget interactions, questionnaire submissions, health report updates, and e-commerce cart integration.
+- Integrated Qwen model via LangChain to process questionnaire/health report data into structured health objects (summaries, exercise/nutrition recommendations, matched products).
+- Built product recommendation logic mapping AI-generated nutrient needs to Catalo's inventory, enabling direct add-to-cart actions linked to their e-commerce platform.
+- Developed general chat APIs for health advice queries, with scope controls to avoid unrelated topics and fallback to customer support.
+- Implemented Better Auth for user and admin authentication (username/password login), including session management and role-based access.
+- Created knowledge base APIs supporting PDF/Word/image/CSV uploads, parsing, vectorization to Qdrant, and admin operations (download/replace/delete).
+- Configured AWS infrastructure with CloudFront as entry point, Lambda for serverless APIs, S3 for storage, and EC2/Docker for persistent tasks.
+
+# Key Contributions
+
+**Questionnaire & Health Object Flow**
+- Engineered end-to-end flow: questionnaire → health report update → Qwen/LangChain processing → structured health objects → nutrient-based product matching → e-commerce add-to-cart.
+- Structured health data modeling ensures repeatable updates and AI personalization for exercise, nutrition, and Catalo product recommendations.
+
+**AI Chat Widget & Advice Mode**
+- Backend for embeddable widget supporting questionnaire mode and free-form health chats, powered by Qwen for natural responses within brand guidelines.
+- Implemented conversation scoping (recommendations, waiting lists, student info, enquiries, promotions) with support/customer support fallbacks.
+
+**Knowledge Base & RAG Pipeline**
+- Built document ingestion pipeline transforming uploads into Qdrant vectors for retrieval-augmented generation (RAG), enhancing AI accuracy.
+- Enabled admin prompt settings and multilingual (English/Traditional Chinese) handling for consistent, domain-specific outputs.
+
+**Infrastructure & Security**
+- Deployed via CloudFront → Lambda → S3/EC2 (Docker) topology for performance and scalability, managed through SST IaC.
+- Secured all flows with Better Auth, ensuring protected access to health data and admin functions.
+
+## Technical Skills Demonstrated
+
+- Backend/API Development: SST monorepo, Hono REST APIs, questionnaire/report/e-commerce integration.
+- AI/ML Integration: Qwen model orchestration, LangChain pipelines, RAG with health object generation.
+- Vector DB: Qdrant indexing/retrieval for knowledge-enhanced recommendations.
+- Cloud Infrastructure: AWS CloudFront/Lambda/S3/EC2/Docker, SST IaC deployments.
+- Authentication: Better Auth for secure user/admin flows.
+- Domain Expertise: Health data modeling, personalized recommendation engines, e-commerce backend sync.
+
