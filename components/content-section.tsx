@@ -31,7 +31,7 @@ function WorkExperience() {
       </div>
       <div className="space-y-6">
         {profile.workExperience?.map((work, index) => (
-          <div key={index} className="space-y-2">
+          <div key={index} className="space-y-4">
             <div className="flex justify-between items-center gap-4">
               <div className="flex-1">
                 <h3 className="font-semibold text-foreground mb-1 text-md">
@@ -50,6 +50,16 @@ function WorkExperience() {
                 </Badge>
               </div>
             </div>
+            {work.description && work.description.length > 0 && (
+              <ul className="space-y-2.5 list-none pl-0">
+                {work.description.map((desc, descIndex) => (
+                  <li key={descIndex} className="text-muted-foreground text-sm leading-relaxed flex items-start gap-3">
+                    <span className="text-foreground/60 text-xs mt-1.5 shrink-0">•</span>
+                    <span>{desc}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </div>

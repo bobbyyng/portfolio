@@ -11,7 +11,16 @@
       "company": "Vioo Company Limited",
       "position": "Software Developer",
       "period": "2020 - Present",
-      "previousPositions": ["Intern"]
+      "previousPositions": ["Intern"],
+      "description": [
+        "Architected AI RAG agent with e-commerce integration, implementing knowledge-base ingestion (PDF/Word/image/CSV) with vector search and deployed on AWS using SST/Terraform, delivering personalized health insights and product recommendations.",
+        "Built multi-location digital signage CMS platform using NestJS and MySQL, implementing multi-level RBAC and real-time content synchronization to IoT displays with 10-second refresh latency.",
+        "Maintained 3+ admission systems with strict multi-branch data separation, delivering RESTful APIs and automation for inventory forecasting, mobile payments, appointment booking, and digital assessments.",
+        "Developed complex WooCommerce discount engines handling multiple promotion types, ensuring accurate calculations and optimizing WordPress performance through code refactoring.",
+        "Implemented self-hosted GitLab infrastructure with Docker, designed CI/CD pipelines, and established automated backup strategies on AWS EC2.",
+        "Replaced legacy systems using TypeScript/PHP, NestJS/Hono, MySQL/PostgreSQL, Docker, and cloud infrastructure, improving system reliability and operational efficiency.",
+        "Collaborated with clients and cross-functional teams to gather requirements, conduct impact analysis, and ensure successful deployments while maintaining code quality."
+      ]
     }
   ],
   "education": [
