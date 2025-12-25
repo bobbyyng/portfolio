@@ -20,6 +20,43 @@ function ProfessionalSummary() {
   );
 }
 
+function WorkExperience() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
+          Work Experience
+        </h2>
+        <div className="w-full h-px bg-border"></div>
+      </div>
+      <div className="space-y-6">
+        {profile.workExperience?.map((work, index) => (
+          <div key={index} className="space-y-2">
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1 text-md">
+                  {work.company}
+                </h3>
+                <p className="text-muted-foreground text-sm">{work.position}</p>
+                {work.previousPositions && work.previousPositions.length > 0 && (
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Previously: {work.previousPositions.join(", ")}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Badge variant="secondary" className="text-md">
+                  {work.period}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Education() {
   return (
     <div className="space-y-6">
@@ -159,6 +196,7 @@ export function ContentSection() {
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-8 space-y-12">
           <ProfessionalSummary />
+          <WorkExperience />
           <Education />
           <SelectedProjects />
         </div>

@@ -5,7 +5,15 @@
   "location": "Hong Kong",
   "experience": "5 years Experience",
   "available": true,
-  "summary": "Software developer with ~5 years’ experience building highly available, scalable RESTful services and internal platforms for B2B/B2C clients in education and e‑commerce. Experienced in AI/RAG agents, admission systems, digital signage and e‑commerce platforms, covering complex business rules, RBAC, tenant‑level data isolation and 3rd‑party integrations. Strong in TypeScript/PHP, MySQL/PostgreSQL, AWS, Docker and Terraform, with hands‑on cloud deployment, CI/CD and close collaboration with PMs and product teams to deliver stable, performant systems.",
+  "summary": "Software developer with ~5 years' experience building highly available, scalable RESTful services and internal platforms for B2B/B2C clients in education and e‑commerce. Experienced in AI/RAG agents, admission systems, digital signage and e‑commerce platforms, covering complex business rules, RBAC, tenant‑level data isolation and 3rd‑party integrations. Strong in TypeScript/PHP, MySQL/PostgreSQL, AWS, Docker and Terraform, with hands‑on cloud deployment, CI/CD and close collaboration with PMs and product teams to deliver stable, performant systems.",
+  "workExperience": [
+    {
+      "company": "Vioo Company Limited",
+      "position": "Software Developer",
+      "period": "2020 - Present",
+      "previousPositions": ["Intern"]
+    }
+  ],
   "education": [
     {
       "institution": "Hong Kong Polytechnic University",
