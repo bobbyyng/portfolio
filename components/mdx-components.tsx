@@ -62,13 +62,40 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
       </blockquote>
     ),
     img: (props) => (
-      <Image
-        {...props}
-        alt={props.alt || ""}
-        width={800}
-        height={600}
-        className="rounded-lg my-4"
-      />
+      <figure className="my-6">
+        <Image
+          {...props}
+          alt={props.alt || ""}
+          width={1200}
+          height={800}
+          className="rounded-lg border border-zinc-200 dark:border-zinc-700 w-full h-auto"
+        />
+        {props.alt && (
+          <figcaption className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-2 italic">
+            {props.alt}
+          </figcaption>
+        )}
+      </figure>
+    ),
+    table: ({ children }) => (
+      <div className="overflow-x-auto my-6">
+        <table className="min-w-full border-collapse text-sm">
+          {children}
+        </table>
+      </div>
+    ),
+    th: ({ children }) => (
+      <th className="border border-zinc-200 dark:border-zinc-700 px-4 py-2 bg-zinc-50 dark:bg-zinc-800 text-left font-semibold text-zinc-700 dark:text-zinc-300">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-zinc-700 dark:text-zinc-300">
+        {children}
+      </td>
+    ),
+    hr: () => (
+      <hr className="my-8 border-zinc-200 dark:border-zinc-700" />
     ),
     ...components,
   };

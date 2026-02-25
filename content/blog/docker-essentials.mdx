@@ -3,6 +3,7 @@ title: Docker Essentials Cheat Sheet
 date: 2026-02-15
 tags: Docker, DevOps, Study Notes
 summary: A quick reference guide for essential Docker commands and concepts that I use regularly in my development workflow.
+coverImage: /blog/cover-docker.svg
 ---
 
 # Docker Essentials Cheat Sheet
@@ -88,6 +89,16 @@ COPY --from=builder /app/package.json ./
 EXPOSE 3000
 CMD ["npm", "start"]
 ```
+
+## Architecture Overview
+
+You can include architecture or flow diagrams directly in your blog posts using standard markdown image syntax:
+
+```markdown
+![Description of the diagram](/blog/your-diagram.png)
+```
+
+Place your images in `public/blog/` and reference them with `/blog/filename`. They will render full-width with captions automatically.
 
 ## Tips
 

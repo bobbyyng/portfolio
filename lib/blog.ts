@@ -6,6 +6,7 @@ export interface BlogPostMetadata {
   date?: string;
   tags?: string[];
   summary?: string;
+  coverImage?: string;
   [key: string]: string | string[] | number | boolean | undefined;
 }
 
