@@ -1,0 +1,67 @@
+---
+title: Next.js App Router Study Notes
+date: 2026-02-20
+tags: Next.js, React, TypeScript, Study Notes
+summary: Key takeaways and notes from studying the Next.js App Router, including server components, routing patterns, and data fetching strategies.
+---
+
+# Next.js App Router Study Notes
+
+These are my study notes on Next.js App Router, covering the key concepts and patterns I've learned.
+
+## Server Components vs Client Components
+
+Next.js App Router uses React Server Components (RSC) by default. Here's the key distinction:
+
+**Server Components** (default):
+- Render on the server
+- Can directly access backend resources (databases, file system)
+- Cannot use React hooks like `useState`, `useEffect`
+- Reduce client-side JavaScript bundle size
+
+**Client Components** (add `"use client"` directive):
+- Render on the client (with SSR)
+- Can use React hooks and browser APIs
+- Required for interactivity (event handlers, state)
+
+## File-Based Routing
+
+The App Router uses a file-system based routing structure:
+
+```
+app/
+├── page.tsx          → /
+├── layout.tsx        → Root layout
+├── blog/
+│   ├── page.tsx      → /blog
+│   └── [slug]/
+│       └── page.tsx  → /blog/:slug
+└── api/
+    └── route.ts      → API endpoint
+```
+
+## Data Fetching
+
+In the App Router, data fetching is simplified:
+
+```typescript
+// Server Component - fetch directly
+async function BlogPage() {
+  const posts = await getPosts();
+  return <PostList posts={posts} />;
+}
+```
+
+## Key Takeaways
+
+1. **Default to Server Components** — only use `"use client"` when interactivity is needed
+2. **Layouts are shared** — they don't re-render on navigation
+3. **Loading UI** — use `loading.tsx` for streaming suspense boundaries
+4. **Error handling** — use `error.tsx` for error boundaries
+5. **Metadata API** — use `generateMetadata` for dynamic SEO
+
+## Useful Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Server Components RFC](https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md)
+- [Vercel's App Router Course](https://nextjs.org/learn)

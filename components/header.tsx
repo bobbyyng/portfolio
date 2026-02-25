@@ -20,6 +20,7 @@ export function Header() {
   const navLinks = [
     { href: "/", label: "CV" },
     { href: "/projects", label: "Projects" },
+    { href: "/blog", label: "Blog" },
     { href: "/chat", label: "AI Portfolio Agent" },
   ];
 
