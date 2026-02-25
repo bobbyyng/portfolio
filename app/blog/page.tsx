@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getAllBlogPosts, type BlogPost } from "@/lib/blog";
 import { ChatButton } from "@/components/chat-button";
 import { Calendar, ArrowRight, Clock, BookOpen } from "lucide-react";
@@ -33,12 +32,11 @@ function FeaturedPost({ post }: { post: BlogPost }) {
     >
       {post.metadata.coverImage ? (
         <div className="relative w-full h-56 sm:h-64 md:h-72 overflow-hidden">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={post.metadata.coverImage}
             alt={post.metadata.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            priority
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
@@ -120,11 +118,11 @@ function PostCard({ post }: { post: BlogPost }) {
     >
       {post.metadata.coverImage ? (
         <div className="relative w-full h-40 sm:h-44 overflow-hidden">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={post.metadata.coverImage}
             alt={post.metadata.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>
       ) : (

@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/blog";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
@@ -48,12 +47,11 @@ export default async function BlogPostPage({ params }: PageProps) {
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {post.metadata.coverImage && (
         <div className="relative w-full h-64 sm:h-80 md:h-96">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={post.metadata.coverImage}
             alt={post.metadata.title}
-            fill
-            className="object-cover"
-            priority
+            className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-black via-transparent to-transparent" />
         </div>
