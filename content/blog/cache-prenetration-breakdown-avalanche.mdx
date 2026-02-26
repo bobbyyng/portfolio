@@ -38,7 +38,7 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 - **Bloom Filter:** Use it to check if the key never exists, block request early.  
   **布隆過濾器：** 先用過濾器判斷Key可能不存在，若無直接拒絕，不進一步查DB。
 
-- **Typical Flow / 標準流程：**
+- **Typical Flow**
   1. Check cache; if hit, return.（查Cache，有則直接返回）
   2. Check Bloom Filter; if not exist, directly return.（查過濾器，無此Key則快速返回）
   3. Query DB if necessary, and cache null if not found.（如有需要再查DB，若查無則寫入空值於Cache）
