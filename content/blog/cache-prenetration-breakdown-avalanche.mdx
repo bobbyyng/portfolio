@@ -4,13 +4,11 @@ date: 2026-02-15
 tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 ---
 
-# Cache Penetration, Breakdown & Avalanche: Complete Guide
-
-# 緩存穿透、擊穿與雪崩：完整指南
+# Cache Penetration, Breakdown & Avalanche: Complete Guide 緩存穿透、擊穿與雪崩：完整指南
 
 ---
 
-## Key Terms 重要詞彙
+## Key Terms
 
 | Term                             | Meaning                                                                                                                                                      |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -25,7 +23,7 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 
 ---
 
-## Cache Penetration (緩存穿透)
+## Cache Penetration 緩存穿透
 
 **Phenomenon**
 
@@ -47,14 +45,14 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 
 ---
 
-## Cache Breakdown (緩存擊穿)
+## Cache Breakdown 緩存擊穿
 
 **Phenomenon**
 
 - A hot key suddenly expires, loads of requests miss cache and hit DB all at once.  
   熱門Key突然過期，導致大量請求同時查不到Cache，全部轉向DB，造成壓力激增。
 
-**Prevention Methods (預防方法):**
+**Prevention Methods**
 
 - **Mutex Lock:** Only allow one request to rebuild cache, others wait or使用舊資料。  
   **互斥鎖：** 第一個請求負責重建Cache，其餘需等待或使用舊數據。
@@ -67,14 +65,14 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 
 ---
 
-## Cache Avalanche (緩存雪崩)
+## Cache Avalanche 緩存雪崩
 
 **Phenomenon**
 
 - A whole batch of keys expire at once or system restarts, all requests go to DB and overwhelm it.  
   一大批Key同時過期或系統重啟，Cache全失效，導致請求瞬間全部灌向DB，DB不堪重負。
 
-**Common Solutions (解決辦法):**
+**Common Solutions**
 
 - **Random TTL:** When writing cache, TTL = 基本時長+隨機值，避免集體過期。  
   **隨機過期時間：** 每個Key的過期時間都不一樣，可防止同時過期。
