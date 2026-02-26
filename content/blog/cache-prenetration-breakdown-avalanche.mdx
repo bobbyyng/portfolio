@@ -1,0 +1,86 @@
+---
+title: Cache Penetration, Breakdown, and Avalanche - Quick Guide | 快速指南：緩存穿透、擊穿、雪崩
+date: 2026-02-15
+tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
+---
+
+# Cache Penetration, Breakdown & Avalanche: Complete Guide
+
+# 緩存穿透、擊穿與雪崩：完整指南
+
+---
+
+## Key Terms 重要詞彙
+
+| Term                             | Meaning                                                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cache Penetration<br />緩存穿透  | Requests for non-existent data always go to the DB, bypassing the cache.<br />當請求不存在的數據時（Cache和DB皆無），會直達DB，讓Cache失去效用。             |
+| Cache Breakdown<br />緩存擊穿    | "Hot key" expires: Many requests for same key all miss cache and hit DB.<br />熱門Key突然過期，所有請求瞬間查不到Cache，全都衝向DB。                         |
+| Cache Avalanche<br />緩存雪崩    | Many keys expire together, flooding the DB.<br />大量Key同時失效或系統重啟，瞬間產生大量請求，DB承受不住。                                                   |
+| Bloom Filter<br />布隆過濾器     | Efficient way to check if a key definitely does not exist, blocking unnecessary requests.<br />先檢查Key是否一定不存在，若確定無此Key，就不用再查Cache和DB。 |
+| Mutex Lock<br />互斥鎖           | Prevents several requests from rebuilding the same cache at once.<br />防止多個請求同時重建同一份Cache，透過鎖只允許一個進行，其餘需等待。                   |
+| TTL (Time To Live)<br />生存時間 | Cache expiration time; use random expiry to avoid avalanche.<br />Cache的過期時間（TTL）；可隨機設置TTL避免集體過期造成雪崩現象。                            |
+| Rate Limiting<br />限流          | Limit request rate to protect DB.<br />控制請求速率，避免短時間內大量查詢導致DB崩潰。                                                                        |
+| Fallback/Degrade<br />降級/兜底  | Graceful fallback when system busy.<br />系統超載時優雅退回，返回預設值、靜態頁等保底資料，避免癱瘓。                                                        |
+
+---
+
+## Cache Penetration (緩存穿透)
+
+**Phenomenon**
+
+- Users request a key that doesn't exist in DB or Cache, causing repeated DB queries.  
+  用戶請求不存在（DB與Cache皆無）的Key，怎麼查都查不到，導致DB不斷被查詢。
+
+**Common Solutions**
+
+- **Cache Null Value:** Store empty/null in cache for a short TTL so next time查Cache即知結果，不必再查DB。  
+  **緩存空值：** 可設置短暫過期的空值，避免同一Key重複擊中DB。
+
+- **Bloom Filter:** Use it to check if the key never exists, block request early.  
+  **布隆過濾器：** 先用過濾器判斷Key可能不存在，若無直接拒絕，不進一步查DB。
+
+- **Typical Flow / 標準流程：**
+  1. Check cache; if hit, return.（查Cache，有則直接返回）
+  2. Check Bloom Filter; if not exist, directly return.（查過濾器，無此Key則快速返回）
+  3. Query DB if necessary, and cache null if not found.（如有需要再查DB，若查無則寫入空值於Cache）
+
+---
+
+## Cache Breakdown (緩存擊穿)
+
+**Phenomenon**
+
+- A hot key suddenly expires, loads of requests miss cache and hit DB all at once.  
+  熱門Key突然過期，導致大量請求同時查不到Cache，全部轉向DB，造成壓力激增。
+
+**Prevention Methods (預防方法):**
+
+- **Mutex Lock:** Only allow one request to rebuild cache, others wait or使用舊資料。  
+  **互斥鎖：** 第一個請求負責重建Cache，其餘需等待或使用舊數據。
+
+- **Cache Prewarm/Refresh:** Update hot key before expiration, or schedule refreshes.  
+  **預熱／定時刷新：** 熱門Key到期前主動更新，或指定週期做Refresh。
+
+- **Double Deletion/Never Expire:** Advanced, can use together with above.  
+  **雙重刪除／永不過期：** 高階做法，可配合其他方法一起使用。
+
+---
+
+## Cache Avalanche (緩存雪崩)
+
+**Phenomenon**
+
+- A whole batch of keys expire at once or system restarts, all requests go to DB and overwhelm it.  
+  一大批Key同時過期或系統重啟，Cache全失效，導致請求瞬間全部灌向DB，DB不堪重負。
+
+**Common Solutions (解決辦法):**
+
+- **Random TTL:** When writing cache, TTL = 基本時長+隨機值，避免集體過期。  
+  **隨機過期時間：** 每個Key的過期時間都不一樣，可防止同時過期。
+
+- **Batch Cache Warmup:** Preheat/refresh in batches, never wipe all caches at once.  
+  **分批預熱Cache：** 預熱時分批進行，絕不可一次性清除全部Cache。
+
+- **Rate Limit & Fallback:** Spike in traffic? Immediate degrade, provide safe fallback/default values.  
+  **限流與降級：** 流量異常時即時啟動限流，必要時返回預設或兜底資料，避免DB被擊穿。

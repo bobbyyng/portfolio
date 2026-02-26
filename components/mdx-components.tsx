@@ -44,7 +44,9 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
       </ol>
     ),
     li: ({ children }) => (
-      <li className="ml-4">{children}</li>
+      <li className="ml-4 [&_p]:inline [&_p]:m-0 [&_p]:leading-7">
+        {children}
+      </li>
     ),
     code: ({ children }) => (
       <code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono text-zinc-800 dark:text-zinc-200">

@@ -4,6 +4,7 @@ import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/blog";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
 import { Calendar, ArrowLeft, Clock } from "lucide-react";
+import remarkGfm from "remark-gfm";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -113,6 +114,11 @@ export default async function BlogPostPage({ params }: PageProps) {
             <MDXRemote
               source={post.content}
               components={createMDXComponents()}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                },
+              }}
             />
           </div>
         </article>
