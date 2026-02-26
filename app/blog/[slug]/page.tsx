@@ -59,7 +59,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       )}
 
       <div className="py-8 md:py-12 px-4">
-        <article className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-8 md:p-12 -mt-16 relative z-10">
+        <article className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-8 md:p-12 relative z-10">
           <Link
             href="/blog"
             className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-8"

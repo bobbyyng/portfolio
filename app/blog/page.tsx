@@ -1,4 +1,4 @@
-import { getAllBlogPosts, getAllBlogTags } from "@/lib/blog";
+import { getAllBlogPosts } from "@/lib/blog";
 import { ChatButton } from "@/components/chat-button";
 import { BlogFilter } from "@/components/blog-filter";
 
@@ -9,7 +9,6 @@ function estimateReadingTime(content: string): number {
 
 export default function BlogPage() {
   const posts = getAllBlogPosts();
-  const allTags = getAllBlogTags();
 
   const postsData = posts.map((post) => ({
     slug: post.slug,
@@ -33,7 +32,7 @@ export default function BlogPage() {
           </p>
         </header>
 
-        <BlogFilter posts={postsData} allTags={allTags} />
+        <BlogFilter posts={postsData} />
       </div>
 
       <ChatButton />
