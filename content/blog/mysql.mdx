@@ -1,0 +1,71 @@
+---
+title: MySQL Study
+date: 2026-02-27
+tags: MySQL
+---
+
+# MySQL Study
+
+---
+
+## Key Terms
+
+| Term                             | Meaning                                                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Storage Engine  | |
+---
+
+## Storage Engine
+| Engine  | ACID support                         | Lock granularity              | Crash recovery                                     | Typical usage                                                |
+|-------- |--------------------------------------|-------------------------------|----------------------------------------------------|--------------------------------------------------------------|
+| InnoDB  | Yes (full ACID transactions)         | Row-level (plus gap/next-key) | Yes (strong, with redo/undo logs)                  | Default engine for most OLTP and web applications            |
+| MyISAM  | No (no transaction support)          | Table-level                   | No (prone to corruption after crash)               | Legacy read-heavy workloads without transaction requirements |
+| Memory  | No (no transaction support)          | Table-level                   | No durability (data lost on restart)               | Temporary or cache tables stored entirely in memory          |
+| Archive | No (append-only, no full transactions)| Optimized for insert + select | Basic durability but no full transaction recovery  | Long-term compressed storage of historical or log data       |
+
+### InnoDB
+InnoDB 係 MySQL 預設引擎，適合大多數現代應用。
+佢支援完整 ACID 交易、行級鎖定（包括 Next-Key 鎖避免幻讀）同強大 crash 恢復，90% OLTP 同 Web 系統都用佢。
+優點：交易安全、高併發、支援外鍵
+缺點：寫入較慢、佔用資源多，讀重場景唔及 MyISAM 快
+
+### MyISAM
+MyISAM 係舊式引擎，適合讀多寫少嘅場景。
+用途主要係老系統或靜態資料表，如報表或歸檔，因鎖粒度係表級，crash 恢復弱。
+優點：讀取超快、全文字搜尋支援好、空間效率高
+缺點：無交易、無外鍵、crash 易損壞資料，唔適合寫入頻繁
+
+### Memory
+Memory 引擎（舊稱 HEAP）將資料全存 RAM，速度最快但非持久。
+用途係臨時表、快取或 session 資料，重啟即清空，鎖粒度表級、無交易。
+優點：讀寫極快、適合小量熱資料；
+缺點：RAM 限制大小、無 crash 恢復、重啟丟失一切，唔適合大資料。
+
+### Archive
+Archive 引擎專為寫入為主、很少讀取嘅場景設計。
+主要用長期冷數據、log 或歷史歸檔，只支援 INSERT 同 SELECT，幾乎只 append，無刪除/更新。
+優點：極高壓縮率（比 InnoDB 小 80%）、寫入快；
+缺點：鎖表級、無索引、查詢慢，唔支援交易或複雜操作。
+
+## MySQL query lifecycle
+| Step | Step Name | What Happen in it | Input | Output | Example | Error |
+|------|-----------|-------------------|-------|--------|---------|-------|
+| 1    | Client    | Client（如 app/mysqsh）把 SQL 傳給 MySQL 8.0 server。8.0 無 Query Cache，直接進下一步。| SQL | | | |
+| 2    | Parser    | - 把 SQL 拆成 token（關鍵字、表名、欄位名、常數等等）<br /> -檢查語法是否正確（少關鍵字、括號錯誤等）<br /> -建立「語法樹」（parse tree），表示這條 SQL 的結構 | SQL | Parse Tree | | Syntax Error ```ERROR 1064 (ER_PARSE_ERROR)``` |
+| 3    | Preprocessor | - 檢查資料庫裡是否存在對應的表 users <br /> - 檢查欄位 id、name、email 是否都存在 <br /> - 檢查目前登入的 user 是否有 SELECT users 的權限 <br /> - 處理 view、別名、function 等語義相關的東西 | parse tree | - | - | Table 'xxx.users' doesn't exist, column "email" does not exist |
+| 4     | Query Optimizer | Optimizer 會查看 users 表的 metadata 和統計資訊，確認 email 欄位有無索引（如 idx_email）。MySQL 8.0 採用 cost-based 優化器，會計算多種執行方式的成本：例如「用 email index 做 index lookup」和「全表掃描（table scan）」各自的花費，然後選擇成本最低的計劃（例如選 idx_email 當 index lookup）。<br /><br />內部其實有 Hypergraph-based optimizer、AccessPath 等複雜技術，但可以理解為：「計算全部可能的執行方法，優化器挑一個最抵（最便宜）的方案。」 | - | - | - | - |
+| 5     | Query Execution Engine（執行引擎） | 執行引擎根據 optimizer 給的「執行計畫」（例如「使用 idx_email 查詢」）一步步執行：<br />1. 呼叫 InnoDB：用 idx_email 找出 email = 'test@example.com' 的 row；<br />2. InnoDB 在自己的 B+Tree index 找 index record，再從聚簇索引（主鍵）讀出全行資料；<br />3. 把那行的 id、name 值送回執行引擎；<br />4. 執行引擎把所有結果組成 result set，回傳俾 client。 | 執行計畫 | Result Set | SELECT id, name FROM users WHERE email = 'test@example.com'; | Table 無 index => 查詢會變好慢；InnoDB 崩潰導致查詢失敗 |
+| 6     | InnoDB Storage Engine | - 根據執行引擎請求，用 B+Tree 索引查 row<br />- 透過聚簇索引搵出完整資料行<br />- 應用 MVCC、鎖等技術確保一致性同隔離性<br />- 將資料返回比執行引擎 | 執行計畫 | 行資料（row） | 用 idx_email 先查 index，再 fetch 聚簇索引資料 | InnoDB 崩潰、row 被鎖死 |
+| 7     | Server → Client      | - MySQL Server 組合多行 row 成 result set<br />- 透過網路連接將結果回傳 client (應用程式 / mysql CLI)<br />- Client 收到結果顯示或進一步處理 | Result Set | 查詢結果輸出 (如 table/grid) | SELECT id, name FROM users...; | Client/Server 連接中斷導致結果未回到 client |
+
+
+
+
+## Remarks 
+- Only MySQL 8.0 having the Query Optimizer
+
+## Need to Know More
+- index
+- Query Optimizer v5.0 vs v8.0 and the logic how to find the lower cost step
+- Undo log and redo log in InnoDB
+- Buffer Pool, Data File and index Relationship
