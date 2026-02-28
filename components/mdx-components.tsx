@@ -1,6 +1,10 @@
-import type { MDXComponents } from "mdx/types";
+import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+// Local type for MDX component map (avoids "mdx/types" resolution in build)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MDXComponents = Record<string, ComponentType<any> | undefined>;
 
 export function createMDXComponents(components: MDXComponents = {}): MDXComponents {
   return {
