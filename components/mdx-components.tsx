@@ -1,10 +1,6 @@
-import type { ComponentType } from "react";
+import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
-
-// Local type for MDX component map (avoids "mdx/types" resolution in build)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MDXComponents = Record<string, ComponentType<any> | undefined>;
 
 export function createMDXComponents(components: MDXComponents = {}): MDXComponents {
   return {
@@ -67,22 +63,29 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         {children}
       </blockquote>
     ),
-    img: (props) => (
-      <figure className="my-6">
-        <Image
-          {...props}
-          alt={props.alt || ""}
-          width={1200}
-          height={800}
-          className="rounded-lg border border-zinc-200 dark:border-zinc-700 w-full h-auto"
-        />
-        {props.alt && (
-          <figcaption className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-2 italic">
-            {props.alt}
-          </figcaption>
-        )}
-      </figure>
-    ),
+    img: (props) => {
+      const alt = typeof props.alt === "string" ? props.alt : "";
+      const src =
+        typeof props.src === "string"
+          ? props.src
+          : (props as { src?: { src?: string } }).src?.src ?? "";
+      return (
+        <figure className="my-6">
+          <Image
+            src={src}
+            alt={alt}
+            width={1200}
+            height={800}
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 w-full h-auto"
+          />
+          {alt && (
+            <figcaption className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-2 italic">
+              {alt}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
     table: ({ children }) => (
       <div className="overflow-x-auto my-6">
         <table className="min-w-full border-collapse text-sm">
