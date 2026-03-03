@@ -6,13 +6,21 @@ tags: MySQL
 
 # MySQL Study
 
----
-
 ## Key Terms
 
 | Term                             | Meaning                                                                                                                                                      |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Storage Engine  | |
+| Storage Engine  | MySQL 的儲存引擎，負責資料儲存與讀取方式，如 InnoDB（預設，支援事務）與 MyISAM（讀取快速但無事務）。|
+| Index | 索引結構加速查詢，如 B+樹索引。InnoDB 主鍵為叢集索引，資料行與索引共存。|
+| Undo Log| 事務回滾與 MVCC 使用的日誌，記錄修改前舊資料版本，支持一致性讀取。|
+| Redo Log| WAL 日誌確保資料持久性，記錄物理修改，用於崩潰恢復。|
+| Query Optimizer | 查詢最佳化器，分析 SQL 選擇最低成本執行計畫（如索引使用順序）。|
+| Buffer Pool | InnoDB 記憶體快取區，存放資料頁與索引頁，減少磁碟 I/O。|
+| Doublewrite Buffer | 先將髒頁寫入雙重緩衝區再寫資料檔案，防止頁寫入中斷損壞。|
+| Change Buffer | 緩衝二級索引變更操作，合併後批量應用，優化插入效能。|
+| MVCC | 多版本並存控制，透過 Undo Log 實現讀寫不互斥，快照讀取。|
+| Lock | 鎖機制確保事務隔離，包括行鎖、表鎖、間隙鎖防止幻讀。|
+
 ---
 
 ## Storage Engine
@@ -58,8 +66,39 @@ Archive 引擎專為寫入為主、很少讀取嘅場景設計。
 | 6     | InnoDB Storage Engine | - 根據執行引擎請求，用 B+Tree 索引查 row<br />- 透過聚簇索引搵出完整資料行<br />- 應用 MVCC、鎖等技術確保一致性同隔離性<br />- 將資料返回比執行引擎 | 執行計畫 | 行資料（row） | 用 idx_email 先查 index，再 fetch 聚簇索引資料 | InnoDB 崩潰、row 被鎖死 |
 | 7     | Server → Client      | - MySQL Server 組合多行 row 成 result set<br />- 透過網路連接將結果回傳 client (應用程式 / mysql CLI)<br />- Client 收到結果顯示或進一步處理 | Result Set | 查詢結果輸出 (如 table/grid) | SELECT id, name FROM users...; | Client/Server 連接中斷導致結果未回到 client |
 
+## InnoDB Core Structure
+- MySQL InnoDB 的核心結構分為記憶體結構與磁碟結構，.ibd 檔案與 Buffer Pool 是關鍵組成
+### In Momory 記憶體結構
+- InnoDB 在記憶體中快取資料，提升效能，主要包括：
+  -  Buffer Pool：主要快取區，存放資料頁、索引頁、Undo 頁等，預設大小依 innodb_buffer_pool_size 設定。通常分配伺服器記憶體的 60-80%。
+  -  Change Buffer：快取二級索引變更，減少隨機 I/O。
+  -  Log Buffer：暫存 Redo Log，定期寫入磁碟。
+  -  Adaptive Hash Index：自動建立常用索引的雜湊索引。
 
+### On-Disk 磁碟結構
+- 資料永久儲存於磁碟，主要包括：
+  - .ibd 檔案：每個 InnoDB 表的獨立表空間檔案（file-per-table），存放該表資料與主索引。例：table_name.ibd。
+  - 系統表空間（ibdata1）：存放 Doublewrite Buffer、共享 Change Buffer 等。
+  - Redo Log：ib_logfile0/1，WAL 日誌確保耐久性。
+  - Undo Log：獨立 Undo 表空間，支援 MVCC 與回滾。
+  - Doublewrite Buffer：128 連續頁，防止頁寫入損壞。
 
+## New Record Insert Flow 
+1. Insert SQL
+- Client executes INSERT statement through SQL Layer.
+2. Data to Buffer Pool
+- New record inserted into data page in Buffer Pool (memory), marked as dirty page.
+3. Undo Log Generated
+- Undo Log entry created for MVCC (snapshot read) and rollback capability.
+4. Write to Redo Log Buffer
+- Redo Log record generated in Log Buffer (physical changes for crash recovery).
+5. COMMIT Confirmation
+- Redo Log flushed to disk (ib_logfile), transaction commits successfully.
+6. Background Flush
+- Dirty pages from Buffer Pool → Doublewrite Buffer → .ibd file (delayed batch write).
+```
+INSERT → Buffer Pool + Undo Log + Redo Log Buffer → COMMIT (fsync Redo Log) → Background: Buffer Pool → .ibd
+```
 
 ## Remarks 
 - Only MySQL 8.0 having the Query Optimizer
