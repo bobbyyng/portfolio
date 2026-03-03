@@ -100,6 +100,25 @@ Archive 引擎專為寫入為主、很少讀取嘅場景設計。
 INSERT → Buffer Pool + Undo Log + Redo Log Buffer → COMMIT (fsync Redo Log) → Background: Buffer Pool → .ibd
 ```
 
+## MVCC (Multi-Version Concurrency Control)
+- MVCC allows concurrent reads and writes without blocking each other.
+  - Core Mechanism: Each row has multiple versions stored in Undo Log. Readers see "snapshot" data from transaction start time.
+  - ReadView: Generated at SELECT start, determines visible row versions based on transaction ID.
+  - Hidden Columns: Each row stores ROW_START (creation trx_id), ROW_END (deletion trx_id).
+  - Implementation:
+  ```text
+  SELECT → ReadView (trx_id list) → Check row trx_id → Visible? → Undo Log (older version)
+  ```
+  - Isolation Levels: Works with REPEATABLE READ (default) and READ COMMITTED.
+
+## InnoDB Record Lock
+- Record Lock
+  - Locks a specific index record.
+- Gap Lock
+  - Locks a range of values between existing index records (an open interval).
+- Next-Level Lock
+  - A Record Lock on the index record plus a Gap Lock on the gap preceding the index record.
+
 ## Remarks 
 - Only MySQL 8.0 having the Query Optimizer
 
