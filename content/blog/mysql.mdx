@@ -122,6 +122,10 @@ INSERT → Buffer Pool + Undo Log + Redo Log Buffer → COMMIT (fsync Redo Log) 
 ## Remarks 
 - Only MySQL 8.0 having the Query Optimizer
 
+## Process
+- MYSQL is using single process, multi thread
+- If there are are out of memory or Segmentation Fault, all connection will die at the same time
+
 ## Need to Know More
 - index
 - Query Optimizer v5.0 vs v8.0 and the logic how to find the lower cost step
