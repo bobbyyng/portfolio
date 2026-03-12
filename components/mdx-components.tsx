@@ -1,6 +1,18 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
+import { slugify } from "@/lib/utils";
+
+function extractTextFromChildren(children: React.ReactNode): string {
+  if (typeof children === "string") return children;
+  if (Array.isArray(children)) {
+    return children.map(extractTextFromChildren).join("");
+  }
+  if (children && typeof children === "object" && "props" in children) {
+    return extractTextFromChildren((children as React.ReactElement).props.children);
+  }
+  return "";
+}
 
 export function createMDXComponents(components: MDXComponents = {}): MDXComponents {
   return {
@@ -10,16 +22,28 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         {children}
       </h1>
     ),
-    h2: ({ children }) => (
-      <h2 className="text-2xl font-semibold mt-6 mb-3 text-black dark:text-zinc-50">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="text-xl font-semibold mt-4 mb-2 text-black dark:text-zinc-50">
-        {children}
-      </h3>
-    ),
+    h2: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children)) || undefined;
+      return (
+        <h2
+          id={id}
+          className="text-2xl font-semibold mt-6 mb-3 text-black dark:text-zinc-50 scroll-mt-24"
+        >
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children)) || undefined;
+      return (
+        <h3
+          id={id}
+          className="text-xl font-semibold mt-4 mb-2 text-black dark:text-zinc-50 scroll-mt-24"
+        >
+          {children}
+        </h3>
+      );
+    },
     p: ({ children }) => (
       <p className="mb-4 text-zinc-700 dark:text-zinc-300 leading-7">
         {children}

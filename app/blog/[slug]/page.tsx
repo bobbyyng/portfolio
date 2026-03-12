@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/blog";
+import { getBlogPostBySlug, getAllBlogSlugs, extractHeadings } from "@/lib/blog";
+import { TableOfContents } from "@/components/table-of-contents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
 import { Calendar, ArrowLeft, Clock } from "lucide-react";
@@ -43,6 +44,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   const readTime = estimateReadingTime(post.content);
+  const headings = extractHeadings(post.content);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -59,7 +61,8 @@ export default async function BlogPostPage({ params }: PageProps) {
       )}
 
       <div className="py-8 md:py-12 px-4">
-        <article className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-8 md:p-12 relative z-10">
+        <div className="max-w-6xl mx-auto flex gap-8 items-start">
+          <article className="flex-1 min-w-0 bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-8 md:p-12 relative z-10">
           <Link
             href="/blog"
             className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-8"
@@ -122,6 +125,13 @@ export default async function BlogPostPage({ params }: PageProps) {
             />
           </div>
         </article>
+
+          {headings.length > 0 && (
+            <aside className="hidden xl:block w-56 shrink-0">
+              <TableOfContents headings={headings} />
+            </aside>
+          )}
+        </div>
       </div>
     </div>
   );

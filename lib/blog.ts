@@ -1,5 +1,12 @@
 import fs from "fs";
 import path from "path";
+import { slugify } from "./utils";
+
+export interface Heading {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
 
 export interface BlogPostMetadata {
   title: string;
@@ -17,6 +24,29 @@ export interface BlogPost {
 }
 
 const blogDirectory = path.join(process.cwd(), "content/blog");
+
+export function extractHeadings(content: string): Heading[] {
+  const headings: Heading[] = [];
+  const lines = content.split("\n");
+  const headingRegex = /^(#{2,3})\s+(.+)$/;
+
+  for (const line of lines) {
+    const match = line.match(headingRegex);
+    if (!match) continue;
+
+    const [, hashes, text] = match;
+    const level = hashes.length === 2 ? (2 as const) : (3 as const);
+    const cleanText = text.replace(/\s*\{.*?\}\s*$/g, "").trim();
+    if (!cleanText) continue;
+
+    const id = slugify(cleanText);
+    if (!id) continue;
+
+    headings.push({ id, text: cleanText, level });
+  }
+
+  return headings;
+}
 
 export function getAllBlogSlugs(): string[] {
   if (!fs.existsSync(blogDirectory)) {
