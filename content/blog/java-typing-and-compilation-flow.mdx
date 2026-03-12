@@ -1,0 +1,83 @@
+---
+title: Java Static Typing & Compilation Flow — From Source to Bytecode to JVM | Java 強類型與編譯流程：從源碼到字節碼再到 JVM
+date: 2026-03-10
+tags: Java, JVM, Bytecode, Compilation, 編譯, 強類型
+summary: How Java's compile-time and runtime type safety work, and the two-step flow from .java to bytecode to machine code. Java 編譯期與運行時類型安全，以及從源碼到字節碼再到機器碼的流程。
+---
+
+# Java Static Typing & Compilation Flow  
+# Java 強類型與編譯流程
+
+TypeScript checks types at compile time but types are erased when it becomes JavaScript at runtime. Java keeps type discipline both at **compile time** and **runtime**, and uses a two-step process: source → bytecode → execution on the JVM.
+
+TypeScript 編譯完變成 JS，運行時沒有類型檢查。Java 是強類型語言，編譯成 Bytecode 在 JVM 上執行，類型在編譯與運行階段都會被檢查。
+
+---
+
+## When Are Type Errors Caught? 類型錯誤在哪個階段被攔截？
+
+| Stage | What happens |
+| ----- | ------------- |
+| **Compile time 編譯階段** | You write code and run `javac`. If you assign a `String` to an `int`, the compiler refuses to produce `.class` files. 寫 Code 或 Build 時，類型不對就編譯不過，不會產生 .class。 |
+| **Runtime 運行階段** | If you do unsafe casting or get wrong types from external data (e.g. JSON), the JVM can throw `ClassCastException`. 強制轉型或從外部取得錯誤類型時，JVM 會拋出 ClassCastException。 |
+
+So: many type mistakes are caught at **compile time**; dynamic or cast-heavy code can still fail at **runtime**.
+
+所以：許多類型錯誤在**編譯階段**就被攔截；透過 Casting 或動態數據引入的錯誤可能留到**運行階段**才發生。
+
+---
+
+## Java vs TypeScript 對比
+
+| Aspect | TypeScript | Java |
+| ------ | ---------- | ---- |
+| **When types are checked** | At compile/build time. 編譯時。 | Compile time + runtime (JVM enforces). 編譯時 + 運行時。 |
+| **After compile** | Types are erased; you get plain JS. 類型會消失。 | Type information lives in bytecode; JVM uses it. 類型資訊保留在 Bytecode。 |
+| **Runtime behaviour** | No type checks in the engine. 運行時引擎不做類型檢查。 | JVM checks casts and can throw ClassCastException. JVM 會檢查轉型。 |
+
+---
+
+## The Two-Step Compilation Flow 兩步編譯流程
+
+Java does **not** compile directly to machine code. It uses an intermediate representation so the same code can run on any platform that has a JVM (“Write Once, Run Anywhere”).
+
+Java 不是直接編譯成機械碼，而是先變成中間表示，讓同一份 Code 可以在任何有 JVM 的平台上運行。
+
+### Step 1: Source → Bytecode 第一步：源碼 → 字節碼
+
+| Step | Tool / Output | 說明 |
+| ---- | -------------- | ----- |
+| **Source** | `.java` files. 你寫的 Java 源碼。 | |
+| **Compiler** | `javac` (Java compiler). 檢查語法與類型。 | If types are wrong, compilation fails; no `.class` is produced. 類型錯誤就編譯失敗，不會產生 .class。 |
+| **Output** | `.class` files (bytecode). 字節碼。 | Intermediate format for the JVM, not raw machine code. 是 JVM 的中間格式，不是 CPU 直接執行的機械碼。 |
+
+### Step 2: Bytecode → Execution 第二步：字節碼 → 執行
+
+| Step | What happens |
+| ---- | ------------- |
+| **JVM** | Loads `.class` files and executes bytecode. 載入 .class 並執行字節碼。 |
+| **Interpreter** | Executes bytecode instructions one by one. 逐條解釋執行。 |
+| **JIT (Just-In-Time) compiler** | Hot code paths are compiled to native machine code for speed. 熱點代碼會被編譯成機器碼以提升速度。 |
+
+So the full flow is:
+
+**Source (.java) → javac → Bytecode (.class) → JVM (Interpreter + JIT) → Machine code on OS/hardware.**
+
+**源碼 (.java) → javac 編譯 → 字節碼 (.class) → JVM（解釋器 + JIT）→ 在當前系統上運行的機器碼。**
+
+---
+
+## Why Bytecode? 為何要 Bytecode？
+
+- **Portability 可移植性:** One bytecode runs on any OS (Windows, Linux, macOS) as long as a JVM exists for that platform. 同一份 Bytecode 在不同平台只要有對應的 JVM 就能運行。
+- **Security & checks 安全與檢查:** JVM can verify bytecode and enforce type safety at load/run time. JVM 可以驗證字節碼並在載入/運行時執行類型檢查。
+- **Optimisation 優化:** JIT can profile and optimise hot code at runtime. JIT 可以根據運行時情況對熱點做優化。
+
+---
+
+## Summary 小結
+
+- **Compile time:** `javac` enforces types; wrong types prevent `.class` from being generated. 編譯階段用 javac 做類型檢查，類型不對就不會產生 .class。
+- **Runtime:** JVM runs bytecode and enforces type safety (e.g. `ClassCastException` on invalid casts). 運行階段 JVM 執行字節碼並做類型檢查。
+- **Flow:** `.java` → **javac** → `.class` (bytecode) → **JVM** (interpreter + JIT) → machine code. 流程：源碼 → javac → 字節碼 → JVM → 機器碼。
+- **Bytecode** is the key to “Write Once, Run Anywhere” and allows the JVM to optimise with JIT. 字節碼是「一次編譯，到處運行」的基礎，也讓 JVM 可以用 JIT 做優化。

@@ -1,0 +1,119 @@
+---
+title: Java Concurrent Collections — Thread-Safe Data Structures Without a Global Lock | Java 併發集合：不需鎖死整個結構的線程安全容器
+date: 2026-03-13
+tags: Java, Concurrency, ConcurrentHashMap, Concurrent Collections, 併發集合
+summary: How Java's concurrent collections (ConcurrentHashMap, CopyOnWriteArrayList, BlockingQueue) work and when to use them. Java 併發集合的原理與使用場景。
+---
+
+# Java Concurrent Collections  
+# Java 併發集合
+
+Using a normal `HashMap` or `ArrayList` from multiple threads can corrupt data or even cause infinite loops. Wrapping them with `Collections.synchronizedMap()` locks the **entire** structure on every access — only one thread can do anything at a time. **Concurrent collections** in `java.util.concurrent` are designed for high concurrency: they allow many threads to work in parallel while still keeping data safe.
+
+多個線程同時對普通 `HashMap` 或 `ArrayList` 做 put/get 可能導致數據錯亂甚至死循環。使用 `Collections.synchronizedMap()` 雖然安全，但每次操作都會鎖住**整個** Map，一次只有一個線程可以工作。**併發集合**專為高併發設計，允許多個線程同時操作而保持數據安全。
+
+---
+
+## Key Terms 關鍵詞
+
+| Term | Meaning |
+| ---- | ------- |
+| **Race condition**<br />競態條件 | Two threads read the same value, both update it, one overwrites the other — e.g. both see 10, both write 11, so one update is lost. 兩線程讀到同一值、各自更新後寫回，導致一次更新被覆蓋。 |
+| **ConcurrentHashMap**<br />併發哈希表 | Thread-safe map that locks only the bucket being updated (lock stripping), not the whole map. 只鎖正在更新的桶，不鎖整個 Map 的線程安全哈希表。 |
+| **Lock stripping**<br />分段鎖 | Lock only a part of the structure so other threads can work on other parts. 只鎖住結構的一部分，其他線程可並行處理其他部分。 |
+| **Lock contention**<br />鎖競爭 | Many threads waiting for the same lock; throughput drops. 多線程等同一把鎖，吞吐量下降。 |
+| **CopyOnWriteArrayList**<br />寫時複製列表 | List that copies the array on write; reads are lock-free and see a consistent snapshot. 寫入時複製陣列；讀取無鎖且看到一致快照。 |
+| **BlockingQueue**<br />阻塞隊列 | Queue that blocks `put()` when full and `take()` when empty. 滿時 put 阻塞、空時 take 阻塞的隊列。 |
+| **Compound operation**<br />複合操作 | Read–modify–write (e.g. get then put); not atomic by default, need atomic type or compute/merge. 讀–改–寫（如 get 再 put）；預設非原子，需用原子類或 compute/merge。 |
+
+---
+
+## Why Not Just Lock the Whole Map? 為何不能鎖死整個 Map？
+
+With a single lock (e.g. `Hashtable` or `Collections.synchronizedMap(new HashMap())`), every `get` and `put` blocks all other threads. Under high load, threads pile up waiting for the lock — **lock contention** — and throughput drops. It behaves like a single-threaded program.
+
+使用一把大鎖（例如 Hashtable 或 synchronizedMap）時，每次 get/put 都會擋住其他線程。高併發下大家大排長龍等鎖，出現**鎖競爭**，吞吐量大跌，等同變回單線程。
+
+---
+
+## ConcurrentHashMap — The Star of the Show  
+## ConcurrentHashMap — 分段鎖的代表
+
+`ConcurrentHashMap` does **not** lock the whole map. It uses **lock stripping** (segment-based or per-bucket locking): only the bucket (or node) being updated is locked. Thread A updating key `"user_1"` and thread B updating key `"user_2"` can run at the same time. Result: high concurrency and good performance for both reads and writes.
+
+`ConcurrentHashMap` 不會鎖住整個 Map，而是使用**分段鎖**：只鎖住正在修改的那一「塊」（bucket/節點）。線程 A 修改 `"user_1"`、線程 B 修改 `"user_2"` 可以同時進行，因此讀寫都不需要大排長龍，效能好。
+
+### Typical use case 典型場景
+
+- In-memory cache keyed by user ID (e.g. “last login time per user”). Many threads update different users at the same time; no need to block each other.
+- 以用戶 ID 為 key 的內存緩存（例如「每個用戶最後登入時間」）。多個線程同時更新不同用戶，不需要互相阻塞。
+
+### Important caveat: compound operations 注意：複合操作
+
+The map only guarantees that **single** operations like `get(key)` and `put(key, value)` are thread-safe. A **compound** sequence like:
+
+```text
+value = map.get(id);
+map.put(id, value + 1);
+```
+
+is **not** atomic. Two threads can both read the same value and both write back, so one increment is lost (race condition). Use **atomic** values (e.g. `AtomicLong`) inside the map, or use methods like `compute`, `computeIfAbsent`, or `merge` to do read-modify-write in one step.
+
+Map 只保證**單一**操作（例如 get、put）是線程安全的。像「讀出 → 加 1 → 寫入」這類**複合**操作不是原子的，兩個線程可能同時讀到同一舊值，寫回時就會漏計。解決方式：Map 的 value 使用原子類（例如 `AtomicLong`），或使用 `compute` / `computeIfAbsent` / `merge` 等一次完成「讀–改–寫」。
+
+```java
+// Safe: atomic update per key
+ConcurrentHashMap<String, AtomicLong> counters = new ConcurrentHashMap<>();
+counters.computeIfAbsent("orders", k -> new AtomicLong(0)).incrementAndGet();
+```
+
+---
+
+## CopyOnWriteArrayList — When Reads Dominate  
+## CopyOnWriteArrayList — 讀多寫少的時候
+
+Every **write** (add, set, remove) creates a new copy of the underlying array; **reads** never block and always see a consistent snapshot. So: great when you have many readers and few writers (e.g. list of listeners, config that rarely changes). Bad when writes are frequent — copying the whole array is expensive.
+
+每次**寫**（add、set、remove）都會複製一份新陣列；**讀**不需要加鎖，且讀到的是一個一致的快照。因此適合**讀多寫少**（例如 listener 列表、很少改的配置）。若寫入很頻繁，經常複製整個陣列就會很耗成本。
+
+| Pros 優點 | Cons 缺點 |
+| --------- | --------- |
+| No lock on read; many readers in parallel. 讀不需要鎖，多個讀者並行。 | Write is O(n) — copy entire array. 寫入為 O(n)。 |
+| Iterators never throw ConcurrentModificationException. 迭代器不會因併發修改而拋錯。 | Not for high-write workloads. 不適合高寫入場景。 |
+
+---
+
+## BlockingQueue — Producer–Consumer  
+## BlockingQueue — 生產者–消費者
+
+A queue that supports **blocking** when full or empty: `put()` blocks when the queue is full; `take()` blocks when the queue is empty. Perfect for producer–consumer patterns (e.g. task queue with worker threads). Common implementations: `ArrayBlockingQueue` (bounded), `LinkedBlockingQueue` (optionally bounded), `SynchronousQueue` (handoff one-by-one).
+
+一種**會阻塞**的隊列：滿的時候 `put()` 會等待，空的時候 `take()` 會等待。適合生產者–消費者模式（例如任務隊列 + 多個 worker 線程）。常見實現：`ArrayBlockingQueue`（有界）、`LinkedBlockingQueue`（可選有界）、`SynchronousQueue`（逐個交接）。
+
+```java
+BlockingQueue<Task> queue = new LinkedBlockingQueue<>(100);
+// Producer
+queue.put(task);
+// Consumer
+Task t = queue.take();
+```
+
+---
+
+## Quick Reference 快速對照
+
+| Collection | When to use 適用場景 |
+| ---------- | --------------------- |
+| **ConcurrentHashMap** | High-concurrency key–value store; updates to different keys can run in parallel. 高併發 key-value 存儲；不同 key 可以並行更新。 |
+| **CopyOnWriteArrayList** | Read-heavy, write-rare list (listeners, config). 讀多寫少的列表。 |
+| **BlockingQueue** | Producer–consumer; need to block when full/empty. 生產者–消費者；滿/空時需阻塞。 |
+| **ConcurrentLinkedQueue** | Unbounded, non-blocking queue; no blocking put/take. 無界、非阻塞隊列。 |
+
+---
+
+## Summary 小結
+
+- **ConcurrentHashMap** uses lock stripping so different keys can be updated concurrently; use atomic values or `compute`/`merge` for compound updates. ConcurrentHashMap 用分段鎖，不同 key 可並行更新；複合更新要用原子類或 compute/merge。
+- **CopyOnWriteArrayList** trades write cost for lock-free reads; use when reads dominate. CopyOnWriteArrayList 用寫入成本換取無鎖讀取，適合讀多寫少。
+- **BlockingQueue** is for producer–consumer flows where threads should block on full/empty. BlockingQueue 用於生產者–消費者，滿/空時阻塞。
+- Prefer these concurrent collections over manually synchronizing a normal `HashMap` or `ArrayList` when you need both thread safety and good concurrency. 需要線程安全又要高併發時，優先選用併發集合，而不要手動鎖住普通 HashMap/ArrayList。

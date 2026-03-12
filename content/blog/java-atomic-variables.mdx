@@ -1,0 +1,105 @@
+---
+title: Java Atomic Variables — Indivisible Operations with AtomicInteger | Java 原子操作：用 AtomicInteger 讓加法一氣呵成
+date: 2026-03-14
+tags: Java, Concurrency, AtomicInteger, Atomic Variables, 原子操作
+summary: How Java uses classes like AtomicInteger so that operations such as increment become a single, indivisible step. 學習 Java 如何使用 AtomicInteger 等類別，讓加法變成不可分割的操作。
+---
+
+# Java Atomic Variables  
+# Java 原子操作 (Atomic Variables)
+
+In a multi-threaded environment, `count++` is not safe: one thread can read, another can read the same value, both add 1 and write back — one update is lost (race condition). **Atomic variables** in `java.util.concurrent.atomic` make read-modify-write a single, **indivisible** step so no other thread can interleave. No need to use `synchronized` for simple counters.
+
+在多線程環境下，`count++` 不安全：一個線程讀取後，另一個線程可能讀到同一值，各自加 1 再寫回，導致其中一次更新被覆蓋（競態條件）。**原子變量**（`java.util.concurrent.atomic`）把「讀–改–寫」變成一個**不可分割**的步驟，其他線程無法插隊。做簡單計數時不需要再用 `synchronized`。
+
+---
+
+## Key Terms 關鍵詞
+
+| Term | Meaning |
+| ---- | ------- |
+| **Atomic operation**<br />原子操作 | An operation that cannot be split; no other thread can run in the middle. 不可分割的操作，其他線程不能在中間插入。 |
+| **AtomicInteger / AtomicLong**<br />原子整數／長整數 | Thread-safe wrapper for int/long; methods like `incrementAndGet()` are atomic. 線程安全的 int/long 包裝類，如 `incrementAndGet()` 為原子操作。 |
+| **CAS (Compare-And-Swap)**<br />比較並交換 | CPU instruction: update only if current value equals expected; used by atomic classes. 僅在當前值等於預期值時才更新；原子類底層使用此機制。 |
+| **Read-modify-write**<br />讀–改–寫 | Sequence: read value, change it, write back. Must be atomic to avoid race. 讀取 → 修改 → 寫回；必須整體為原子才能避免競態。 |
+
+---
+
+## Why `count++` Is Not Safe 為何 count++ 不安全
+
+Two threads both execute `count++` when `count` is 10:
+
+- Thread A reads 10, Thread B reads 10.
+- Thread A writes 11.
+- Thread B also writes 11.
+- Result: 11 instead of 12. One increment is lost.
+
+兩個線程同時對 `count` 做 `count++`（假設 count 為 10）：
+
+- 線程 A 讀到 10，線程 B 也讀到 10。
+- 線程 A 寫入 11。
+- 線程 B 也寫入 11。
+- 結果是 11 而不是 12，少了一次增加。
+
+---
+
+## AtomicInteger: One Indivisible Step AtomicInteger：一氣呵成
+
+**AtomicInteger** is a special class provided by Java that uses a CPU-level technique called **CAS (Compare-And-Swap, 比較並交換)**. The CPU ensures: read the current value, compute the new value, and update **only if** the value in memory still matches what you read — all in one indivisible step. If another thread changed it in between, the update is retried. So methods like `incrementAndGet()` are **atomic** without using `synchronized`.
+
+**AtomicInteger** 是 Java 提供的一個特殊類別，它利用了 CPU 底層的一種技術，叫做 **CAS（Compare-And-Swap，比較並交換）**。CPU 會保證：讀取當前值、計算新值，並且**僅在**記憶體中的值仍與讀到的一致時才寫入——整個過程不可分割。若其間被其他線程改過，就重試。因此像 `incrementAndGet()` 這樣的方法在不用 `synchronized` 的情況下也是**原子**的。
+
+```java
+AtomicInteger count = new AtomicInteger(0);
+
+// Atomic: no other thread can interleave
+int newValue = count.incrementAndGet();  // 0 -> 1, returns 1
+int after = count.addAndGet(5);          // 1 -> 6, returns 6
+```
+
+---
+
+## Common Methods 常用方法
+
+| Method | Effect |
+| ------ | ------ |
+| `get()` / `set(int)` | Read / write current value. 讀取／寫入當前值。 |
+| `incrementAndGet()` | Add 1, return new value. 加 1，回傳新值。 |
+| `getAndIncrement()` | Add 1, return old value. 加 1，回傳舊值。 |
+| `addAndGet(delta)` | Add delta, return new value. 加上 delta，回傳新值。 |
+| `getAndAdd(delta)` | Add delta, return old value. 加上 delta，回傳舊值。 |
+| `compareAndSet(expect, update)` | Set to update only if current == expect. 僅在當前值等於 expect 時設為 update。 |
+
+---
+
+## When to Use 何時使用
+
+- **Use atomic variables** for counters, sequence numbers, or simple numeric state updated by many threads. No lock, less contention.
+- **Use `synchronized` or locks** when you need to protect a **block** of logic (multiple statements) or non-numeric state.
+
+用**原子變量**做計數、序號或簡單數值狀態，多線程只做讀–改–寫時。無需加鎖，鎖競爭較少。  
+當需要保護**一整段**邏輯（多行語句）或非數值狀態時，用 `synchronized` 或鎖。
+
+---
+
+## Example: Counter in a Map 範例：Map 裡的計數器
+
+A single `get` or `put` on `ConcurrentHashMap` is thread-safe, but `get` then `put` is not atomic. Store an **AtomicLong** (or AtomicInteger) as the value so each increment is atomic:
+
+`ConcurrentHashMap` 的單次 `get` 或 `put` 是線程安全的，但「get 再 put」不是原子的。把 **AtomicLong**（或 AtomicInteger）當成 value 存進去，每次加一就是原子操作：
+
+```java
+ConcurrentHashMap<String, AtomicLong> counters = new ConcurrentHashMap<>();
+
+// Thread-safe: only one thread runs the lambda if key is absent
+counters.computeIfAbsent("orders", k -> new AtomicLong(0)).incrementAndGet();
+```
+
+---
+
+## Summary 小結
+
+- **Atomic variables** make read-modify-write (e.g. increment) a single, indivisible operation. 原子變量讓讀–改–寫（如自增）成為單一、不可分割的操作。
+- **AtomicInteger / AtomicLong** are the usual choice for thread-safe counters without explicit locking. 做線程安全計數時，常用 AtomicInteger／AtomicLong，無需顯式加鎖。
+- They rely on **CAS** at the hardware level; no `synchronized` needed for simple numeric updates. 底層依賴 CAS，簡單數值更新不需要 synchronized。
+- For compound logic (multiple steps), use atomic inside a structure or use `synchronized`/locks. 若是一連串複合邏輯，可在結構內使用原子類，或使用 synchronized／鎖。

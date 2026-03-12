@@ -1,0 +1,68 @@
+---
+title: Java Memory Management — Stack, Heap, GC & Reference Types | Java 記憶體管理：棧、堆、GC 與引用類型
+date: 2026-03-11
+tags: Java, JVM, Memory, Garbage Collection, 記憶體, 垃圾回收
+summary: How Java manages memory (Stack vs Heap), why memory leaks happen, and when to use Strong, Soft, and Weak references. Java 記憶體結構、記憶體洩漏成因，以及強引用、軟引用、弱引用的使用場景。
+---
+
+# Java Memory Management: Stack, Heap, GC & References  
+# Java 記憶體管理：棧、堆、GC 與引用類型
+
+In PHP, each request ends and resources are reset. In Java, the process runs for a long time; if objects are never released, you get **OutOfMemoryError**. Understanding memory layout and reference types helps you avoid leaks and design caches properly.
+
+在 PHP 裡，每個 Request 結束就會釋放資源。在 Java，程式會長時間運行；若一些不再需要用到的 Object 一直佔用記憶體，就會導致 OutOfMemoryError。了解記憶體結構與引用類型可以幫助你避免記憶體洩漏並設計好 Cache。
+
+---
+
+## Memory Layout 記憶體結構
+
+| Area | Role | 說明 |
+| ---- | ----- | ----- |
+| **Stack 棧** | Local variables, method calls. Tied to each thread. Cleared when the method returns. 存放局部變數與方法調用，跟隨線程，方法結束就清掉。 | Small, fast. 細、快。 |
+| **Heap 堆** | All objects created with `new`. Shared by all threads. 所有 `new` 出來的對象。 | Large. Managed by the **Garbage Collector (GC)**. 大，由 GC 管理。 |
+
+---
+
+## How Memory Leaks Happen 如何發生記憶體洩漏？
+
+GC only reclaims objects that are **no longer referenced**. If you keep adding to a **static** list and never remove, that list lives for the whole JVM lifetime and holds references to all those objects — GC will never collect them. That’s a classic memory leak.
+
+GC 只會回收**沒有人再引用**的對象。若你將大量數據放入一個 **static** List 且從不 remove，該 List 會與 JVM 同壽命，一直引用著那些對象，GC 就不會清掉它們。這就是典型的記憶體洩漏。
+
+---
+
+## Reference Types 引用類型
+
+| Type | When GC reclaims | 回收時機 | Use case 適用場景 |
+| ---- | ----------------- | -------- | -------------------- |
+| **Strong 強引用** | Never, as long as the reference exists. 只要引用還在就不會回收。 | Normal business objects. 一般業務對象。 |
+| **Soft 軟引用** | When memory is tight (e.g. before OOM). 記憶體不足、快滿的時候才回收。 | **Cache**: keep data until memory pressure, then allow GC to free it. 緩存：平時保留，危急時自動釋放。 |
+| **Weak 弱引用** | As soon as GC runs and finds no other references. 只要 GC 一發現沒有其他引用就會回收。 | Prevent leaks when the “key” should not be kept alive by the cache (e.g. **WeakHashMap** for session → debug info). 防止主體消失後關聯數據仍被持有不放。 |
+
+---
+
+## Cache Design 緩存設計
+
+For a **global cache** of expensive-to-fetch data (e.g. from DB):
+
+- **SoftReference** is a good fit: keep entries until memory is low, then let GC reclaim them so the app doesn’t crash. You handle **cache miss** by re-fetching from DB/API and putting the result back into the cache (Cache-Aside pattern).
+- **WeakReference** is too eager — GC will clear it quickly even when memory is fine, so you’d hit DB/API too often.
+
+- 使用 **SoftReference** 最合適：盡量保留數據，只有記憶體不足時才讓 GC 回收，避免 Crash；Cache Miss 時向 DB/API 重新取得再寫入 Cache（Cache-Aside）。
+- **WeakReference** 太「積極」：就算記憶體足夠，GC 一有機會就會清掉，會導致經常 Cache Miss，增加 DB/API 負擔。
+
+---
+
+## WeakHashMap 的用途
+
+If you store **metadata by object** (e.g. `Map<UserSession, DebugInfo>`), using a normal `HashMap` keeps every `UserSession` alive as long as the map exists — even after logout. **WeakHashMap** uses weak references for keys: when no other code references the `UserSession`, GC can reclaim it and the map entry is effectively removed, avoiding a leak.
+
+若你用 Map 存「按對象的元數據」（例如 `Map<UserSession, DebugInfo>`），使用普通 HashMap 會讓每個 UserSession 一直被 Map 引用，即使用戶已登出。**WeakHashMap** 的 Key 是弱引用：當再沒有其他地方引用該 UserSession 時，GC 就會回收它，Map 裡該筆 Entry 也會被清理，不會造成洩漏。
+
+---
+
+## Summary 小結
+
+- **Stack** = method locals and calls; **Heap** = all objects; **GC** manages the heap. 棧放局部變數與調用，堆放對象，由 GC 管理。
+- **Memory leak** often comes from long-lived (e.g. static) collections that never release references. 記憶體洩漏常來自長期存在（例如 static）的集合從不釋放引用。
+- **SoftReference** = cache that survives until memory is low. **WeakReference** = don’t keep the referent alive; good for auxiliary data keyed by object. 軟引用適合做緩存；弱引用適合「不想因自己而留住主體」的輔助數據（如 WeakHashMap）。

@@ -1,0 +1,81 @@
+---
+title: Java Thread-Safety — Concurrency in Multi-threaded Environments | Java 線程安全：多線程環境下的數據保護
+date: 2026-03-12
+tags: Java, Concurrency, Thread-safety, 線程安全, 併發
+summary: How to protect shared data in multi-threaded Java applications — synchronization, atomic operations, and concurrent collections. 多線程環境下如何保護數據：同步、原子操作與併發集合。
+---
+
+# Java Thread-Safety: Protecting Data in Multi-threaded Environments  
+# Java 線程安全：多線程環境下如何保護數據？
+
+When multiple threads read and write the same data at once, the result can be corrupted — like several people writing on the same piece of paper. Java offers several mechanisms to keep data safe while still allowing concurrency.
+
+在多線程（Multi-threaded）環境裡，當多個線程同時讀寫同一份數據時，就像幾個人同時在同一張紙上面寫字，結果會讓數據變得混亂。Java 提供了幾種機制來保護數據。
+
+---
+
+## Key Concepts 核心概念
+
+| Term (EN) | Term (中文) | Meaning |
+| --------- | ----------- | ------- |
+| **Race Condition** | 競態條件 | Two threads read the same value, both update it, and one overwrites the other — e.g. both see `count=10`, both write 11, so the result is 11 instead of 12. 兩個線程同時讀到舊數值，各自加 1 後寫入，導致少了一次更新。 |
+| **Synchronization** | 同步 | Only one thread can run a block of code at a time (like a single toilet with a lock). 同一時間只有一個線程可以執行某段代碼。 |
+| **Atomic operation** | 原子操作 | An operation that cannot be split — no other thread can step in between read and write. 不可分割的操作，其他線程不可以中途插隊。 |
+| **Lock contention** | 鎖競爭 | Too many threads waiting for the same lock; performance drops and can feel like single-threaded. 過多線程等同一把鎖，效能變差，甚至死鎖。 |
+| **Lock stripping** | 分段鎖 | Lock only a part of the data structure (e.g. one bucket), so other threads can work on other parts. 只鎖住一部分數據，其他部分可以並行。 |
+
+---
+
+## 1. Synchronization 同步
+
+The simplest way is `synchronized`. Only one thread can execute the method (or block) at a time; others must wait. Overusing it locks too much and hurts performance — threads queue up like a single-threaded program.
+
+最直接的方法是使用 `synchronized`。同一時間只有一個線程可以執行該段代碼，其他要等待。過度使用會讓線程大排長龍，效能變差。
+
+```java
+public synchronized void increment() {
+    count++;
+}
+```
+
+---
+
+## 2. Atomic Operations 原子操作
+
+For simple read-modify-write (e.g. counter increment), use `java.util.concurrent.atomic` (e.g. `AtomicInteger`). The operation is done in one indivisible step so no other thread can interleave.
+
+若只是做簡單的加減（例如 Counter++），可以使用 `AtomicInteger` 等原子類，保證「讀–改–寫」一氣呵成，不會被其他線程插隊。
+
+```java
+AtomicInteger orderCount = new AtomicInteger(10);
+int newCount = orderCount.incrementAndGet(); // thread-safe, no explicit lock
+```
+
+---
+
+## 3. Concurrent Collections 併發集合
+
+`ConcurrentHashMap` is thread-safe but does **not** lock the whole map. It uses lock stripping: only the bucket being updated is locked, so other threads can update other keys. Good for high read/write concurrency (e.g. “last login time per user”).
+
+`ConcurrentHashMap` 是線程安全的，但不會鎖住整個 Map，而是用分段鎖：只鎖住正在修改的那一「塊」，其他線程可以同時修改其他塊，因此不需要大排長龍。
+
+**Caveat 注意：** The map only protects single `get`/`put`. A **compound** operation like `count = map.get(id) + 1; map.put(id, count);` is **not** atomic — you still get a race. Use `AtomicInteger` (or similar) for the value, or use methods like `computeIfAbsent` for “get-or-compute” logic.
+
+Map 只保證單一 get/put 安全；「讀取 → 修改 → 寫入」這個複合操作依然會有競態，要用原子類或 `computeIfAbsent` 等來處理。
+
+---
+
+## 4. Avoiding Cache Stampede 避免緩存擊穿
+
+When many threads see a cache miss at once, they might all go to the DB/API. Use `ConcurrentHashMap.computeIfAbsent(key, key -> fetchFromAPI(key))` so that only one thread runs the fetch; others wait and reuse the result.
+
+當多個線程同時發現 Cache 沒有數據時，可能會一窩蜂去 Call API。使用 `computeIfAbsent` 可以保證只有一個線程去取數據，其他線程等它取完後直接使用結果。
+
+---
+
+## Summary 小結
+
+- **Race condition:** Two threads read the same value and both write back, so one update is lost. 兩個線程讀到同一舊值，寫回時會漏掉一次更新。
+- **synchronized:** Safe but coarse-grained; overuse causes lock contention and slowness. 安全但鎖的範圍大，用得多會變慢。
+- **Atomic types:** Use for counters and simple numeric updates. 用來做計數、簡單數值更新。
+- **ConcurrentHashMap:** Thread-safe map with fine-grained locking; combine with atomic or `computeIfAbsent` for compound logic. 線程安全的 Map，鎖粒度細；複合邏輯要配合原子類或 `computeIfAbsent`。
