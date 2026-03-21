@@ -16,13 +16,46 @@ When multiple threads read and write the same data at once, the result can be co
 
 ## Key Concepts 核心概念
 
-| Term (EN) | Term (中文) | Meaning |
-| --------- | ----------- | ------- |
-| **Race Condition** | 競態條件 | Two threads read the same value, both update it, and one overwrites the other — e.g. both see `count=10`, both write 11, so the result is 11 instead of 12. 兩個線程同時讀到舊數值，各自加 1 後寫入，導致少了一次更新。 |
-| **Synchronization** | 同步 | Only one thread can run a block of code at a time (like a single toilet with a lock). 同一時間只有一個線程可以執行某段代碼。 |
-| **Atomic operation** | 原子操作 | An operation that cannot be split — no other thread can step in between read and write. 不可分割的操作，其他線程不可以中途插隊。 |
-| **Lock contention** | 鎖競爭 | Too many threads waiting for the same lock; performance drops and can feel like single-threaded. 過多線程等同一把鎖，效能變差，甚至死鎖。 |
-| **Lock stripping** | 分段鎖 | Lock only a part of the data structure (e.g. one bucket), so other threads can work on other parts. 只鎖住一部分數據，其他部分可以並行。 |
+<Table
+  caption="Key concepts · 核心概念"
+  columns={[
+    { key: "termEn", header: "Term (EN)" },
+    { key: "termZh", header: "Term (中文)" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      termEn: "Race Condition",
+      termZh: "競態條件",
+      meaning:
+        "Two threads read the same value, both update it, and one overwrites the other — e.g. both see count=10, both write 11, so the result is 11 instead of 12. 兩個線程同時讀到舊數值，各自加 1 後寫入，導致少了一次更新。",
+    },
+    {
+      termEn: "Synchronization",
+      termZh: "同步",
+      meaning:
+        "Only one thread can run a block of code at a time (like a single toilet with a lock). 同一時間只有一個線程可以執行某段代碼。",
+    },
+    {
+      termEn: "Atomic operation",
+      termZh: "原子操作",
+      meaning:
+        "An operation that cannot be split — no other thread can step in between read and write. 不可分割的操作，其他線程不可以中途插隊。",
+    },
+    {
+      termEn: "Lock contention",
+      termZh: "鎖競爭",
+      meaning:
+        "Too many threads waiting for the same lock; performance drops and can feel like single-threaded. 過多線程等同一把鎖，效能變差，甚至死鎖。",
+    },
+    {
+      termEn: "Lock stripping",
+      termZh: "分段鎖",
+      meaning:
+        "Lock only a part of the data structure (e.g. one bucket), so other threads can work on other parts. 只鎖住一部分數據，其他部分可以並行。",
+    },
+  ]}
+/>
 
 ---
 

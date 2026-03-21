@@ -6,12 +6,10 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 
 # Cache Penetration, Breakdown & Avalanche: Complete Guide 緩存穿透、擊穿與雪崩：完整指南
 
----
-
 ## Key Terms
 
 <Table
-  caption="Cache patterns & mitigations"
+  caption="Cache patterns & mitigations · 緩存問題與緩解"
   columns={[
     { key: "term", header: "Term" },
     { key: "meaning", header: "Meaning" },
@@ -60,64 +58,122 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
   ]}
 />
 
----
-
 ## Cache Penetration 緩存穿透
 
-**Phenomenon**
+### Phenomenon · 現象
 
-- Users request a key that doesn't exist in DB or Cache, causing repeated DB queries.  
-  用戶請求不存在（DB與Cache皆無）的Key，怎麼查都查不到，導致DB不斷被查詢。
+<BilingualParagraph
+  en="Users request a key that does not exist in the DB or cache, so every request misses and hits the database repeatedly."
+  zh="用戶請求不存在（DB與Cache皆無）的 Key，怎麼查都查不到，導致 DB 不斷被查詢。"
+/>
 
-**Common Solutions**
+### Common solutions · 常見做法
 
-- **Cache Null Value:** Store empty/null in cache for a short TTL so next time查Cache即知結果，不必再查DB。  
-  **緩存空值：** 可設置短暫過期的空值，避免同一Key重複擊中DB。
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Cache null value",
+      en: "Store empty/null in cache for a short TTL so the next lookup short-circuits and does not hit the DB again.",
+      zhLabel: "緩存空值",
+      zh: "可設置短暫過期的空值，避免同一 Key 重複擊中 DB。",
+    },
+    {
+      enLabel: "Bloom filter",
+      en: "Check whether a key can possibly exist before querying cache or DB; reject impossible keys early.",
+      zhLabel: "布隆過濾器",
+      zh: "先用過濾器判斷 Key 可能不存在，若無則直接拒絕，不進一步查 DB。",
+    },
+  ]}
+/>
 
-- **Bloom Filter:** Use it to check if the key never exists, block request early.  
-  **布隆過濾器：** 先用過濾器判斷Key可能不存在，若無直接拒絕，不進一步查DB。
+#### Typical flow · 典型流程
 
-- **Typical Flow**
-  1. Check cache; if hit, return.（查Cache，有則直接返回）
-  2. Check Bloom Filter; if not exist, directly return.（查過濾器，無此Key則快速返回）
-  3. Query DB if necessary, and cache null if not found.（如有需要再查DB，若查無則寫入空值於Cache）
-
----
+<Table
+  caption="Typical request flow · 典型請求流程"
+  columns={[
+    { key: "step", header: "#" },
+    { key: "action", header: "Action · 步驟" },
+  ]}
+  data={[
+    {
+      step: "1",
+      action: "Check cache; if hit, return.（查 Cache，有則直接返回）",
+    },
+    {
+      step: "2",
+      action: "Check Bloom filter; if the key cannot exist, return.（查過濾器，無此 Key 則快速返回）",
+    },
+    {
+      step: "3",
+      action: "Query DB if needed; cache a null/empty marker if not found.（如有需要再查 DB，若查無則寫入空值於 Cache）",
+    },
+  ]}
+/>
 
 ## Cache Breakdown 緩存擊穿
 
-**Phenomenon**
+### Phenomenon · 現象
 
-- A hot key suddenly expires, loads of requests miss cache and hit DB all at once.  
-  熱門Key突然過期，導致大量請求同時查不到Cache，全部轉向DB，造成壓力激增。
+<BilingualParagraph
+  en="A hot key expires: many concurrent requests miss cache at once and all hit the database together."
+  zh="熱門 Key 突然過期，導致大量請求同時查不到 Cache，全部轉向 DB，造成壓力激增。"
+/>
 
-**Prevention Methods**
+### Prevention methods · 預防方法
 
-- **Mutex Lock:** Only allow one request to rebuild cache, others wait or使用舊資料。  
-  **互斥鎖：** 第一個請求負責重建Cache，其餘需等待或使用舊數據。
-
-- **Cache Prewarm/Refresh:** Update hot key before expiration, or schedule refreshes.  
-  **預熱／定時刷新：** 熱門Key到期前主動更新，或指定週期做Refresh。
-
-- **Double Deletion/Never Expire:** Advanced, can use together with above.  
-  **雙重刪除／永不過期：** 高階做法，可配合其他方法一起使用。
-
----
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Mutex lock",
+      en: "Only one request rebuilds the cache for that key; others wait or read stale data.",
+      zhLabel: "互斥鎖",
+      zh: "第一個請求負責重建 Cache，其餘需等待或使用舊數據。",
+    },
+    {
+      enLabel: "Cache prewarm / refresh",
+      en: "Refresh or extend the hot key before it expires, or schedule background refresh.",
+      zhLabel: "預熱／定時刷新",
+      zh: "熱門 Key 到期前主動更新，或指定週期做 refresh。",
+    },
+    {
+      enLabel: "Double delete / never expire",
+      en: "Advanced patterns; combine with the strategies above as needed.",
+      zhLabel: "雙重刪除／永不過期",
+      zh: "高階做法，可配合其他方法一起使用。",
+    },
+  ]}
+/>
 
 ## Cache Avalanche 緩存雪崩
 
-**Phenomenon**
+### Phenomenon · 現象
 
-- A whole batch of keys expire at once or system restarts, all requests go to DB and overwhelm it.  
-  一大批Key同時過期或系統重啟，Cache全失效，導致請求瞬間全部灌向DB，DB不堪重負。
+<BilingualParagraph
+  en="Many keys expire together or the system restarts, so the cache empties and traffic floods the database at once."
+  zh="一大批 Key 同時過期或系統重啟，Cache 全失效，導致請求瞬間全部灌向 DB，DB 不堪重負。"
+/>
 
-**Common Solutions**
+### Common solutions · 常見做法
 
-- **Random TTL:** When writing cache, TTL = 基本時長+隨機值，避免集體過期。  
-  **隨機過期時間：** 每個Key的過期時間都不一樣，可防止同時過期。
-
-- **Batch Cache Warmup:** Preheat/refresh in batches, never wipe all caches at once.  
-  **分批預熱Cache：** 預熱時分批進行，絕不可一次性清除全部Cache。
-
-- **Rate Limit & Fallback:** Spike in traffic? Immediate degrade, provide safe fallback/default values.  
-  **限流與降級：** 流量異常時即時啟動限流，必要時返回預設或兜底資料，避免DB被擊穿。
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Random TTL",
+      en: "When writing cache, use base TTL plus jitter so keys do not expire at the same instant.",
+      zhLabel: "隨機過期時間",
+      zh: "每個 Key 的過期時間都不一樣，可防止同時過期。",
+    },
+    {
+      enLabel: "Batch cache warmup",
+      en: "Preheat or refresh in batches; avoid wiping the entire cache in one shot.",
+      zhLabel: "分批預熱 Cache",
+      zh: "預熱時分批進行，絕不可一次性清除全部 Cache。",
+    },
+    {
+      enLabel: "Rate limit & fallback",
+      en: "On traffic spikes, degrade gracefully and return safe defaults instead of hammering the DB.",
+      zhLabel: "限流與降級",
+      zh: "流量異常時即時啟動限流，必要時返回預設或兜底資料，避免 DB 被擊穿。",
+    },
+  ]}
+/>

@@ -16,12 +16,35 @@ In a multi-threaded environment, `count++` is not safe: one thread can read, ano
 
 ## Key Terms 關鍵詞
 
-| Term | Meaning |
-| ---- | ------- |
-| **Atomic operation**<br />原子操作 | An operation that cannot be split; no other thread can run in the middle. 不可分割的操作，其他線程不能在中間插入。 |
-| **AtomicInteger / AtomicLong**<br />原子整數／長整數 | Thread-safe wrapper for int/long; methods like `incrementAndGet()` are atomic. 線程安全的 int/long 包裝類，如 `incrementAndGet()` 為原子操作。 |
-| **CAS (Compare-And-Swap)**<br />比較並交換 | CPU instruction: update only if current value equals expected; used by atomic classes. 僅在當前值等於預期值時才更新；原子類底層使用此機制。 |
-| **Read-modify-write**<br />讀–改–寫 | Sequence: read value, change it, write back. Must be atomic to avoid race. 讀取 → 修改 → 寫回；必須整體為原子才能避免競態。 |
+<Table
+  caption="Key terms · 關鍵詞"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "Atomic operation · 原子操作",
+      meaning:
+        "An operation that cannot be split; no other thread can run in the middle. 不可分割的操作，其他線程不能在中間插入。",
+    },
+    {
+      term: "AtomicInteger / AtomicLong · 原子整數／長整數",
+      meaning:
+        "Thread-safe wrapper for int/long; methods like incrementAndGet() are atomic. 線程安全的 int/long 包裝類，如 incrementAndGet() 為原子操作。",
+    },
+    {
+      term: "CAS (Compare-And-Swap) · 比較並交換",
+      meaning:
+        "CPU instruction: update only if current value equals expected; used by atomic classes. 僅在當前值等於預期值時才更新；原子類底層使用此機制。",
+    },
+    {
+      term: "Read-modify-write · 讀–改–寫",
+      meaning:
+        "Sequence: read value, change it, write back. Must be atomic to avoid race. 讀取 → 修改 → 寫回；必須整體為原子才能避免競態。",
+    },
+  ]}
+/>
 
 ---
 
@@ -61,14 +84,24 @@ int after = count.addAndGet(5);          // 1 -> 6, returns 6
 
 ## Common Methods 常用方法
 
-| Method | Effect |
-| ------ | ------ |
-| `get()` / `set(int)` | Read / write current value. 讀取／寫入當前值。 |
-| `incrementAndGet()` | Add 1, return new value. 加 1，回傳新值。 |
-| `getAndIncrement()` | Add 1, return old value. 加 1，回傳舊值。 |
-| `addAndGet(delta)` | Add delta, return new value. 加上 delta，回傳新值。 |
-| `getAndAdd(delta)` | Add delta, return old value. 加上 delta，回傳舊值。 |
-| `compareAndSet(expect, update)` | Set to update only if current == expect. 僅在當前值等於 expect 時設為 update。 |
+<Table
+  caption="AtomicInteger-style API · 常用方法"
+  columns={[
+    { key: "method", header: "Method" },
+    { key: "effect", header: "Effect" },
+  ]}
+  data={[
+    { method: "get() / set(int)", effect: "Read / write current value. 讀取／寫入當前值。" },
+    { method: "incrementAndGet()", effect: "Add 1, return new value. 加 1，回傳新值。" },
+    { method: "getAndIncrement()", effect: "Add 1, return old value. 加 1，回傳舊值。" },
+    { method: "addAndGet(delta)", effect: "Add delta, return new value. 加上 delta，回傳新值。" },
+    { method: "getAndAdd(delta)", effect: "Add delta, return old value. 加上 delta，回傳舊值。" },
+    {
+      method: "compareAndSet(expect, update)",
+      effect: "Set to update only if current == expect. 僅在當前值等於 expect 時設為 update。",
+    },
+  ]}
+/>
 
 ---
 

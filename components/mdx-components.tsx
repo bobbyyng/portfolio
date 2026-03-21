@@ -63,16 +63,17 @@ function formatCell(value: unknown): ReactNode {
  * Data-driven table for MDX: pass rows as objects; optional `columns` controls order and headers.
  * Use `<Table ... />` or `<DataTable ... />` (same component).
  */
-export function DataTable({
-  caption,
-  columns,
-  data,
-}: {
+export function DataTable(props: {
   caption?: string;
   columns?: DataTableColumn[];
-  data: DataRow[];
+  /** Omitted when `<Table />` has no props — treated as empty */
+  data?: DataRow[];
+  children?: ReactNode;
+  [key: string]: unknown;
 }) {
-  if (!data.length) {
+  const { caption, columns, data } = props;
+  const rows = data ?? [];
+  if (!rows.length) {
     return (
       <div className={`${tableShell} px-4 py-6 text-center text-sm text-zinc-500 dark:text-zinc-400`}>
         No rows
@@ -80,7 +81,7 @@ export function DataTable({
     );
   }
 
-  const resolved = resolveColumns(columns, data[0]);
+  const resolved = resolveColumns(columns, rows[0]);
 
   return (
     <div className={tableShell}>
@@ -96,7 +97,7 @@ export function DataTable({
           </tr>
         </thead>
         <tbody className={tbodyClassName}>
-          {data.map((row, rowIndex) => (
+          {rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {resolved.map((col) => (
                 <td key={col.key} className={tdClassName}>
@@ -129,6 +130,56 @@ export function MDXTable({
         {children}
       </table>
     </div>
+  );
+}
+
+export type BilingualSolutionItem = {
+  enLabel: string;
+  en: string;
+  zhLabel: string;
+  zh: string;
+};
+
+/** Short EN + 中文 stacked paragraphs (e.g. phenomenon intro) */
+export function BilingualParagraph(props: {
+  en?: string;
+  zh?: string;
+  children?: ReactNode;
+  [key: string]: unknown;
+}) {
+  const en = props.en ?? "";
+  const zh = props.zh ?? "";
+  if (!en && !zh) return null;
+  return (
+    <div className="mb-4 space-y-2 text-zinc-700 dark:text-zinc-300 leading-7">
+      {en ? <p className="text-zinc-800 dark:text-zinc-200">{en}</p> : null}
+      {zh ? <p className="text-zinc-600 dark:text-zinc-400">{zh}</p> : null}
+    </div>
+  );
+}
+
+/** EN + 中文 solution bullets: bold label then detail on two lines per item */
+export function BilingualSolutionList(props: {
+  items?: BilingualSolutionItem[];
+  children?: ReactNode;
+  [key: string]: unknown;
+}) {
+  const items = props.items ?? [];
+  return (
+    <ul className="list-none space-y-4 mb-4 pl-0">
+      {items.map((item, i) => (
+        <li key={i} className="text-zinc-700 dark:text-zinc-300 leading-7">
+          <p className="mb-1">
+            <strong className="text-zinc-900 dark:text-zinc-100">{item.enLabel}:</strong>{" "}
+            {item.en}
+          </p>
+          <p className="pl-0 text-zinc-600 dark:text-zinc-400">
+            <strong className="text-zinc-800 dark:text-zinc-200">{item.zhLabel}：</strong>{" "}
+            {item.zh}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -172,6 +223,17 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         >
           {children}
         </h3>
+      );
+    },
+    h4: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children)) || undefined;
+      return (
+        <h4
+          id={id}
+          className="text-lg font-semibold mt-4 mb-2 text-zinc-900 dark:text-zinc-100 scroll-mt-24"
+        >
+          {children}
+        </h4>
       );
     },
     p: ({ children }) => (
@@ -259,6 +321,8 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
     MDXTable,
     Table,
     DataTable,
+    BilingualParagraph,
+    BilingualSolutionList,
     hr: () => (
       <hr className="my-8 border-zinc-200 dark:border-zinc-700" />
     ),

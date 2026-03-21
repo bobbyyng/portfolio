@@ -118,6 +118,8 @@ export default async function BlogPostPage({ params }: PageProps) {
               source={post.content}
               components={createMDXComponents()}
               options={{
+                // Default true strips JSX attribute expressions (<Table data={[...]} />) — keep them for MDX components
+                blockJS: false,
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],
                 },

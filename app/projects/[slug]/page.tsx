@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProjectBySlug, getAllProjectSlugs } from "@/lib/projects";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
+import remarkGfm from "remark-gfm";
 import { ProjectCarousel } from "@/components/project-carousel";
 
 interface PageProps {
@@ -66,7 +67,14 @@ export default async function ProjectPage({ params }: PageProps) {
         )}
 
         <div className="prose prose-zinc dark:prose-invert max-w-none">
-          <MDXRemote source={project.content} components={createMDXComponents()} />
+          <MDXRemote
+            source={project.content}
+            components={createMDXComponents()}
+            options={{
+              blockJS: false,
+              mdxOptions: { remarkPlugins: [remarkGfm] },
+            }}
+          />
         </div>
       </article>
     </div>

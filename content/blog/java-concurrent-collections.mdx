@@ -16,15 +16,50 @@ Using a normal `HashMap` or `ArrayList` from multiple threads can corrupt data o
 
 ## Key Terms 關鍵詞
 
-| Term | Meaning |
-| ---- | ------- |
-| **Race condition**<br />競態條件 | Two threads read the same value, both update it, one overwrites the other — e.g. both see 10, both write 11, so one update is lost. 兩線程讀到同一值、各自更新後寫回，導致一次更新被覆蓋。 |
-| **ConcurrentHashMap**<br />併發哈希表 | Thread-safe map that locks only the bucket being updated (lock stripping), not the whole map. 只鎖正在更新的桶，不鎖整個 Map 的線程安全哈希表。 |
-| **Lock stripping**<br />分段鎖 | Lock only a part of the structure so other threads can work on other parts. 只鎖住結構的一部分，其他線程可並行處理其他部分。 |
-| **Lock contention**<br />鎖競爭 | Many threads waiting for the same lock; throughput drops. 多線程等同一把鎖，吞吐量下降。 |
-| **CopyOnWriteArrayList**<br />寫時複製列表 | List that copies the array on write; reads are lock-free and see a consistent snapshot. 寫入時複製陣列；讀取無鎖且看到一致快照。 |
-| **BlockingQueue**<br />阻塞隊列 | Queue that blocks `put()` when full and `take()` when empty. 滿時 put 阻塞、空時 take 阻塞的隊列。 |
-| **Compound operation**<br />複合操作 | Read–modify–write (e.g. get then put); not atomic by default, need atomic type or compute/merge. 讀–改–寫（如 get 再 put）；預設非原子，需用原子類或 compute/merge。 |
+<Table
+  caption="Key terms · 關鍵詞"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "Race condition · 競態條件",
+      meaning:
+        "Two threads read the same value, both update it, one overwrites the other — e.g. both see 10, both write 11, so one update is lost. 兩線程讀到同一值、各自更新後寫回，導致一次更新被覆蓋。",
+    },
+    {
+      term: "ConcurrentHashMap · 併發哈希表",
+      meaning:
+        "Thread-safe map that locks only the bucket being updated (lock stripping), not the whole map. 只鎖正在更新的桶，不鎖整個 Map 的線程安全哈希表。",
+    },
+    {
+      term: "Lock stripping · 分段鎖",
+      meaning:
+        "Lock only a part of the structure so other threads can work on other parts. 只鎖住結構的一部分，其他線程可並行處理其他部分。",
+    },
+    {
+      term: "Lock contention · 鎖競爭",
+      meaning:
+        "Many threads waiting for the same lock; throughput drops. 多線程等同一把鎖，吞吐量下降。",
+    },
+    {
+      term: "CopyOnWriteArrayList · 寫時複製列表",
+      meaning:
+        "List that copies the array on write; reads are lock-free and see a consistent snapshot. 寫入時複製陣列；讀取無鎖且看到一致快照。",
+    },
+    {
+      term: "BlockingQueue · 阻塞隊列",
+      meaning:
+        "Queue that blocks put() when full and take() when empty. 滿時 put 阻塞、空時 take 阻塞的隊列。",
+    },
+    {
+      term: "Compound operation · 複合操作",
+      meaning:
+        "Read–modify–write (e.g. get then put); not atomic by default, need atomic type or compute/merge. 讀–改–寫（如 get 再 put）；預設非原子，需用原子類或 compute/merge。",
+    },
+  ]}
+/>
 
 ---
 
@@ -76,10 +111,23 @@ Every **write** (add, set, remove) creates a new copy of the underlying array; *
 
 每次**寫**（add、set、remove）都會複製一份新陣列；**讀**不需要加鎖，且讀到的是一個一致的快照。因此適合**讀多寫少**（例如 listener 列表、很少改的配置）。若寫入很頻繁，經常複製整個陣列就會很耗成本。
 
-| Pros 優點 | Cons 缺點 |
-| --------- | --------- |
-| No lock on read; many readers in parallel. 讀不需要鎖，多個讀者並行。 | Write is O(n) — copy entire array. 寫入為 O(n)。 |
-| Iterators never throw ConcurrentModificationException. 迭代器不會因併發修改而拋錯。 | Not for high-write workloads. 不適合高寫入場景。 |
+<Table
+  caption="CopyOnWriteArrayList trade-offs · 優缺點"
+  columns={[
+    { key: "pros", header: "Pros · 優點" },
+    { key: "cons", header: "Cons · 缺點" },
+  ]}
+  data={[
+    {
+      pros: "No lock on read; many readers in parallel. 讀不需要鎖，多個讀者並行。",
+      cons: "Write is O(n) — copy entire array. 寫入為 O(n)。",
+    },
+    {
+      pros: "Iterators never throw ConcurrentModificationException. 迭代器不會因併發修改而拋錯。",
+      cons: "Not for high-write workloads. 不適合高寫入場景。",
+    },
+  ]}
+/>
 
 ---
 
@@ -102,12 +150,32 @@ Task t = queue.take();
 
 ## Quick Reference 快速對照
 
-| Collection | When to use 適用場景 |
-| ---------- | --------------------- |
-| **ConcurrentHashMap** | High-concurrency key–value store; updates to different keys can run in parallel. 高併發 key-value 存儲；不同 key 可以並行更新。 |
-| **CopyOnWriteArrayList** | Read-heavy, write-rare list (listeners, config). 讀多寫少的列表。 |
-| **BlockingQueue** | Producer–consumer; need to block when full/empty. 生產者–消費者；滿/空時需阻塞。 |
-| **ConcurrentLinkedQueue** | Unbounded, non-blocking queue; no blocking put/take. 無界、非阻塞隊列。 |
+<Table
+  caption="Collection quick reference · 快速對照"
+  columns={[
+    { key: "collection", header: "Collection" },
+    { key: "whenToUse", header: "When to use · 適用場景" },
+  ]}
+  data={[
+    {
+      collection: "ConcurrentHashMap",
+      whenToUse:
+        "High-concurrency key–value store; updates to different keys can run in parallel. 高併發 key-value 存儲；不同 key 可以並行更新。",
+    },
+    {
+      collection: "CopyOnWriteArrayList",
+      whenToUse: "Read-heavy, write-rare list (listeners, config). 讀多寫少的列表。",
+    },
+    {
+      collection: "BlockingQueue",
+      whenToUse: "Producer–consumer; need to block when full/empty. 生產者–消費者；滿/空時需阻塞。",
+    },
+    {
+      collection: "ConcurrentLinkedQueue",
+      whenToUse: "Unbounded, non-blocking queue; no blocking put/take. 無界、非阻塞隊列。",
+    },
+  ]}
+/>
 
 ---
 
