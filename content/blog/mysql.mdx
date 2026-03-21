@@ -8,28 +8,110 @@ tags: MySQL
 
 ## Key Terms
 
-| Term                             | Meaning                                                                                                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Storage Engine  | MySQL 的儲存引擎，負責資料儲存與讀取方式，如 InnoDB（預設，支援事務）與 MyISAM（讀取快速但無事務）。|
-| Index | 索引結構加速查詢，如 B+樹索引。InnoDB 主鍵為叢集索引，資料行與索引共存。|
-| Undo Log| 事務回滾與 MVCC 使用的日誌，記錄修改前舊資料版本，支持一致性讀取。|
-| Redo Log| WAL 日誌確保資料持久性，記錄物理修改，用於崩潰恢復。|
-| Query Optimizer | 查詢最佳化器，分析 SQL 選擇最低成本執行計畫（如索引使用順序）。|
-| Buffer Pool | InnoDB 記憶體快取區，存放資料頁與索引頁，減少磁碟 I/O。|
-| Doublewrite Buffer | 先將髒頁寫入雙重緩衝區再寫資料檔案，防止頁寫入中斷損壞。|
-| Change Buffer | 緩衝二級索引變更操作，合併後批量應用，優化插入效能。|
-| MVCC | 多版本並存控制，透過 Undo Log 實現讀寫不互斥，快照讀取。|
-| Lock | 鎖機制確保事務隔離，包括行鎖、表鎖、間隙鎖防止幻讀。|
+<Table
+  caption="MySQL / InnoDB terminology"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "Storage Engine",
+      meaning:
+        "MySQL 的儲存引擎，負責資料儲存與讀取方式，如 InnoDB（預設，支援事務）與 MyISAM（讀取快速但無事務）。",
+    },
+    {
+      term: "Index",
+      meaning:
+        "索引結構加速查詢，如 B+樹索引。InnoDB 主鍵為叢集索引，資料行與索引共存。",
+    },
+    {
+      term: "Undo Log",
+      meaning:
+        "事務回滾與 MVCC 使用的日誌，記錄修改前舊資料版本，支持一致性讀取。",
+    },
+    {
+      term: "Redo Log",
+      meaning:
+        "WAL 日誌確保資料持久性，記錄物理修改，用於崩潰恢復。",
+    },
+    {
+      term: "Query Optimizer",
+      meaning:
+        "查詢最佳化器，分析 SQL 選擇最低成本執行計畫（如索引使用順序）。",
+    },
+    {
+      term: "Buffer Pool",
+      meaning:
+        "InnoDB 記憶體快取區，存放資料頁與索引頁，減少磁碟 I/O。",
+    },
+    {
+      term: "Doublewrite Buffer",
+      meaning:
+        "先將髒頁寫入雙重緩衝區再寫資料檔案，防止頁寫入中斷損壞。",
+    },
+    {
+      term: "Change Buffer",
+      meaning:
+        "緩衝二級索引變更操作，合併後批量應用，優化插入效能。",
+    },
+    {
+      term: "MVCC",
+      meaning:
+        "多版本並存控制，透過 Undo Log 實現讀寫不互斥，快照讀取。",
+    },
+    {
+      term: "Lock",
+      meaning:
+        "鎖機制確保事務隔離，包括行鎖、表鎖、間隙鎖防止幻讀。",
+    },
+  ]}
+/>
 
 ---
 
 ## Storage Engine
-| Engine  | ACID support                         | Lock granularity              | Crash recovery                                     | Typical usage                                                |
-|-------- |--------------------------------------|-------------------------------|----------------------------------------------------|--------------------------------------------------------------|
-| InnoDB  | Yes (full ACID transactions)         | Row-level (plus gap/next-key) | Yes (strong, with redo/undo logs)                  | Default engine for most OLTP and web applications            |
-| MyISAM  | No (no transaction support)          | Table-level                   | No (prone to corruption after crash)               | Legacy read-heavy workloads without transaction requirements |
-| Memory  | No (no transaction support)          | Table-level                   | No durability (data lost on restart)               | Temporary or cache tables stored entirely in memory          |
-| Archive | No (append-only, no full transactions)| Optimized for insert + select | Basic durability but no full transaction recovery  | Long-term compressed storage of historical or log data       |
+
+<Table
+  caption="Storage engine comparison"
+  columns={[
+    { key: "engine", header: "Engine" },
+    { key: "acid", header: "ACID support" },
+    { key: "lock", header: "Lock granularity" },
+    { key: "crash", header: "Crash recovery" },
+    { key: "usage", header: "Typical usage" },
+  ]}
+  data={[
+    {
+      engine: "InnoDB",
+      acid: "Yes (full ACID transactions)",
+      lock: "Row-level (plus gap/next-key)",
+      crash: "Yes (strong, with redo/undo logs)",
+      usage: "Default engine for most OLTP and web applications",
+    },
+    {
+      engine: "MyISAM",
+      acid: "No (no transaction support)",
+      lock: "Table-level",
+      crash: "No (prone to corruption after crash)",
+      usage: "Legacy read-heavy workloads without transaction requirements",
+    },
+    {
+      engine: "Memory",
+      acid: "No (no transaction support)",
+      lock: "Table-level",
+      crash: "No durability (data lost on restart)",
+      usage: "Temporary or cache tables stored entirely in memory",
+    },
+    {
+      engine: "Archive",
+      acid: "No (append-only, no full transactions)",
+      lock: "Optimized for insert + select",
+      crash: "Basic durability but no full transaction recovery",
+      usage: "Long-term compressed storage of historical or log data",
+    },
+  ]}
+/>
 
 ### InnoDB
 InnoDB 係 MySQL 預設引擎，適合大多數現代應用。

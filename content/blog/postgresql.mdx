@@ -8,11 +8,34 @@ tags: PostgreSQL
 
 ## Key Terms
 
-| Term                             | Meaning                                                                                                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Hash Join | |
-| Merge Join | |
-| Postmaster | | 
-| Backcend Process | |
+<Table
+  caption="PostgreSQL planner & process terms"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "Hash Join",
+      meaning:
+        "Join algorithm that builds a hash table from one relation and probes with the other; common when large unsorted inputs fit in work_mem. 以雜湊表建立與探測完成的連接，常見於查詢計畫。",
+    },
+    {
+      term: "Merge Join",
+      meaning:
+        "Join when both inputs are ordered on the join keys; the executor merges two sorted streams. 兩邊已按連接鍵排序時，以合併方式對齊資料列。",
+    },
+    {
+      term: "Postmaster",
+      meaning:
+        "Main server process: listens on the port, accepts connections, and forks backend processes for each client. 主進程，負責監聽連線並派生後端處理程序。",
+    },
+    {
+      term: "Backend process",
+      meaning:
+        "Per-session worker that parses, plans, and executes SQL; visible as a backend in pg_stat_activity. 每個客戶端連線對應的後端進程，負責執行 SQL。",
+    },
+  ]}
+/>
 
 ---

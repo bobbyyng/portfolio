@@ -10,16 +10,55 @@ tags: Cache, Redis, Distributed Systems, 緩存, 分佈式
 
 ## Key Terms
 
-| Term                             | Meaning                                                                                                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cache Penetration<br />緩存穿透  | Requests for non-existent data always go to the DB, bypassing the cache.<br />當請求不存在的數據時（Cache和DB皆無），會直達DB，讓Cache失去效用。             |
-| Cache Breakdown<br />緩存擊穿    | "Hot key" expires: Many requests for same key all miss cache and hit DB.<br />熱門Key突然過期，所有請求瞬間查不到Cache，全都衝向DB。                         |
-| Cache Avalanche<br />緩存雪崩    | Many keys expire together, flooding the DB.<br />大量Key同時失效或系統重啟，瞬間產生大量請求，DB承受不住。                                                   |
-| Bloom Filter<br />布隆過濾器     | Efficient way to check if a key definitely does not exist, blocking unnecessary requests.<br />先檢查Key是否一定不存在，若確定無此Key，就不用再查Cache和DB。 |
-| Mutex Lock<br />互斥鎖           | Prevents several requests from rebuilding the same cache at once.<br />防止多個請求同時重建同一份Cache，透過鎖只允許一個進行，其餘需等待。                   |
-| TTL (Time To Live)<br />生存時間 | Cache expiration time; use random expiry to avoid avalanche.<br />Cache的過期時間（TTL）；可隨機設置TTL避免集體過期造成雪崩現象。                            |
-| Rate Limiting<br />限流          | Limit request rate to protect DB.<br />控制請求速率，避免短時間內大量查詢導致DB崩潰。                                                                        |
-| Fallback/Degrade<br />降級/兜底  | Graceful fallback when system busy.<br />系統超載時優雅退回，返回預設值、靜態頁等保底資料，避免癱瘓。                                                        |
+<Table
+  caption="Cache patterns & mitigations"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "Cache Penetration · 緩存穿透",
+      meaning:
+        "Requests for non-existent data always go to the DB, bypassing the cache. 當請求不存在的數據時（Cache和DB皆無），會直達DB，讓Cache失去效用。",
+    },
+    {
+      term: "Cache Breakdown · 緩存擊穿",
+      meaning:
+        'A "hot key" expires: many requests for the same key all miss cache and hit DB. 熱門Key突然過期，所有請求瞬間查不到Cache，全都衝向DB。',
+    },
+    {
+      term: "Cache Avalanche · 緩存雪崩",
+      meaning:
+        "Many keys expire together, flooding the DB. 大量Key同時失效或系統重啟，瞬間產生大量請求，DB承受不住。",
+    },
+    {
+      term: "Bloom Filter · 布隆過濾器",
+      meaning:
+        "Efficient way to check if a key definitely does not exist, blocking unnecessary requests. 先檢查Key是否一定不存在，若確定無此Key，就不用再查Cache和DB。",
+    },
+    {
+      term: "Mutex Lock · 互斥鎖",
+      meaning:
+        "Prevents several requests from rebuilding the same cache at once. 防止多個請求同時重建同一份Cache，透過鎖只允許一個進行，其餘需等待。",
+    },
+    {
+      term: "TTL (Time To Live) · 生存時間",
+      meaning:
+        "Cache expiration time; use random expiry to avoid avalanche. Cache的過期時間（TTL）；可隨機設置TTL避免集體過期造成雪崩現象。",
+    },
+    {
+      term: "Rate Limiting · 限流",
+      meaning:
+        "Limit request rate to protect DB. 控制請求速率，避免短時間內大量查詢導致DB崩潰。",
+    },
+    {
+      term: "Fallback / Degrade · 降級/兜底",
+      meaning:
+        "Graceful fallback when system busy. 系統超載時優雅退回，返回預設值、靜態頁等保底資料，避免癱瘓。",
+    },
+  ]}
+/>
 
 ---
 
