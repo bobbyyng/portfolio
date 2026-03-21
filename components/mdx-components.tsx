@@ -116,13 +116,12 @@ export function DataTable(props: {
 export const Table = DataTable;
 
 /** Optional JSX wrapper for MDX tables — use with thead/tbody/tr/th/td inside. */
-export function MDXTable({
-  caption,
-  children,
-}: {
+export function MDXTable(props: {
   caption?: string;
-  children: ReactNode;
+  children?: ReactNode;
+  [key: string]: unknown;
 }) {
+  const { caption, children } = props;
   return (
     <div className={tableShell}>
       <table className={tableBase}>
