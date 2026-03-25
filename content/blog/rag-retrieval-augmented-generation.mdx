@@ -1,0 +1,166 @@
+---
+title: RAG (Retrieval-Augmented Generation) Explained | RAG 檢索增強生成入門
+date: 2026-03-21
+tags: RAG, LLM, AI, Embeddings, Vector Search, 檢索增強生成
+---
+
+# RAG: Retrieval-Augmented Generation · 檢索增強生成
+
+## Key Terms
+
+<Table
+  caption="RAG core concepts · RAG 核心概念"
+  columns={[
+    { key: "term", header: "Term" },
+    { key: "meaning", header: "Meaning" },
+  ]}
+  data={[
+    {
+      term: "RAG · 檢索增強生成",
+      meaning:
+        "A pattern where a model answers using retrieved documents plus the user query, instead of relying only on weights baked in at training. 先從知識庫檢索相關片段，再連同問題一併交給語言模型生成答案，而非只靠訓練時「記住」的內容。",
+    },
+    {
+      term: "Retriever · 檢索器",
+      meaning:
+        "Finds the most relevant chunks (e.g. by vector similarity or hybrid search) before generation. 在生成前找出與問題最相關的文字片段，例如用向量相似度或混合搜尋。",
+    },
+    {
+      term: "Embedding · 向量嵌入",
+      meaning:
+        "A dense numeric representation of text so that semantically similar texts are close in vector space. 將文字轉成高維向量，語意相近的文字在空間中距離較近。",
+    },
+    {
+      term: "Vector store · 向量庫",
+      meaning:
+        "Index of document chunks and their embeddings for fast nearest-neighbour search. 儲存文件塊與對應向量，支援快速近鄰搜尋的索引／資料庫。",
+    },
+    {
+      term: "Chunking · 分塊",
+      meaning:
+        "Splitting documents into smaller pieces (with optional overlap) so retrieval stays focused and fits context limits. 把長文件切成較小單位（可含重疊），令檢索更精準並符合模型上下文長度。",
+    },
+    {
+      term: "Grounding · 依據檢索內容作答",
+      meaning:
+        "Answering with explicit support from retrieved passages, reducing pure fabrication. 答案應可追溯到檢索到的段落，降低無中生有（幻覺）的機會。",
+    },
+  ]}
+/>
+
+## Why RAG matters · 為何需要 RAG
+
+<BilingualParagraph
+  en="Large language models have a knowledge cutoff and can hallucinate. RAG injects fresh or private context at query time so answers can cite what your organisation actually stores."
+  zh="大型語言模型有知識截止日期，亦可能憑空捏造。RAG 在查詢時把最新或內部文件注入提示，令回答可以依據你實際擁有的資料，而非只靠模型參數裏的「記憶」。"
+/>
+
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Up-to-date knowledge",
+      en: "Index new docs without retraining the whole model.",
+      zhLabel: "知識可更新",
+      zh: "新增或修訂文件後重新索引即可，不必為每次改動重訓整個模型。",
+    },
+    {
+      enLabel: "Private / proprietary data",
+      en: "Keep sensitive text in your store; only relevant snippets go into the prompt.",
+      zhLabel: "私隱與專有資料",
+      zh: "敏感內容留在你的儲存與權限體系內，只有檢索到的相關片段會進入提示。",
+    },
+    {
+      enLabel: "Traceability",
+      en: "You can show which chunks supported the answer (with good UX and policies).",
+      zhLabel: "可追溯性",
+      zh: "在產品與合規允許下，可向用戶展示答案所依據的來源段落。",
+    },
+  ]}
+/>
+
+## Typical pipeline · 典型流程
+
+<Table
+  caption="End-to-end RAG flow · RAG 端到端流程"
+  columns={[
+    { key: "step", header: "#" },
+    { key: "action", header: "Stage · 階段" },
+  ]}
+  data={[
+    {
+      step: "1",
+      action:
+        "Ingest: load PDFs, wikis, tickets, etc.（攝入：載入 PDF、內部維基、工單等來源）",
+    },
+    {
+      step: "2",
+      action:
+        "Chunk & enrich: split text, attach metadata (source, time, ACL).（分塊與元資料：切分文字並帶上來源、時間、權限等）",
+    },
+    {
+      step: "3",
+      action:
+        "Embed: turn each chunk into a vector with an embedding model.（嵌入：用嵌入模型把每塊文字轉成向量）",
+    },
+    {
+      step: "4",
+      action:
+        "Index: upsert vectors (+ optional keyword index) into a vector store.（索引：寫入向量庫，亦可配合關鍵字索引做混合搜尋）",
+    },
+    {
+      step: "5",
+      action:
+        "Retrieve: embed the user query, fetch top-k similar chunks (and rerank if needed).（檢索：將用戶問題向量化，取最相近的 k 段，必要時再重排）",
+    },
+    {
+      step: "6",
+      action:
+        "Generate: prompt the LLM with query + retrieved context; optionally enforce citations.（生成：把問題與檢索結果組成提示交給 LLM；可要求標註出處）",
+    },
+  ]}
+/>
+
+## Design trade-offs · 設計上要取捨的事
+
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Chunk size & overlap",
+      en: "Too small loses context; too large dilutes relevance. Overlap reduces boundary cuts but increases storage.",
+      zhLabel: "塊大小與重疊",
+      zh: "太細會失去上下文；太大則檢索變「雜」。塊之間重疊可減少斷句問題，但會增加儲存與索引成本。",
+    },
+    {
+      enLabel: "Retrieval quality",
+      en: "Pure embedding search may miss keyword matches; hybrid (dense + sparse) or rerankers often help.",
+      zhLabel: "檢索質素",
+      zh: "純向量搜尋或漏掉專有名詞；混合搜尋（稠密＋稀疏）或重排模型通常能提升命中率。",
+    },
+    {
+      enLabel: "Latency & cost",
+      en: "Each query may call embedding APIs, vector DB, reranker, and the LLM—budget and caching matter.",
+      zhLabel: "延遲與成本",
+      zh: "一次查詢可能涉及嵌入 API、向量庫、重排器與 LLM，需規劃快取、批次與預算。",
+    },
+    {
+      enLabel: "Security",
+      en: "Enforce access control on retrieval: never put a user in a prompt with chunks they should not see.",
+      zhLabel: "安全與權限",
+      zh: "檢索層必須套用權限：不可把用戶無權閱讀的片段塞進提示。",
+    },
+  ]}
+/>
+
+## RAG vs fine-tuning · RAG 與微調
+
+<BilingualParagraph
+  en="Fine-tuning changes model behaviour and style by updating weights; RAG changes facts available at inference. They complement each other: RAG for factual grounding, fine-tuning for tone, format, or domain phrasing."
+  zh="微調透過更新權重改變模型行為與語氣；RAG 則在推理時改變「手頭有甚麼資料」。兩者常並用：RAG 負責事實與依據，微調負責語氣、格式或行業用語習慣。"
+/>
+
+## Takeaway · 小結
+
+<BilingualParagraph
+  en="RAG is not magic: quality depends on ingestion, chunking, retrieval, and prompting. Treat it as a product surface—observability, evaluation sets, and guardrails matter as much as the embedding model choice."
+  zh="RAG 不是萬靈丹：成效取決於攝入、分塊、檢索與提示設計。應當成產品能力來經營——可觀測性、評測集與防護欄，與選哪個嵌入模型同樣重要。"
+/>

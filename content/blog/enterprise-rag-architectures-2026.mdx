@@ -1,0 +1,541 @@
+---
+title: RAG Architecture Comparison | RAG 架構對照指南
+date: 2026-03-25
+tags: RAG, Enterprise AI, Hybrid RAG, Graph RAG, Agentic RAG, LLM, Governance, 檢索增強生成, 架構對照, RAG 架構
+---
+
+## Structural shifts · 結構轉變
+
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "1. Knowledge scale vs context",
+      en: "Even with expanded context windows, enterprise data spans billions of tokens across data lakes, SaaS, document repositories, and structured databases. Injecting raw data into prompts is computationally wasteful and governance-risky. Strategic retrieval ensures only relevant, permission-compliant, high-signal information enters generation.",
+      zhLabel: "1. 知識規模與上下文",
+      zh: "即使上下文窗口擴大，企業資料仍跨數據湖、SaaS、文件庫與結構化庫，動輒數十億 token。把原始資料灌進提示既浪費運算亦帶管治風險；策略性檢索確保只有相關、合權限、高訊噪比的資訊進入生成。",
+    },
+    {
+      enLabel: "2. Governance",
+      en: "Enterprise AI must enforce role-based access, data lineage, audit logs, and explainability. RAG acts as a policy enforcement layer — filtering what the model may see before generation. In regulated industries, retrieval design is inseparable from compliance design.",
+      zhLabel: "2. 管治與合規",
+      zh: "企業 AI 須落實角色權限、數據血緣、審計日誌與可解釋性。RAG 是政策執行層，在生成前過濾模型可見內容；在受規管行業，檢索設計與合規設計密不可分。",
+    },
+    {
+      enLabel: "3. Cost & latency",
+      en: "Uncontrolled prompt expansion and multi-step reasoning create unpredictable inference costs. Modern RAG — particularly Hybrid and Adaptive patterns — introduces cost discipline by optimizing retrieval depth for query complexity.",
+      zhLabel: "3. 成本與延遲",
+      zh: "不受控的提示膨脹與多步推理會令推理成本難以預測；現代 RAG（尤其 Hybrid 與 Adaptive）會按查詢複雜度調整檢索深度，帶來成本紀律。",
+    },
+    {
+      enLabel: "4. Multi-system orchestration",
+      en: "Enterprise copilots access CRM, financial databases, APIs, and knowledge graphs. The retrieval layer coordinates these interactions. In agentic environments, RAG becomes the backbone of cross-system intelligence.",
+      zhLabel: "4. 多系統編排",
+      zh: "企業副駕會存取 CRM、金融庫、API 與知識圖譜；檢索層協調這些互動。在代理式環境中，RAG 是跨系統智能的骨干。",
+    },
+    {
+      enLabel: "5. Precision as advantage",
+      en: "As foundation models commoditize, differentiation shifts to data orchestration and retrieval strategy. Precise, domain-aware RAG architectures yield more accurate, explainable, and grounded systems.",
+      zhLabel: "5. 精準即優勢",
+      zh: "基模趨向商品化後，差異化落在數據編排與檢索策略；精準、具領域感的 RAG 架構能帶來更準確、可解釋且扎根於證據的系統。",
+    },
+  ]}
+/>
+
+<BilingualParagraph
+  en="In practical terms, RAG architecture influences reliability, regulatory exposure, operational cost, time-to-decision, and scalability across departments. Retrieval design is a strategic architectural decision — not a developer-only implementation detail."
+  zh="實務上，RAG 架構影響可靠性、監管曝露、營運成本、決策時間與跨部門擴展性。檢索設計是策略性架構決策，而非僅屬開發層的實作細節。"
+/>
+
+## RAG architecture comparison · RAG 架構對照
+
+<BilingualParagraph
+  en="The two tables below are the centerpiece of this guide: first, which business priority maps to which architecture direction; second, a full side-by-side view of retrieval type, complexity, latency, governance risk, best-fit scenarios, and production readiness."
+  zh="以下兩表是全文核心：第一張把「業務優先」對應到「架構方向」；第二張並列檢索類型、複雜度、延遲、管治風險、最適場景與生產就緒度，方便對照選型。"
+/>
+
+<BilingualParagraph
+  en="Different architectures optimize for different priorities:"
+  zh="不同架構對應不同優先次序："
+/>
+
+<Table
+  caption="Priority mapping · 優先次序與架構方向"
+  columns={[
+    { key: "priority", header: "Priority · 優先" },
+    { key: "direction", header: "Architecture direction · 架構方向" },
+  ]}
+  data={[
+    {
+      priority: "Speed and simplicity · 速度與簡潔",
+      direction: "Naive RAG",
+    },
+    {
+      priority: "Production reliability · 生產可靠性",
+      direction: "Hybrid RAG",
+    },
+    {
+      priority: "Relationship-aware intelligence · 關係型智能",
+      direction: "Graph RAG",
+    },
+    {
+      priority: "Multi-step workflow automation · 多步流程自動化",
+      direction: "Agentic RAG",
+    },
+    {
+      priority: "Risk mitigation · 風險緩解",
+      direction: "Self-RAG",
+    },
+    {
+      priority: "Cost optimization · 成本優化",
+      direction: "Adaptive RAG",
+    },
+    {
+      priority: "Enterprise scalability · 企業級擴展",
+      direction: "Modular RAG",
+    },
+  ]}
+/>
+
+<BilingualParagraph
+  en="There is no universal “best” architecture. The right choice depends on query complexity, data heterogeneity, regulatory sensitivity, cost tolerance, and observability maturity. Choosing incorrectly leads to over-engineering or reliability gaps."
+  zh="沒有放諸四海皆準的「最佳」架構；選型取決於查詢複雜度、數據異質性、監管敏感度、成本承受力與可觀測成熟度。選錯會導致過度設計或可靠性缺口。"
+/>
+
+<Table
+  caption="Enterprise RAG architecture comparison · 企業 RAG 架構比較"
+  columns={[
+    { key: "architecture", header: "Architecture · 架構" },
+    { key: "retrieval", header: "Retrieval · 檢索類型" },
+    { key: "complexity", header: "Complexity · 複雜度" },
+    { key: "latency", header: "Latency · 延遲" },
+    { key: "governance", header: "Governance risk · 管治風險" },
+    { key: "bestFor", header: "Best for · 最適場景" },
+    { key: "readiness", header: "Production readiness · 生產就緒度" },
+  ]}
+  data={[
+    {
+      architecture: "Naive RAG",
+      retrieval: "Vector only · 純向量",
+      complexity: "Low · 低",
+      latency: "Low · 低",
+      governance: "Medium · 中",
+      bestFor: "FAQs · 常見問題",
+      readiness: "High · 高",
+    },
+    {
+      architecture: "Hybrid RAG",
+      retrieval: "Vector + keyword · 向量＋關鍵字",
+      complexity: "Medium · 中",
+      latency: "Medium · 中",
+      governance: "Low · 低",
+      bestFor: "Enterprise search · 企業搜尋",
+      readiness: "Very high · 甚高",
+    },
+    {
+      architecture: "Graph RAG",
+      retrieval: "Knowledge graph · 知識圖譜",
+      complexity: "High · 高",
+      latency: "Medium–high · 中高",
+      governance: "Low · 低",
+      bestFor: "Legal / R&D · 法律／研發",
+      readiness: "Medium · 中",
+    },
+    {
+      architecture: "Agentic RAG",
+      retrieval: "Multi-step + tools · 多步＋工具",
+      complexity: "Very high · 甚高",
+      latency: "Variable · 不定",
+      governance: "High · 高",
+      bestFor: "Investigations · 調查",
+      readiness: "Emerging · 漸趨成熟",
+    },
+    {
+      architecture: "Adaptive RAG",
+      retrieval: "Dynamic routing · 動態路由",
+      complexity: "Medium–high · 中高",
+      latency: "Optimized · 已優化",
+      governance: "Medium · 中",
+      bestFor: "Cost-sensitive AI · 成本敏感場景",
+      readiness: "High · 高",
+    },
+    {
+      architecture: "Self-RAG",
+      retrieval: "Reflective · 反思式",
+      complexity: "High · 高",
+      latency: "Higher · 較高",
+      governance: "Very low · 甚低",
+      bestFor: "Regulated domains · 受規管領域",
+      readiness: "Emerging · 漸趨成熟",
+    },
+    {
+      architecture: "Modular RAG",
+      retrieval: "Composable · 可組合",
+      complexity: "High · 高",
+      latency: "Flexible · 彈性",
+      governance: "Medium · 中",
+      bestFor: "Multi-domain enterprise · 多領域企業",
+      readiness: "High · 高",
+    },
+  ]}
+/>
+
+## Key criteria before selecting · 選型前的關鍵準則
+
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Query complexity",
+      en: "Single-fact lookups vs multi-hop analytical queries?",
+      zhLabel: "查詢複雜度",
+      zh: "單一事實查詢，還是多跳分析？",
+    },
+    {
+      enLabel: "Governance sensitivity",
+      en: "Regulated environment requiring explainability and audit logs?",
+      zhLabel: "管治敏感度",
+      zh: "是否身處須可解釋性與審計日誌的受規管環境？",
+    },
+    {
+      enLabel: "Cost sensitivity",
+      en: "Tight cost per query vs prioritizing reasoning depth?",
+      zhLabel: "成本敏感度",
+      zh: "每筆查詢成本要緊，還是優先推理深度？",
+    },
+    {
+      enLabel: "System integration",
+      en: "SQL, APIs, knowledge graphs, multiple systems?",
+      zhLabel: "系統整合",
+      zh: "是否需要 SQL、API、知識圖譜與多系統存取？",
+    },
+    {
+      enLabel: "Scalability horizon",
+      en: "Cross-department expansion vs domain-specific scope?",
+      zhLabel: "擴展視野",
+      zh: "會跨部門擴展，還是維持單一領域？",
+    },
+  ]}
+/>
+
+<BilingualParagraph
+  en="Answering these questions reduces architectural mismatch."
+  zh="先答好這些問題，有助減少架構錯配。"
+/>
+
+## Why retrieval remains a strategic layer · 為何檢索仍是策略層
+
+<BilingualParagraph
+  en="Large language models now offer very large context windows. That amplifies — not removes — the need for retrieval. Enterprise knowledge often exceeds billions of tokens. Injecting raw data into context is computationally wasteful, governance-risky, and operationally imprecise. Strategic retrieval ensures only relevant, permission-compliant, high-quality knowledge enters generation."
+  zh="大型語言模型已有極長上下文窗口，這反而更突顯——而非削弱——檢索的必要。企業知識規模常達數十億 token；把原始資料整批塞進上下文既浪費運算、帶管治風險，亦難精準。策略性檢索確保只有相關、合權限、高質素知識進入生成。"
+/>
+
+<BilingualParagraph
+  en="Industry analysts report that a large share of enterprise generative AI initiatives require structured retrieval pipelines to mitigate hallucination and compliance risk. RAG architectures are safeguards, not optional extras."
+  zh="業界分析顯示，不少企業生成式 AI 項目須依賴結構化檢索管道，以減輕幻覺與合規風險；RAG 架構是防線，而非可有可無的附加品。"
+/>
+
+<BilingualParagraph
+  en="For organizations shaping an AI roadmap, retrieval design should align with enterprise strategy — not only developer convenience."
+  zh="制定 AI 路線圖時，檢索設計應對齊企業策略，而非僅顧及開發便利。"
+/>
+
+## Naive RAG · 簡易 RAG（基礎架構）
+
+<BilingualParagraph
+  en="Naive RAG is the simplest pattern: vector embeddings and semantic similarity to retrieve top-k chunks before generation."
+  zh="Naive RAG 是最簡模式：以向量嵌入與語意相似度在生成前檢索前 k 個文本塊。"
+/>
+
+<BilingualParagraph
+  en="How it works: Queries and documents are embedded; cosine similarity finds closest chunks; retrieved content is appended to prompts; the LLM generates from augmented context."
+  zh="運作方式：將查詢與文件嵌入；以餘弦相似度找最接近的塊；把檢索內容附加到提示；LLM 在增強上下文下生成。"
+/>
+
+<BilingualParagraph
+  en="Strengths: Rapid deployment with vector databases; fewer hallucinations when grounded in documents; low infrastructure complexity (no graph traversal or heavy orchestration)."
+  zh="優點：可快速用向量庫上線；有文件依據時幻覺較少；基建簡單（無需圖遍歷或重型編排）。"
+/>
+
+<BilingualParagraph
+  en="Limitations: Semantic similarity is not always true relevance; no multi-hop reasoning; no self-correction if retrieval fails — generation may still proceed confidently."
+  zh="限制：語意相近不等於真正相關；無多跳推理；檢索失敗亦未必自糾——生成仍可能看似很有把握。"
+/>
+
+<BilingualParagraph
+  en="Typical use cases: Internal documentation assistants, HR policy bots, customer knowledge portals, FAQ-style copilots."
+  zh="典型場景：內部文件助理、人事政策機械人、客戶知識門戶、FAQ 式副駕。"
+/>
+
+<BilingualParagraph
+  en="Naive RAG is foundational — but insufficient for complex enterprise reasoning."
+  zh="Naive RAG 是起點——但不足以應付複雜企業推理。"
+/>
+
+## Graph RAG · 圖譜 RAG（關係型智能）
+
+<BilingualParagraph
+  en="Vector similarity works at chunk level; enterprises often reason at relationship level: case law, supply chains, fraud chains, citation networks. Graph RAG adds structured knowledge."
+  zh="向量相似度擅長塊級匹配；企業卻常在「關係」層面推理：判例、供應鏈、欺詐鏈、引用網絡。Graph RAG 引入結構化知識。"
+/>
+
+<BilingualParagraph
+  en="How it works: Entities and relationships extracted (often via LLMs); knowledge graph built; community detection may cluster semantics; queries traverse paths; generation synthesizes multi-hop findings."
+  zh="運作方式：抽取實體與關係（常借助 LLM）；建立知識圖譜；可用社群發現聚類語意；查詢沿路徑遍歷；生成綜合多跳發現。"
+/>
+
+<BilingualParagraph
+  en="Advantages: Multi-hop reasoning; holistic analysis of interconnected data; improved explainability via traceable paths."
+  zh="優點：多跳推理；對互聯數據作整體分析；路徑可追溯，解釋性較佳。"
+/>
+
+<BilingualParagraph
+  en="Trade-offs: High indexing cost; ongoing maintenance for entity extraction and graph updates."
+  zh="取捨：索引成本高；實體抽取與圖更新需持續維護。"
+/>
+
+<BilingualParagraph
+  en="Use cases: Legal research, pharma R&D knowledge graphs, compliance audit systems, M&A due diligence."
+  zh="應用：法律研究、製藥研發知識圖譜、合規審計系統、併購盡職調查。"
+/>
+
+<BilingualParagraph
+  en="Graph RAG is transformative for relationship-intensive domains — not every workload needs it."
+  zh="在關係密集的領域，Graph RAG 能帶來質變——但不是每個工作負載都需要。"
+/>
+
+## Hybrid RAG · 混合 RAG（企業生產標準）
+
+<BilingualParagraph
+  en="Real enterprise queries mix semantic and exact needs: policy names, contract IDs, IFRS references alongside conceptual questions. Hybrid RAG combines vector search with lexical search (e.g. BM25 / TF-IDF), sometimes with optional graph traversal."
+  zh="真實企業查詢常混合語意與精準需求：政策名稱、合約編號、IFRS 條文與概念性問題並存。Hybrid RAG 結合向量與詞法搜尋（如 BM25／TF-IDF），有時可選配圖遍歷。"
+/>
+
+<BilingualParagraph
+  en="How it works: Parallel vector + keyword retrieval; merge and re-rank; enriched context to the LLM; grounded response."
+  zh="運作方式：並行向量與關鍵字檢索；合併與重排；向 LLM 提供豐富上下文；產出扎根於證據的回答。"
+/>
+
+<BilingualParagraph
+  en="Benefits: Fewer false negatives on exact terms; less semantic drift; higher recall and precision than single-method retrieval in many studies."
+  zh="效益：專有名詞較少漏檢；語意漂移較小；多項研究顯示比單一方法有更高召回與精準度。"
+/>
+
+<BilingualParagraph
+  en="Infrastructure: Vector databases, search engines, ranking logic, monitoring. Complexity rises with reliability."
+  zh="基建：向量庫、搜尋引擎、排序邏輯、監控；複雜度隨可靠性要求上升。"
+/>
+
+<BilingualParagraph
+  en="Use cases: Enterprise search, regulatory reporting assistants, IT operations knowledge, technical documentation copilots."
+  zh="場景：企業搜尋、監管報告助理、IT 營運知識、技術文件副駕。"
+/>
+
+<BilingualParagraph
+  en="Hybrid RAG is production-grade, not experimental."
+  zh="Hybrid RAG 屬生產級，而非實驗性質。"
+/>
+
+### Hybrid vs vector-only · 混合與純向量
+
+<BilingualParagraph
+  en="Vector-only RAG struggles with exact keyword compliance, structured references, policy numbers, and contract identifiers. Hybrid captures both semantic meaning and exact terminology — critical in legal, financial, and regulatory settings."
+  zh="純向量 RAG 在精準關鍵字合規、結構化引用、政策編號與合約識別上較弱。混合模式同時涵蓋語意與精準用語——在法律、金融與監管場景至關重要。"
+/>
+
+### When graph beats hybrid · 何時圖譜勝過混合
+
+<BilingualParagraph
+  en="Hybrid improves retrieval. Graph transforms reasoning. Prefer Graph RAG when insights depend on entity relationships, multi-hop logic, or interconnected records — e.g. fraud ownership networks, legal precedent chains, supply chain risk, M&A diligence. If the task is how entities relate, not only which text matches, graph approaches become strategically necessary."
+  zh="混合強化「檢索」；圖譜改變「推理」。當洞見取決於實體關係、多跳邏輯或互聯紀錄——例如詐欺持股網絡、判例鏈、供應鏈風險、併購盡職——應優先考慮 Graph RAG。若任務是實體「如何關聯」，而非僅哪段文字匹配，圖方法在策略上屬必要。"
+/>
+
+## Contextual RAG · 情境化 RAG（保留跨塊語境）
+
+<BilingualParagraph
+  en="Traditional chunking can break pronoun references, section continuity, and nuance. Contextual RAG enriches chunks with document-level metadata."
+  zh="傳統分塊易打斷代詞指涉、章節連貫與細微語氣。Contextual RAG 以文件級元數據豐富各塊。"
+/>
+
+<BilingualParagraph
+  en="How it works: Analyze structure; attach section headers and positional context; enrich embeddings with semantic role; retrieve context-aware chunks."
+  zh="運作方式：分析結構；附加小節標題與位置語境；以語意角色豐富嵌入；檢索具情境感的塊。"
+/>
+
+<BilingualParagraph
+  en="Enterprise impact: Better disambiguation; stronger long-form document handling; reduced context drift — valuable in regulated, medical, and legal documents."
+  zh="企業效益：消歧更佳；長文件處理更穩；減少語境漂移——對受規管、醫療與法律文件特別有價值。"
+/>
+
+## Adaptive RAG · 自適應 RAG（按複雜度調策略）
+
+<BilingualParagraph
+  en="Static pipelines waste resources: a one-line policy question and a cross-regional contract analysis should not follow identical paths. Adaptive RAG selects retrieval depth from query classification."
+  zh="靜態管道浪費資源：一句政策問答與跨區合約分析不應走同一條路。Adaptive RAG 依查詢分類決定檢索深度。"
+/>
+
+<BilingualParagraph
+  en="How it works: Classify complexity; route simple queries to fast paths; route complex queries to multi-step pipelines; optimize latency and cost."
+  zh="運作方式：分類複雜度；簡單查詢走快路徑；複雜查詢走多步管道；優化延遲與成本。"
+/>
+
+<BilingualParagraph
+  en="Benefits: Cost optimization; low latency for operational questions; depth where strategy requires it."
+  zh="效益：成本優化；營運問題低延遲；策略需要處才加深。"
+/>
+
+## Agentic RAG · 代理式 RAG（由檢索到自主推理）
+
+<BilingualParagraph
+  en="Traditional RAG retrieves then generates. Agentic RAG adds planning, tool use, evaluation, and refinement — supporting multi-step workflows, cross-system access, iterative reasoning, and memory."
+  zh="傳統 RAG 先檢索再生成。Agentic RAG 加入規劃、工具使用、評估與修正——支援多步流程、跨系統存取、迭代推理與記憶。"
+/>
+
+<BilingualParagraph
+  en="How it works: Task decomposition (e.g. ReAct-style or chain-of-thought orchestration); tools hit vectors, SQL, APIs, storage, graphs; short- and long-term memory; iterative refinement until confidence thresholds."
+  zh="運作方式：任務分解（如 ReAct 或思維鏈編排）；工具觸及向量、SQL、API、儲存、圖；短長期記憶；迭代修正直至達信心門檻。"
+/>
+
+<BilingualParagraph
+  en="Advantages: Cross-system intelligence (CRM, tickets, databases, policies); autonomous research for investigations, compliance, root-cause analysis; higher analytical quality on complex tasks."
+  zh="優點：跨系統智能（CRM、工單、庫、政策）；調查、合規、根因分析等自主研究；複雜任務分析質素較高。"
+/>
+
+<BilingualParagraph
+  en="Governance note: Agentic patterns increase governance exposure due to autonomous tool usage. They are strategic infrastructure — not the default for every use case."
+  zh="管治提示：代理自主調用工具會提高管治曝露；屬策略基建——並非每個場景的預設。"
+/>
+
+## Self-RAG · 自省式 RAG（以反思換可靠）
+
+<BilingualParagraph
+  en="Standard RAG can still produce confident wrong answers. Self-RAG adds reflection: evaluate whether retrieval is needed, assess relevance, generate with self-assessment, and iterate retrieval or regeneration when confidence is low."
+  zh="標準 RAG 仍可能自信地答錯。Self-RAG 加入反思：判斷是否需檢索、評估相關性、生成時自我評估，並在信心不足時重檢索或再生。"
+/>
+
+<BilingualParagraph
+  en="Enterprise value: Fewer unsupported claims; confidence signals for explainability; retrieval only when necessary."
+  zh="企業價值：較少無據主張；可輸出信心訊號以利解釋；必要時才檢索。"
+/>
+
+<BilingualParagraph
+  en="Limitations: Often needs specialized training or careful prompting; higher compute; more complex monitoring."
+  zh="限制：常需專門訓練或細緻提示；運算較高；監控更複雜。"
+/>
+
+<BilingualParagraph
+  en="Suited for: Medical copilots, legal research, investment advisory contexts — alongside strong data-quality practices."
+  zh="適用：醫療副駕、法律研究、投資顧問等——並須配合嚴謹數據質素實踐。"
+/>
+
+## Modular RAG · 模組化 RAG（為演進而設計）
+
+<BilingualParagraph
+  en="Monolithic RAG ages quickly as models and strategies change. Modular RAG treats indexing, retrieval, generation, and orchestration as composable blocks: pluggable vector, keyword, graph, or SQL retrieval; upgrade LLMs without rewiring indexes; central orchestration."
+  zh="單體 RAG 隨模型與策略變化迅速老化。模組化 RAG 把索引、檢索、生成與編排當成可組件：向量、關鍵字、圖或 SQL 檢索可插拔；升級 LLM 不必重接索引；中央編排協調。"
+/>
+
+<BilingualParagraph
+  en="Advantages: Future-proofing; A/B testing retrieval in production; multi-department strategies on one platform."
+  zh="優點：較易演進；生產環境可 A/B 測試檢索；單一平台支援多部門策略。"
+/>
+
+<BilingualParagraph
+  en="Trade-offs: Higher engineering investment; interface and governance coordination across modules."
+  zh="取捨：工程投資較高；模組間介面與管治須協調。"
+/>
+
+<BilingualParagraph
+  en="Ideal for enterprises scaling AI across multiple domains."
+  zh="適合在多領域擴展 AI 的企業。"
+/>
+
+## Agentic Graph RAG · 代理式圖譜 RAG（大規模策略探索）
+
+<BilingualParagraph
+  en="This pattern combines autonomous agents, knowledge graphs, and retrieval. Agents dynamically choose entities, paths, backtracking, and synthesis — rather than static graph walks."
+  zh="此模式結合自主代理、知識圖譜與檢索。代理動態選擇實體、路徑、回溯與綜合——而非靜態遍圖。"
+/>
+
+<BilingualParagraph
+  en="How it works: Plan from query intent; traverse the graph iteratively; evaluate intermediate findings; aggregate across paths before generation."
+  zh="運作方式：依查詢意圖規劃；迭代遍歷圖；評估中間發現；生成前聚合多路徑資訊。"
+/>
+
+<BilingualParagraph
+  en="Use cases: Fraud following ownership chains, supply chain risk, complex litigation research, high-value investigations."
+  zh="場景：沿持股鏈追詐欺、供應鏈風險、複雜訴訟研究、高價值調查。"
+/>
+
+<BilingualParagraph
+  en="Limitations: High cost; sophisticated orchestration; harder observability and debugging. Best where reasoning depth justifies expense."
+  zh="限制：成本高；編排複雜；可觀測與除錯較難。適合推理深度足以抵銷開支的情境。"
+/>
+
+## Governance across architectures · 跨架構的管治與合規
+
+<BilingualParagraph
+  en="Mature enterprise RAG integrates RBAC, lineage, retrieval logging, versioning, PII handling, and output auditing. Rough exposure by pattern:"
+  zh="成熟的企業 RAG 須整合 RBAC、血緣、檢索日誌、版本控制、個資處理與輸出審計。各模式管治曝露約略如下："
+/>
+
+<BilingualSolutionList
+  items={[
+    {
+      enLabel: "Naive RAG",
+      en: "Moderate risk.",
+      zhLabel: "Naive RAG",
+      zh: "風險中等。",
+    },
+    {
+      enLabel: "Hybrid RAG",
+      en: "Lower risk when filtering and ranking are well structured.",
+      zhLabel: "Hybrid RAG",
+      zh: "過濾與排序結構良好時風險較低。",
+    },
+    {
+      enLabel: "Agentic RAG",
+      en: "Higher exposure due to tool autonomy.",
+      zhLabel: "Agentic RAG",
+      zh: "工具自主性帶來較高曝露。",
+    },
+    {
+      enLabel: "Self-RAG",
+      en: "Strong reliability potential with higher operational complexity.",
+      zhLabel: "Self-RAG",
+      zh: "可靠性潛力高，但營運複雜度亦高。",
+    },
+  ]}
+/>
+
+<BilingualParagraph
+  en="Without governance alignment, strong technical architectures still fail in production."
+  zh="若未對齊管治，技術再強亦可能在生產環境失敗。"
+/>
+
+## Implementation blueprint · 實作藍圖
+
+<BilingualParagraph
+  en="1. Classify use-case complexity: Simple retrieval → Naive or Hybrid RAG; relationship-heavy reasoning → Graph RAG; multi-step workflows → Agentic RAG; risk-sensitive domains → Self-RAG; multi-domain scale → Modular RAG."
+  zh="1. 分類用例複雜度：簡單檢索→ Naive 或 Hybrid；關係型推理→ Graph；多步流程→ Agentic；高風險領域→ Self-RAG；多領域規模→ Modular。"
+/>
+
+<BilingualParagraph
+  en="2. Align with data governance: RBAC, lineage, audit logs, and versioning are mandatory; maturity constrains architecture choice."
+  zh="2. 對齊數據管治：RBAC、血緣、審計日誌與版本控制屬必要；成熟度會限制架構選擇。"
+/>
+
+<BilingualParagraph
+  en="3. Define cost governance: Adaptive and Hybrid patterns often balance performance and cost."
+  zh="3. 定義成本管治：Adaptive 與 Hybrid 常能平衡效能與成本。"
+/>
+
+<BilingualParagraph
+  en="4. Design observability: Monitor retrieval precision/recall, hallucination rate, latency, cost per query, confidence scores, and drift. Without observability, systems degrade silently."
+  zh="4. 設計可觀測性：監控檢索精準度／召回、幻覺率、延遲、每查詢成本、信心分數與漂移。缺乏可觀測性，系統會靜默劣化。"
+/>
+
+## Monitoring and observability · 監控與可觀測性
+
+<BilingualParagraph
+  en="Measure retrieval precision and recall, hallucination rate, latency, cost per request, confidence scoring, and drift. Continuous evaluation matters most in regulated industries."
+  zh="量度檢索精準度與召回、幻覺率、延遲、每請求成本、信心評分與漂移。持續評估在受規管行業尤其重要。"
+/>
