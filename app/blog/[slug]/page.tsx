@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 label-mono text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 label-mono text-muted-foreground mb-6">
               {formatDate(post.metadata.date) && (
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
@@ -96,15 +96,20 @@ export default async function BlogPostPage({ params }: PageProps) {
                 <Clock className="w-3.5 h-3.5" />
                 {readTime} min read
               </span>
-
-              {post.metadata.tags && post.metadata.tags.length > 0 && (
-                <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  {post.metadata.tags.map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-              )}
             </div>
+
+            {post.metadata.tags && post.metadata.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.metadata.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </header>
 
           <div className="prose prose-zinc max-w-none">
@@ -124,7 +129,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </Reveal>
 
           {headings.length > 0 && (
-            <aside className="hidden xl:block w-56 shrink-0">
+            <aside className="hidden xl:block w-56 shrink-0 sticky top-24">
               <TableOfContents headings={headings} />
             </aside>
           )}

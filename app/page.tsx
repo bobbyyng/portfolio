@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/hero-section";
 import { ContentSection } from "@/components/content-section";
-import { ChatButton } from "@/components/chat-button";
 
 export default function Home() {
   return (
@@ -9,7 +8,6 @@ export default function Home() {
 
       <ContentSection />
       
-      <ChatButton />
     </main>
   );
 }

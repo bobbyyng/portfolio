@@ -28,14 +28,15 @@ const blogDirectory = path.join(process.cwd(), "content/blog");
 export function extractHeadings(content: string): Heading[] {
   const headings: Heading[] = [];
   const lines = content.split("\n");
-  const headingRegex = /^(#{2,3})\s+(.+)$/;
+  const headingRegex = /^(#{1,3})\s+(.+)$/;
 
   for (const line of lines) {
     const match = line.match(headingRegex);
     if (!match) continue;
 
     const [, hashes, text] = match;
-    const level = hashes.length === 2 ? (2 as const) : (3 as const);
+    // Project articles use single-# section headings; treat them as top-level
+    const level = hashes.length <= 2 ? (2 as const) : (3 as const);
     const cleanText = text.replace(/\s*\{.*?\}\s*$/g, "").trim();
     if (!cleanText) continue;
 

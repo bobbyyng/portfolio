@@ -1,10 +1,8 @@
-import Link from "next/link";
 import { getAllProjects, type Project } from "@/lib/projects";
-import { ChatButton } from "@/components/chat-button";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
-import { ArrowRight } from "lucide-react";
+import { Reveal } from "@/components/motion";
+import { ProjectsFilter } from "@/components/projects-filter";
 
-function formatDateRange(project: Project) {
+function formatDateRange(project: Project): string | null {
   // If startDate and endDate are provided, use them
   if (project.metadata.startDate) {
     const endDate = project.metadata.endDate || "Present";
@@ -12,11 +10,11 @@ function formatDateRange(project: Project) {
   }
 
   // Fallback to date or period if they exist
-  if (project.metadata.date) {
+  if (typeof project.metadata.date === "string") {
     return project.metadata.date;
   }
 
-  if (project.metadata.period) {
+  if (typeof project.metadata.period === "string") {
     return project.metadata.period;
   }
 
@@ -25,6 +23,14 @@ function formatDateRange(project: Project) {
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
+
+  const projectsData = projects.map((project) => ({
+    slug: project.slug,
+    title: project.metadata.title,
+    description: project.metadata.description,
+    tags: project.metadata.tags ?? [],
+    dateRange: formatDateRange(project),
+  }));
 
   return (
     <div className="min-h-screen py-16 lg:py-24 px-4">
@@ -53,52 +59,10 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
-          <RevealGroup className="border-t border-foreground/20">
-            {projects.map((project, index) => (
-              <RevealItem key={project.slug}>
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="group grid grid-cols-12 gap-4 py-8 border-b border-border items-baseline transition-colors hover:bg-foreground/[0.03] px-2 -mx-2"
-                >
-                  <span className="label-mono text-muted-foreground col-span-12 sm:col-span-1">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div className="col-span-12 sm:col-span-8">
-                    <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-2 group-hover:underline underline-offset-4 decoration-2">
-                      {project.metadata.title}
-                    </h2>
-                    {project.metadata.description && (
-                      <p className="text-muted-foreground mb-3 line-clamp-2">
-                        {project.metadata.description}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1">
-                      {project.metadata.tags?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="label-mono text-muted-foreground"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="col-span-12 sm:col-span-3 flex sm:justify-end items-center gap-3">
-                    {formatDateRange(project) && (
-                      <span className="label-mono text-muted-foreground whitespace-nowrap">
-                        {formatDateRange(project)}
-                      </span>
-                    )}
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-                  </div>
-                </Link>
-              </RevealItem>
-            ))}
-          </RevealGroup>
+          <ProjectsFilter projects={projectsData} />
         )}
       </div>
 
-      <ChatButton />
     </div>
   );
 }

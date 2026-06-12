@@ -208,14 +208,14 @@ function Languages() {
 export function ContentSection() {
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
-      <div className="grid grid-cols-12 gap-10 lg:gap-14">
-        <div className="col-span-12 lg:col-span-8 space-y-20">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+        <div className="lg:col-span-8 space-y-20">
           <ProfessionalSummary />
           <WorkExperience />
           <Education />
           <SelectedProjects />
         </div>
-        <div className="col-span-12 lg:col-span-4 space-y-20">
+        <div className="lg:col-span-4 space-y-20">
           <TechnicalSkills />
           <Languages />
         </div>

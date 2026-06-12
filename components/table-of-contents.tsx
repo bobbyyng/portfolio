@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import type { Heading } from "@/lib/blog";
@@ -12,6 +12,14 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Keep the active item visible when the list itself overflows
+  useEffect(() => {
+    if (!activeId || !navRef.current) return;
+    const link = navRef.current.querySelector(`a[href="#${activeId}"]`);
+    link?.scrollIntoView({ block: "nearest" });
+  }, [activeId]);
 
   useEffect(() => {
     if (headings.length === 0) return;
@@ -41,7 +49,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <nav
-      className="sticky top-24 w-56"
+      ref={navRef}
+      className="w-56 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain pr-2 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       aria-label="On this page"
     >
       <div className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-4">

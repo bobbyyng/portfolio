@@ -197,17 +197,23 @@ function extractTextFromChildren(children: React.ReactNode): string {
 export function createMDXComponents(components: MDXComponents = {}): MDXComponents {
   return {
     // Customize heading styles
-    h1: ({ children }) => (
-      <h1 className="text-3xl font-bold mt-8 mb-4 text-black dark:text-zinc-50">
-        {children}
-      </h1>
-    ),
+    h1: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children)) || undefined;
+      return (
+        <h1
+          id={id}
+          className="text-2xl md:text-3xl font-semibold tracking-tight mt-14 first:mt-0 mb-5 text-black dark:text-zinc-50 scroll-mt-24"
+        >
+          {children}
+        </h1>
+      );
+    },
     h2: ({ children }) => {
       const id = slugify(extractTextFromChildren(children)) || undefined;
       return (
         <h2
           id={id}
-          className="text-2xl font-semibold mt-6 mb-3 text-black dark:text-zinc-50 scroll-mt-24"
+          className="text-2xl font-semibold tracking-tight mt-10 mb-4 text-black dark:text-zinc-50 scroll-mt-24"
         >
           {children}
         </h2>
@@ -218,7 +224,7 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
       return (
         <h3
           id={id}
-          className="text-xl font-semibold mt-4 mb-2 text-black dark:text-zinc-50 scroll-mt-24"
+          className="text-xl font-semibold tracking-tight mt-8 mb-3 text-black dark:text-zinc-50 scroll-mt-24"
         >
           {children}
         </h3>
@@ -236,7 +242,7 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
       );
     },
     p: ({ children }) => (
-      <p className="mb-4 text-zinc-700 dark:text-zinc-300 leading-7">
+      <p className="mb-5 text-zinc-700 dark:text-zinc-300 leading-8">
         {children}
       </p>
     ),
@@ -249,17 +255,17 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
       </Link>
     ),
     ul: ({ children }) => (
-      <ul className="list-disc list-inside mb-4 space-y-2 text-zinc-700 dark:text-zinc-300">
+      <ul className="list-disc list-outside pl-5 mb-6 space-y-2.5 marker:text-zinc-400 text-zinc-700 dark:text-zinc-300">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="list-decimal list-inside mb-4 space-y-2 text-zinc-700 dark:text-zinc-300">
+      <ol className="list-decimal list-outside pl-5 mb-6 space-y-2.5 marker:text-zinc-400 text-zinc-700 dark:text-zinc-300">
         {children}
       </ol>
     ),
     li: ({ children }) => (
-      <li className="ml-4 [&_p]:inline [&_p]:m-0 [&_p]:leading-7">
+      <li className="leading-relaxed [&_p]:inline [&_p]:m-0 [&_p]:leading-relaxed">
         {children}
       </li>
     ),

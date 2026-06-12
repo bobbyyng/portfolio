@@ -1,5 +1,4 @@
 import { getAllBlogPosts } from "@/lib/blog";
-import { ChatButton } from "@/components/chat-button";
 import { BlogFilter } from "@/components/blog-filter";
 import { Reveal } from "@/components/motion";
 
@@ -39,7 +38,6 @@ export default function BlogPage() {
         <BlogFilter posts={postsData} />
       </div>
 
-      <ChatButton />
     </div>
   );
 }

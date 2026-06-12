@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Geist, Geist_Mono, Great_Vibes } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 const brSegma = localFont({
   src: "./fonts/BRSegma-Regular.otf",
@@ -31,6 +32,19 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   title: "Bobby Yeung's Portfolio",
   description: "Bobby Yeung's Portfolio",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bobby Yeung",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f4f2ee",
 };
 
 export default function RootLayout({
@@ -46,6 +60,7 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
+        <ScrollToTop />
         <Analytics />
       </body>
     </html>

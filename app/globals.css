@@ -127,6 +127,9 @@
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Stray wide content must not create a horizontal scroll —
+       it detaches the sticky header from the right edge on mobile */
+    overflow-x: clip;
   }
   h1, h2, h3, h4 {
     letter-spacing: -0.03em;
@@ -154,4 +157,30 @@
 @utility bg-dot-grid {
   background-image: radial-gradient(oklch(1 0 0 / 0.12) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+/* Slim, theme-matched scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.7 0.004 91) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: oklch(0.7 0.004 91);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.55 0.004 91);
 }

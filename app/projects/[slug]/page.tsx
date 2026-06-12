@@ -1,5 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { getProjectBySlug, getAllProjectSlugs } from "@/lib/projects";
+import { extractHeadings } from "@/lib/blog";
+import { TableOfContents } from "@/components/table-of-contents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
 import remarkGfm from "remark-gfm";
@@ -31,23 +35,46 @@ export default async function ProjectPage({ params }: PageProps) {
     ? [project.metadata.images]
     : [];
 
+  const headings = extractHeadings(project.content);
+
   return (
     <div className="min-h-screen py-16 lg:py-20 px-4">
-      <Reveal className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto flex gap-8 items-start">
+      <Reveal className="flex-1 min-w-0">
       <article>
-        <header className="mb-10 pb-10 border-b border-foreground/20">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-5">
+        <Link
+          href="/projects"
+          className="label-mono inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          All projects
+        </Link>
+        <header className="mb-10 pb-10 border-b border-border">
+          {(project.metadata.startDate || project.metadata.endDate) && (
+            <p className="label-mono flex items-center gap-2 text-muted-foreground mb-4">
+              <Calendar className="h-3.5 w-3.5" />
+              {[project.metadata.startDate, project.metadata.endDate]
+                .filter(Boolean)
+                .join(" — ")}
+            </p>
+          )}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-5 leading-[1.05]">
             {project.metadata.title}
           </h1>
           {project.metadata.description && (
-            <p className="text-xl text-muted-foreground mb-6 max-w-2xl">
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 max-w-2xl">
               {project.metadata.description}
             </p>
           )}
           {project.metadata.tags && project.metadata.tags.length > 0 && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 label-mono text-muted-foreground">
+            <div className="flex flex-wrap gap-2">
               {project.metadata.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
+                <span
+                  key={tag}
+                  className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+                >
+                  {tag}
+                </span>
               ))}
             </div>
           )}
@@ -58,7 +85,7 @@ export default async function ProjectPage({ params }: PageProps) {
           <ProjectCarousel images={images} title={project.metadata.title} />
         )}
 
-        <div className="prose prose-zinc max-w-none">
+        <div className="max-w-[72ch]">
           <MDXRemote
             source={project.content}
             components={createMDXComponents()}
@@ -70,6 +97,13 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
       </article>
       </Reveal>
+
+      {headings.length > 0 && (
+        <aside className="hidden xl:block w-56 shrink-0 sticky top-24">
+          <TableOfContents headings={headings} />
+        </aside>
+      )}
+      </div>
     </div>
   );
 }

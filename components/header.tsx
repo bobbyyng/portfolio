@@ -149,16 +149,13 @@ export function Header() {
             </Link>
           </div>
           {profile.available ? (
-            <Link
-              href={`mailto:${profile.contact.email}`}
-              className="label-mono group flex items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-foreground shadow-sm hover:border-foreground/40 hover:shadow-md transition-all duration-300 whitespace-nowrap"
-            >
+            <span className="label-mono flex items-center gap-2 text-muted-foreground whitespace-nowrap">
               <span className="relative flex w-2 h-2">
                 <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
                 <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
               </span>
               Open to work
-            </Link>
+            </span>
           ) : (
             <Button asChild size="sm" className="label-mono">
               <Link href={`mailto:${profile.contact.email}`}>Email Me</Link>
@@ -207,6 +204,15 @@ export function Header() {
                 </Link>
               ))}
               <div className="pt-2 border-t border-border">
+                {profile.available && (
+                  <span className="label-mono flex items-center gap-2 text-muted-foreground py-3">
+                    <span className="relative flex w-2 h-2">
+                      <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
+                      <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
+                    </span>
+                    Open to work
+                  </span>
+                )}
                 <div className="flex items-center gap-4 pb-4">
                   <Link
                     href={profile.contact.github}

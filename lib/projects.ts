@@ -3,6 +3,9 @@ import path from "path";
 
 export interface ProjectMetadata {
   title: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
   tags?: string[];
   sorting?: number;
   show?: boolean | string;

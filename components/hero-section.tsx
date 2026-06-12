@@ -68,7 +68,7 @@ export function HeroSection() {
   const nameLines = profile.name.split(" ");
 
   return (
-    <section className="container mx-auto px-4 pt-16 pb-20 lg:pt-24 lg:pb-28">
+    <section className="container mx-auto px-4 pt-10 pb-16 lg:pt-24 lg:pb-28">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Left Section - Text Content */}
         <motion.div
@@ -79,14 +79,38 @@ export function HeroSection() {
         >
           <motion.div variants={fadeUp}>
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[0.95] mb-6">
-              {nameLines.map((line, i) => (
-                <span key={i} className="block">
-                  {line}
-                  {i === nameLines.length - 1 && "."}
-                </span>
-              ))}
+              {nameLines.map((line, lineIndex) => {
+                const text =
+                  lineIndex === nameLines.length - 1 ? `${line}.` : line;
+                return (
+                  <span key={lineIndex} className="block overflow-hidden pb-[0.08em]">
+                    {text.split("").map((char, charIndex) => (
+                      <motion.span
+                        key={charIndex}
+                        className="inline-block"
+                        initial={{ y: "110%", opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{
+                          duration: 0.7,
+                          ease: [0.22, 1, 0.36, 1],
+                          delay: 0.15 + lineIndex * 0.18 + charIndex * 0.035,
+                        }}
+                      >
+                        {char}
+                      </motion.span>
+                    ))}
+                  </span>
+                );
+              })}
             </h1>
-            <p className="label-mono text-muted-foreground">{profile.title}</p>
+            <motion.p
+              className="label-mono text-muted-foreground"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+            >
+              {profile.title}
+            </motion.p>
           </motion.div>
 
           <motion.div variants={fadeUp} className="space-y-5 max-w-md">
@@ -123,8 +147,11 @@ export function HeroSection() {
           </motion.div>
 
           {/* Contact Buttons */}
-          <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="label-mono px-6">
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3"
+          >
+            <Button asChild size="lg" className="label-mono px-6 w-full sm:w-auto">
               <Link href={`mailto:${profile.contact.email}`}>
                 Get in touch
                 <ArrowRight className="h-4 w-4" />
@@ -134,7 +161,7 @@ export function HeroSection() {
               variant="outline"
               asChild
               size="lg"
-              className="label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6"
+              className="label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6 w-full sm:w-auto"
             >
               <Link
                 href={profile.contact.cvUrl}
@@ -145,7 +172,7 @@ export function HeroSection() {
                 Download CV
               </Link>
             </Button>
-            <div className="flex items-center gap-4 pl-2">
+            <div className="flex items-center justify-center sm:justify-start gap-6 sm:gap-4 pt-2 sm:pt-0 sm:pl-2">
               <Link
                 href={`mailto:${profile.contact.email}`}
                 aria-label="Email"
