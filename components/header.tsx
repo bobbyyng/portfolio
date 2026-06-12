@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,17 @@ export function Header() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 48);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Expanded while menu is open so the dropdown doesn't fight the collapse
+  const collapsed = isScrolled && !isMenuOpen;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -32,15 +43,34 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center px-4 justify-between relative">
+    <header className="sticky top-0 z-50 w-full lg:top-4 lg:px-4">
+      <div
+        className={cn(
+          "mx-auto border-b border-border/60 bg-background/60 backdrop-blur-xl backdrop-saturate-150 shadow-lg shadow-black/5 lg:rounded-full lg:border lg:border-border/60 lg:bg-background/55 supports-[backdrop-filter]:lg:bg-background/45 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          collapsed ? "lg:max-w-sm" : "lg:max-w-4xl"
+        )}
+      >
+      <div
+        className={cn(
+          "flex items-center px-4 lg:px-6 justify-between relative transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          collapsed ? "h-12" : "h-16"
+        )}
+      >
         {/* Left: Logo with Avatar */}
         <Link
           href="/"
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className={cn(
+            "flex items-center gap-3 hover:opacity-80 transition-all duration-300",
+            collapsed && "lg:opacity-0 lg:scale-75 lg:pointer-events-none lg:w-0 lg:overflow-hidden"
+          )}
           onClick={closeMenu}
         >
-          <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-foreground flex-shrink-0">
+          <div
+            className={cn(
+              "relative rounded-full overflow-hidden bg-foreground flex-shrink-0 transition-all duration-500",
+              collapsed ? "w-7 h-7" : "w-9 h-9"
+            )}
+          >
             {!imageError ? (
               <Image
                 src="/profile.jpg"
@@ -57,7 +87,12 @@ export function Header() {
               </div>
             )}
           </div>
-          <span className="hidden sm:inline label-mono font-semibold text-foreground">
+          <span
+            className={cn(
+              "hidden sm:inline label-mono font-semibold text-foreground transition-all duration-300 overflow-hidden whitespace-nowrap max-w-[200px]",
+              collapsed && "lg:opacity-0 lg:max-w-0"
+            )}
+          >
             {profile.name}
           </span>
         </Link>
@@ -81,33 +116,48 @@ export function Header() {
         </nav>
 
         {/* Right: Availability pill & socials */}
-        <div className="hidden lg:flex items-center gap-4 ml-auto">
-          <Link
-            href={profile.contact.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+        <div
+          className={cn(
+            "hidden lg:flex items-center gap-4 ml-auto transition-all duration-300",
+            collapsed && "lg:opacity-0 lg:scale-75 lg:pointer-events-none lg:w-0 lg:overflow-hidden lg:ml-0"
+          )}
+        >
+          <div
+            className={cn(
+              "flex items-center gap-4 transition-all duration-300 overflow-hidden",
+              collapsed ? "opacity-0 max-w-0 gap-0" : "max-w-[100px]"
+            )}
           >
-            <Github className="w-5 h-5" />
-          </Link>
-          <Link
-            href={profile.contact.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Linkedin className="w-5 h-5" />
-          </Link>
+            <Link
+              href={profile.contact.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </Link>
+            <Link
+              href={profile.contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Linkedin className="w-5 h-5" />
+            </Link>
+          </div>
           {profile.available ? (
             <Link
               href={`mailto:${profile.contact.email}`}
-              className="label-mono flex items-center gap-2 rounded-full border border-foreground/30 px-4 py-2 text-foreground hover:bg-foreground hover:text-background transition-colors"
+              className="label-mono group flex items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-foreground shadow-sm hover:border-foreground/40 hover:shadow-md transition-all duration-300 whitespace-nowrap"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
-              Available for hire
+              <span className="relative flex w-2 h-2">
+                <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
+                <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
+              </span>
+              Open to work
             </Link>
           ) : (
-            <Button asChild size="sm" className="rounded-md label-mono">
+            <Button asChild size="sm" className="label-mono">
               <Link href={`mailto:${profile.contact.email}`}>Email Me</Link>
             </Button>
           )}
@@ -135,9 +185,9 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden border-t border-border bg-background/95 backdrop-blur-md overflow-hidden"
+            className="lg:hidden border-t border-border/60 overflow-hidden"
           >
-            <nav className="container mx-auto px-4 py-4 space-y-4">
+            <nav className="px-4 py-4 space-y-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -174,7 +224,7 @@ export function Header() {
                     <Linkedin className="w-6 h-6" />
                   </Link>
                 </div>
-                <Button asChild className="w-full rounded-md label-mono">
+                <Button asChild className="w-full label-mono">
                   <Link href={`mailto:${profile.contact.email}`} onClick={closeMenu}>
                     Get in touch →
                   </Link>
@@ -184,6 +234,7 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </header>
   );
 }

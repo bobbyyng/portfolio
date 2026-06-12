@@ -113,7 +113,7 @@ export function HeroSection() {
 
           {/* Contact Buttons */}
           <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="rounded-md label-mono px-6">
+            <Button asChild size="lg" className="label-mono px-6">
               <Link href={`mailto:${profile.contact.email}`}>
                 Get in touch
                 <ArrowRight className="h-4 w-4" />
@@ -123,7 +123,7 @@ export function HeroSection() {
               variant="outline"
               asChild
               size="lg"
-              className="rounded-md label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6"
+              className="label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6"
             >
               <Link
                 href={profile.contact.cvUrl}
