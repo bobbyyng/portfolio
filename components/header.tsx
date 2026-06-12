@@ -17,7 +17,10 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 48);
+    // Hysteresis: collapse and expand at different heights, otherwise the
+    // header's own height change shifts the page and re-triggers the threshold
+    const onScroll = () =>
+      setIsScrolled((prev) => (prev ? window.scrollY > 24 : window.scrollY > 80));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
