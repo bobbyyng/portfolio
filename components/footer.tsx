@@ -2,23 +2,20 @@
 
 import Link from "next/link";
 import profile from "@/content/profile.json";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border">
-      <div className="bg-muted/30">
+    <footer className="border-t border-foreground/20">
+      <div>
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            {/* Left side - Name and Copyright */}
-            <div className="flex flex-col sm:items-start items-center gap-1">
-              <p className="font-semibold text-foreground">{profile.name}</p>
-              <p className="text-sm text-muted-foreground">
-                © {currentYear} All rights reserved.
-              </p>
-            </div>
+            {/* Left side - Copyright */}
+            <p className="label-mono text-muted-foreground">
+              © {currentYear} {profile.name}
+            </p>
 
             {/* Right side - Social Icons */}
             <div className="flex items-center gap-4">
@@ -42,10 +39,10 @@ export function Footer() {
               </Link>
               <Link
                 href={`mailto:${profile.contact.email}`}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="label-mono text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Email"
               >
-                <Mail className="h-5 w-5" />
+                {profile.contact.email}
               </Link>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
 import { Calendar, ArrowLeft, Clock } from "lucide-react";
 import remarkGfm from "remark-gfm";
+import { Reveal } from "@/components/motion";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -47,7 +48,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   const headings = extractHeadings(post.content);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen">
       {post.metadata.coverImage && (
         <div className="relative w-full h-64 sm:h-80 md:h-96">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,64 +57,57 @@ export default async function BlogPostPage({ params }: PageProps) {
             alt={post.metadata.title}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-black via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.962_0.004_91)] via-transparent to-transparent" />
         </div>
       )}
 
-      <div className="py-8 md:py-12 px-4">
+      <div className="py-8 md:py-14 px-4">
         <div className="max-w-6xl mx-auto flex gap-8 items-start">
-          <article className="flex-1 min-w-0 bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-8 md:p-12 relative z-10">
+          <Reveal className="flex-1 min-w-0">
+          <article className="relative z-10">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-8"
+            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors mb-10"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
 
-          <header className="mb-8 pb-8 border-b border-zinc-100 dark:border-zinc-800">
-            <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-zinc-50 mb-4">
+          <header className="mb-10 pb-10 border-b border-foreground/20">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-5">
               {post.metadata.title}
             </h1>
 
             {post.metadata.summary && (
-              <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-5">
+              <p className="text-lg text-muted-foreground mb-6 max-w-2xl">
                 {post.metadata.summary}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-500 dark:text-zinc-500">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 label-mono text-muted-foreground">
               {formatDate(post.metadata.date) && (
                 <span className="flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-3.5 h-3.5" />
                   {formatDate(post.metadata.date)}
                 </span>
               )}
 
               <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-3.5 h-3.5" />
                 {readTime} min read
               </span>
 
               {post.metadata.tags && post.metadata.tags.length > 0 && (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                  <div className="flex flex-wrap gap-2">
-                    {post.metadata.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-full text-xs font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </>
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {post.metadata.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
               )}
             </div>
           </header>
 
-          <div className="prose prose-zinc dark:prose-invert max-w-none">
+          <div className="prose prose-zinc max-w-none">
             <MDXRemote
               source={post.content}
               components={createMDXComponents()}
@@ -127,6 +121,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             />
           </div>
         </article>
+          </Reveal>
 
           {headings.length > 0 && (
             <aside className="hidden xl:block w-56 shrink-0">

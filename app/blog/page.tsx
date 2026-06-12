@@ -1,6 +1,7 @@
 import { getAllBlogPosts } from "@/lib/blog";
 import { ChatButton } from "@/components/chat-button";
 import { BlogFilter } from "@/components/blog-filter";
+import { Reveal } from "@/components/motion";
 
 function estimateReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length;
@@ -21,16 +22,19 @@ export default function BlogPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black py-16 px-4">
+    <div className="min-h-screen py-16 lg:py-24 px-4">
       <div className="max-w-5xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-3">
-            Blog
-          </h1>
-          <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Study notes, learning journal, and technical insights
-          </p>
-        </header>
+        <Reveal>
+          <header className="mb-16">
+            <p className="label-mono text-muted-foreground mb-4">Writing</p>
+            <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-foreground mb-6">
+              Blog.
+            </h1>
+            <p className="text-muted-foreground max-w-md">
+              Study notes, learning journal, and technical insights
+            </p>
+          </header>
+        </Reveal>
 
         <BlogFilter posts={postsData} />
       </div>

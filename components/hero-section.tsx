@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { fadeUp, stagger } from "@/components/motion";
 import profile from "@/content/profile.json";
 import carouselData from "@/content/carousel.json";
 import {
@@ -13,8 +14,6 @@ import {
   Download,
   MapPin,
   Briefcase,
-  Circle,
-  MessageCircle,
   ArrowRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -65,73 +64,67 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, [api]);
 
+  // Split the name so each word sits on its own line, Krobyte-style
+  const nameLines = profile.name.split(" ");
+
   return (
-    <section className="container mx-auto px-4 py-12 lg:py-16">
+    <section className="container mx-auto px-4 pt-16 pb-20 lg:pt-24 lg:pb-28">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Left Section - Text Content */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-3">
-              {profile.name}
+        <motion.div
+          className="space-y-10"
+          initial="hidden"
+          animate="visible"
+          variants={stagger}
+        >
+          <motion.div variants={fadeUp}>
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[0.95] mb-6">
+              {nameLines.map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                  {i === nameLines.length - 1 && "."}
+                </span>
+              ))}
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-6">
-              {profile.title}
-            </p>
-          </div>
+            <p className="label-mono text-muted-foreground">{profile.title}</p>
+          </motion.div>
+
+          <motion.p
+            variants={fadeUp}
+            className="text-muted-foreground leading-relaxed max-w-md"
+          >
+            {profile.summary}
+          </motion.p>
 
           {/* Key Details */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span>{profile.location}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              <span>{profile.experience}</span>
-            </div>
-            {profile.available && (
-              <div className="flex items-center gap-2">
-                <Circle className="h-3 w-3 fill-green-500 text-green-500" />
-                <span>Available for hire</span>
-              </div>
-            )}
-          </div>
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-wrap items-center gap-5 label-mono text-muted-foreground"
+          >
+            <span className="flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5" />
+              {profile.location}
+            </span>
+            <span className="flex items-center gap-2">
+              <Briefcase className="h-3.5 w-3.5" />
+              {profile.experience}
+            </span>
+          </motion.div>
 
           {/* Contact Buttons */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Button asChild className="bg-primary hover:bg-primary/90">
-              <Link href="/chat">
-                <MessageCircle className="h-4 w-4" />
-                Chat with AI Agent
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
+          <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3">
+            <Button asChild size="lg" className="rounded-md label-mono px-6">
               <Link href={`mailto:${profile.contact.email}`}>
-                <Mail className="h-4 w-4" />
-                Email Me
+                Get in touch
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button variant="outline" asChild>
-              <Link
-                href={profile.contact.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link
-                href={profile.contact.github}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github className="h-4 w-4" />
-                GitHub
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
+            <Button
+              variant="outline"
+              asChild
+              size="lg"
+              className="rounded-md label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6"
+            >
               <Link
                 href={profile.contact.cvUrl}
                 target="_blank"
@@ -141,24 +134,56 @@ export function HeroSection() {
                 Download CV
               </Link>
             </Button>
-          </div>
-        </div>
+            <div className="flex items-center gap-4 pl-2">
+              <Link
+                href={`mailto:${profile.contact.email}`}
+                aria-label="Email"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+              </Link>
+              <Link
+                href={profile.contact.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Linkedin className="h-5 w-5" />
+              </Link>
+              <Link
+                href={profile.contact.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Github className="h-5 w-5" />
+              </Link>
+            </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Right Section - Carousel */}
-        <div className="flex justify-center lg:justify-end">
-          <div className="relative w-full max-w-md">
+        {/* Right Section - Dark panel with carousel */}
+        <motion.div
+          className="flex justify-center lg:justify-end"
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+        >
+          <div className="relative w-full max-w-lg">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {sortedItems.map((item: CarouselItemType, index: number) => {
                   if (item.type === "image" && item.url) {
                     return (
                       <CarouselItem key={index}>
-                        <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-muted">
+                        <div className="relative w-full aspect-square overflow-hidden">
                           <Image
                             src={item.url}
                             alt={item.alt || profile.name}
                             fill
-                            className="object-cover"
+                            className="object-cover mix-blend-multiply [mask-image:radial-gradient(ellipse_75%_75%_at_center,black_55%,transparent_100%)]"
                             priority={index === 0}
                             onError={() => {
                               if (index === 0) setImageError(true);
@@ -180,44 +205,35 @@ export function HeroSection() {
 
                     return (
                       <CarouselItem key={index}>
-                        <div className="space-y-3 p-6 aspect-square flex flex-col justify-between rounded-lg border bg-card">
+                        <div className="space-y-3 p-8 aspect-square flex flex-col justify-center text-foreground">
                           <div className="space-y-3">
-                            <div className="flex justify-between items-start gap-4">
-                              <h3 className="text-lg font-semibold text-foreground">
-                                {project.title}
-                              </h3>
-                              <Badge variant="secondary">
-                                {project.category}
-                              </Badge>
-                            </div>
+                            <p className="label-mono text-muted-foreground">
+                              {project.category}
+                            </p>
+                            <h3 className="text-2xl font-semibold tracking-tight">
+                              {project.title}
+                            </h3>
                             <p className="text-muted-foreground text-sm line-clamp-4">
                               {project.description}
                             </p>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-x-3 gap-y-1">
                               {project.technologies?.map((tech, techIndex) => (
-                                <Badge
+                                <span
                                   key={techIndex}
-                                  variant="secondary"
-                                  className="text-xs"
+                                  className="label-mono text-muted-foreground"
                                 >
                                   {tech}
-                                </Badge>
+                                </span>
                               ))}
                             </div>
                           </div>
                           {project.slug && (
                             <Link
                               href={`/projects/${project.slug}`}
-                              className="mt-auto"
+                              className="label-mono inline-flex items-center gap-2 text-foreground hover:gap-3 transition-all pt-3"
                             >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full sm:w-auto"
-                              >
-                                View Details
-                                <ArrowRight className="h-4 w-4" />
-                              </Button>
+                              View details
+                              <ArrowRight className="h-4 w-4" />
                             </Link>
                           )}
                         </div>
@@ -227,11 +243,15 @@ export function HeroSection() {
                   return null;
                 })}
               </CarouselContent>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
+              {sortedItems.length > 1 && (
+                <>
+                  <CarouselPrevious className="left-0 bg-transparent border-foreground/20 text-foreground/60 hover:bg-foreground hover:text-background" />
+                  <CarouselNext className="right-0 bg-transparent border-foreground/20 text-foreground/60 hover:bg-foreground hover:text-background" />
+                </>
+              )}
             </Carousel>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
 import remarkGfm from "remark-gfm";
 import { ProjectCarousel } from "@/components/project-carousel";
+import { Reveal } from "@/components/motion";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -31,42 +32,33 @@ export default async function ProjectPage({ params }: PageProps) {
     : [];
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black py-16 px-4">
-      <article className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-sm p-8 md:p-12">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-4">
+    <div className="min-h-screen py-16 lg:py-20 px-4">
+      <Reveal className="max-w-4xl mx-auto">
+      <article>
+        <header className="mb-10 pb-10 border-b border-foreground/20">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-5">
             {project.metadata.title}
           </h1>
           {project.metadata.description && (
-            <p className="text-xl text-zinc-600 dark:text-zinc-400 mb-4">
+            <p className="text-xl text-muted-foreground mb-6 max-w-2xl">
               {project.metadata.description}
             </p>
           )}
-          <div className="flex flex-wrap gap-2 text-sm text-zinc-500 dark:text-zinc-500">
-            {project.metadata.tags && project.metadata.tags.length > 0 && (
-              <>
-                <span>•</span>
-                <div className="flex flex-wrap gap-2">
-                  {project.metadata.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          {project.metadata.tags && project.metadata.tags.length > 0 && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 label-mono text-muted-foreground">
+              {project.metadata.tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          )}
         </header>
-        
+
         {/* Project Images Carousel */}
         {images.length > 0 && (
           <ProjectCarousel images={images} title={project.metadata.title} />
         )}
 
-        <div className="prose prose-zinc dark:prose-invert max-w-none">
+        <div className="prose prose-zinc max-w-none">
           <MDXRemote
             source={project.content}
             components={createMDXComponents()}
@@ -77,6 +69,7 @@ export default async function ProjectPage({ params }: PageProps) {
           />
         </div>
       </article>
+      </Reveal>
     </div>
   );
 }

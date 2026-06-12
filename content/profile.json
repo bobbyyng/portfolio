@@ -10,7 +10,7 @@
     {
       "company": "Vioo Company Limited",
       "position": "Software Developer",
-      "period": "2020 - Present",
+      "period": "2020 - 2026 March",
       "previousPositions": ["Intern"],
       "description": [
         "Architected AI RAG agent with e-commerce integration, implementing knowledge-base ingestion (PDF/Word/image/CSV) with vector search and deployed on AWS using SST/Terraform, delivering personalized health insights and product recommendations.",
@@ -37,7 +37,7 @@
   ],
   "selectedProjects": [
     {
-      "title": "Catalo Health AI Agent",
+      "title": "AI RAG Agent for Personalized Health Insights",
       "slug": "8.catalo-health-ai-agent",
       "category": "AI Agents",
       "description": "Built an AI RAG agent integrated with e-commerce and customer portal flows (questionnaire/report → structured health insights → personalized product recommendations → add-to-cart). Implemented knowledge-base ingestion (PDF/Word/image/CSV) with vector search and secure user/admin authentication. Deployed on AWS with IaC for scalable, production-grade delivery.",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "title": "Pro-lite Digital Board Web Application",
+      "title": "Digital Signage Management Web Application",
       "slug": "7.prolite",
       "category": "B2B SaaS",
       "description": "Designed and implemented a backend platform for multi-location digital signage CMS. Delivered multi-level RBAC (Super/Regional/Corporate/Store Admin), multi-tenant style data access, audit logging, and low-latency content refresh (around 10 seconds) to IoT LCD displays, backed by optimized MySQL schema and indexes.",
@@ -72,7 +72,7 @@
       ]
     },
     {
-      "title": "ABC Pathway Admission System",
+      "title": "Education Centre Admission System",
       "slug": "4.abc-pathway-admission-system",
       "category": "Education",
       "description": "Replaced the legacy admission system with a fully customized platform designed for strict multi-branch data separation. Implemented automation and APIs for inventory forecasting, mobile payments, appointment booking, digital assessments, e-certificate issuance, and parent-facing analytics, ensuring smooth migration from old business logic while maintaining stability and user experience.",

@@ -8,7 +8,7 @@ sorting: 10
 
 # Project Background
 
-Catalo, a Hong Kong-based health and wellness brand specializing in nutritional supplements, partnered with our team to develop an AI Health Agent — an intelligent chat system integrated into their e-commerce platform and customer portal. The core user flow enables customers to complete health questionnaires or update health reports, which feed into the Qwen AI model to generate structured "health objects" (health summaries, recommended exercises, required nutrients). These insights then drive personalized product recommendations from Catalo's catalog, with seamless add-to-cart integration to their e-commerce system.
+A Hong Kong-based health and wellness brand specializing in nutritional supplements partnered with our team to develop an AI Health Agent — an intelligent chat system integrated into their e-commerce platform and customer portal. The core user flow enables customers to complete health questionnaires or update health reports, which feed into the Qwen AI model to generate structured "health objects" (health summaries, recommended exercises, required nutrients). These insights then drive personalized product recommendations from the brand's catalog, with seamless add-to-cart integration to their e-commerce system.
 
 A secondary flow supports general health advice chats. The system includes an AI Chat Widget for users and an Admin Panel for knowledge base management. 
 
@@ -19,7 +19,7 @@ As the backend engineer, I architected the monorepo using SST + Hono + AWS (Clou
 - Designed a SST monorepo backend architecture, modularizing chat APIs, questionnaire/report services, knowledge base, and admin endpoints deployed via AWS Lambda and Dockerized EC2.
 - Implemented Hono-based HTTP APIs handling chat widget interactions, questionnaire submissions, health report updates, and e-commerce cart integration.
 - Integrated Qwen model via LangChain to process questionnaire/health report data into structured health objects (summaries, exercise/nutrition recommendations, matched products).
-- Built product recommendation logic mapping AI-generated nutrient needs to Catalo's inventory, enabling direct add-to-cart actions linked to their e-commerce platform.
+- Built product recommendation logic mapping AI-generated nutrient needs to the brand's inventory, enabling direct add-to-cart actions linked to their e-commerce platform.
 - Developed general chat APIs for health advice queries, with scope controls to avoid unrelated topics and fallback to customer support.
 - Implemented Better Auth for user and admin authentication (username/password login), including session management and role-based access.
 - Created knowledge base APIs supporting PDF/Word/image/CSV uploads, parsing, vectorization to Qdrant, and admin operations (download/replace/delete).
@@ -29,7 +29,7 @@ As the backend engineer, I architected the monorepo using SST + Hono + AWS (Clou
 
 **Questionnaire & Health Object Flow**
 - Engineered end-to-end flow: questionnaire → health report update → Qwen/LangChain processing → structured health objects → nutrient-based product matching → e-commerce add-to-cart.
-- Structured health data modeling ensures repeatable updates and AI personalization for exercise, nutrition, and Catalo product recommendations.
+- Structured health data modeling ensures repeatable updates and AI personalization for exercise, nutrition, and product recommendations.
 
 **AI Chat Widget & Advice Mode**
 - Backend for embeddable widget supporting questionnaire mode and free-form health chats, powered by Qwen for natural responses within brand guidelines.

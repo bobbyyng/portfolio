@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Great_Vibes } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -22,6 +22,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const greatVibes = Great_Vibes({
+  variable: "--font-script",
+  weight: "400",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Bobby Yeung's Portfolio",
   description: "Bobby Yeung's Portfolio",
@@ -35,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${brSegma.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${brSegma.variable} ${geistSans.variable} ${geistMono.variable} ${greatVibes.variable} antialiased`}
       >
         <Header />
         <main>{children}</main>

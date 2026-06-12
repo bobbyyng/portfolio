@@ -3,38 +3,49 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import profile from "@/content/profile.json";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
+
+function SectionHeading({
+  number,
+  children,
+}: {
+  number: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-t border-foreground/20 pt-5">
+      <p className="label-mono text-muted-foreground mb-2">{number}</p>
+      <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+        {children}
+      </h2>
+    </div>
+  );
+}
 
 function ProfessionalSummary() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
-          Professional Summary
-        </h2>
-        <div className="w-full h-px bg-border"></div>
-      </div>
-      <p className="text-muted-foreground leading-relaxed">{profile.summary}</p>
-    </div>
+    <Reveal className="space-y-5">
+      <SectionHeading number="01">Professional Summary</SectionHeading>
+      <p className="text-muted-foreground leading-relaxed text-lg">
+        {profile.summary}
+      </p>
+    </Reveal>
   );
 }
 
 function WorkExperience() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
-          Work Experience
-        </h2>
-        <div className="w-full h-px bg-border"></div>
-      </div>
-      <div className="space-y-6">
+    <div className="space-y-8">
+      <Reveal>
+        <SectionHeading number="02">Work Experience</SectionHeading>
+      </Reveal>
+      <RevealGroup className="divide-y divide-border">
         {profile.workExperience?.map((work, index) => (
-          <div key={index} className="space-y-4">
-            <div className="flex justify-between items-center gap-4">
+          <RevealItem key={index} className="space-y-4 py-7 first:pt-0">
+            <div className="flex justify-between items-baseline gap-4">
               <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1 text-md">
+                <h3 className="text-xl font-semibold tracking-tight text-foreground mb-1">
                   {work.company}
                 </h3>
                 <p className="text-muted-foreground text-sm">{work.position}</p>
@@ -44,173 +55,164 @@ function WorkExperience() {
                   </p>
                 )}
               </div>
-              <div>
-                <Badge variant="secondary" className="text-md">
-                  {work.period}
-                </Badge>
-              </div>
+              <span className="label-mono text-muted-foreground whitespace-nowrap">
+                {work.period}
+              </span>
             </div>
             {work.description && work.description.length > 0 && (
               <ul className="space-y-2.5 list-none pl-0">
                 {work.description.map((desc, descIndex) => (
-                  <li key={descIndex} className="text-muted-foreground text-sm leading-relaxed flex items-start gap-3">
-                    <span className="text-foreground/60 text-xs mt-1.5 shrink-0">•</span>
+                  <li
+                    key={descIndex}
+                    className="text-muted-foreground text-sm leading-relaxed flex items-start gap-3"
+                  >
+                    <span className="text-foreground/50 text-xs mt-1.5 shrink-0">
+                      —
+                    </span>
                     <span>{desc}</span>
                   </li>
                 ))}
               </ul>
             )}
-          </div>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
 
 function Education() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
-          Education
-        </h2>
-        <div className="w-full h-px bg-border"></div>
-      </div>
-      <div className="space-y-6">
+    <div className="space-y-8">
+      <Reveal>
+        <SectionHeading number="03">Education</SectionHeading>
+      </Reveal>
+      <RevealGroup className="divide-y divide-border">
         {profile.education?.map((edu, index) => (
-          <div key={index} className="flex justify-between items-center gap-4">
+          <RevealItem
+            key={index}
+            className="flex justify-between items-baseline gap-4 py-6 first:pt-0"
+          >
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground mb-1 text-md">
+              <h3 className="text-lg font-semibold tracking-tight text-foreground mb-1">
                 {edu.institution}
               </h3>
               <p className="text-muted-foreground text-sm">{edu.degree}</p>
             </div>
-            <div>
-              <Badge variant="secondary" className="text-md">
-                {edu.period}
-              </Badge>
-            </div>
-          </div>
+            <span className="label-mono text-muted-foreground whitespace-nowrap">
+              {edu.period}
+            </span>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
 
 function SelectedProjects() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide">
-          Selected Projects
-        </h2>
+    <div className="space-y-8">
+      <Reveal className="flex justify-between items-end gap-4">
+        <SectionHeading number="04">Selected Projects</SectionHeading>
         <Link
           href="/projects"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          className="label-mono text-foreground hover:gap-3 transition-all flex items-center gap-2 whitespace-nowrap pb-1"
         >
-          View All
+          View all
           <ArrowRight className="h-4 w-4" />
         </Link>
-      </div>
-      <div className="w-full h-px bg-border"></div>
-      <div className="space-y-6">
+      </Reveal>
+      <RevealGroup className="divide-y divide-border">
         {profile.selectedProjects?.map((project, index) => (
-          <div key={index} className="space-y-3">
-            <div className="flex justify-between items-start gap-4">
-              <h3 className="text-lg font-semibold text-foreground">
+          <RevealItem key={index} className="space-y-3 py-7 first:pt-0">
+            <div className="flex justify-between items-baseline gap-4">
+              <h3 className="text-xl font-semibold tracking-tight text-foreground">
                 {project.title}
               </h3>
-              <Badge variant="secondary">{project.category}</Badge>
+              <span className="label-mono text-muted-foreground whitespace-nowrap">
+                {project.category}
+              </span>
             </div>
             <p className="text-muted-foreground text-sm">
               {project.description}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
               {project.technologies?.map((tech, techIndex) => (
-                <Badge key={techIndex} variant="secondary" className="text-xs">
+                <span key={techIndex} className="label-mono text-muted-foreground">
                   {tech}
-                </Badge>
+                </span>
               ))}
             </div>
             {project.slug && (
               <Link href={`/projects/${project.slug}`}>
-                <Button variant="outline" size="sm" className="mt-2">
-                  View Details
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 rounded-md label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background"
+                >
+                  View details
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             )}
-          </div>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
 
 function TechnicalSkills() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
-          Technical Skills
-        </h2>
-        <div className="w-full h-px bg-border"></div>
-      </div>
+    <Reveal className="space-y-6">
+      <SectionHeading number="05">Technical Skills</SectionHeading>
       <div className="space-y-6">
         {profile.skills &&
           Object.entries(profile.skills).map(([category, skills]) => (
             <div key={category} className="space-y-2">
-              <h3 className="text-sm font-semibold text-foreground uppercase">
-                {category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
+              <h3 className="label-mono text-foreground">{category}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {skills.join(" · ")}
+              </p>
             </div>
           ))}
       </div>
-    </div>
+    </Reveal>
   );
 }
 
 function Languages() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide mb-2">
-          Languages
-        </h2>
-        <div className="w-full h-px bg-border"></div>
-      </div>
-      <div className="space-y-4">
+    <Reveal className="space-y-6">
+      <SectionHeading number="06">Languages</SectionHeading>
+      <div className="divide-y divide-border">
         {profile.languages?.map((language, index) => (
-          <div key={index} className="flex justify-between items-center">
+          <div
+            key={index}
+            className="flex justify-between items-center py-3 first:pt-0"
+          >
             <span className="font-medium text-foreground">{language.name}</span>
-            <span className="text-sm text-muted-foreground">
+            <span className="label-mono text-muted-foreground">
               {language.proficiency}
             </span>
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }
 
 export function ContentSection() {
   return (
     <section className="container mx-auto px-4 py-12 lg:py-16">
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12 lg:col-span-8 space-y-12">
+      <div className="grid grid-cols-12 gap-10 lg:gap-14">
+        <div className="col-span-12 lg:col-span-8 space-y-20">
           <ProfessionalSummary />
           <WorkExperience />
           <Education />
           <SelectedProjects />
         </div>
-        <div className="col-span-12 lg:col-span-4 space-y-12">
+        <div className="col-span-12 lg:col-span-4 space-y-20">
           <TechnicalSkills />
           <Languages />
         </div>
