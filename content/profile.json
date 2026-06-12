@@ -6,12 +6,22 @@
   "experience": "5 years Experience",
   "available": true,
   "summary": "Software developer with ~5 years' experience building highly available, scalable RESTful services and internal platforms for B2B/B2C clients in education and e‑commerce. Experienced in AI/RAG agents, admission systems, digital signage and e‑commerce platforms, covering complex business rules, RBAC, tenant‑level data isolation and 3rd‑party integrations. Strong in TypeScript/PHP, MySQL/PostgreSQL, AWS, Docker and Terraform, with hands‑on cloud deployment, CI/CD and close collaboration with PMs and product teams to deliver stable, performant systems.",
+  "summaryShort": "Software developer with ~5 years' experience building AI/RAG agents, scalable RESTful services and internal platforms for B2B/B2C clients in education and e‑commerce.",
+  "highlights": [
+    "AI / RAG Agents",
+    "TypeScript / PHP",
+    "MySQL / PostgreSQL",
+    "AWS · Docker · Terraform",
+    "CI/CD"
+  ],
   "workExperience": [
     {
       "company": "Vioo Company Limited",
       "position": "Software Developer",
       "period": "2020 - 2026 March",
-      "previousPositions": ["Intern"],
+      "previousPositions": [
+        "Intern"
+      ],
       "description": [
         "Architected AI RAG agent with e-commerce integration, implementing knowledge-base ingestion (PDF/Word/image/CSV) with vector search and deployed on AWS using SST/Terraform, delivering personalized health insights and product recommendations.",
         "Built multi-location digital signage CMS platform using NestJS and MySQL, implementing multi-level RBAC and real-time content synchronization to IoT displays with 10-second refresh latency.",
@@ -87,11 +97,35 @@
     }
   ],
   "skills": {
-    "Backend": ["TypeScript", "PHP", "Python"],
-    "Framework": ["NestJS", "Hono", "Laravel", "Yii2", "Wordpress"],
-    "AI": ["RAG", "LangChain", "LangGraph"],
-    "Cloud & DevOps": ["AWS", "Docker", "SST", "Terraform"],
-    "Database": ["PostgreSQL", "MySQL", "Redis", "MongoDB"]
+    "Backend": [
+      "TypeScript",
+      "PHP",
+      "Python"
+    ],
+    "Framework": [
+      "NestJS",
+      "Hono",
+      "Laravel",
+      "Yii2",
+      "Wordpress"
+    ],
+    "AI": [
+      "RAG",
+      "LangChain",
+      "LangGraph"
+    ],
+    "Cloud & DevOps": [
+      "AWS",
+      "Docker",
+      "SST",
+      "Terraform"
+    ],
+    "Database": [
+      "PostgreSQL",
+      "MySQL",
+      "Redis",
+      "MongoDB"
+    ]
   },
   "languages": [
     {

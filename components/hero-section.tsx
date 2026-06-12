@@ -89,12 +89,23 @@ export function HeroSection() {
             <p className="label-mono text-muted-foreground">{profile.title}</p>
           </motion.div>
 
-          <motion.p
-            variants={fadeUp}
-            className="text-muted-foreground leading-relaxed max-w-md"
-          >
-            {profile.summary}
-          </motion.p>
+          <motion.div variants={fadeUp} className="space-y-5 max-w-md">
+            <p className="text-muted-foreground leading-loose">
+              {profile.summaryShort ?? profile.summary}
+            </p>
+            {profile.highlights && (
+              <div className="flex flex-wrap gap-2">
+                {profile.highlights.map((tag) => (
+                  <span
+                    key={tag}
+                    className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </motion.div>
 
           {/* Key Details */}
           <motion.div

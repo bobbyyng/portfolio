@@ -27,7 +27,7 @@ function ProfessionalSummary() {
   return (
     <Reveal className="space-y-5">
       <SectionHeading number="01">Professional Summary</SectionHeading>
-      <p className="text-muted-foreground leading-relaxed text-lg">
+      <p className="text-muted-foreground leading-relaxed text-lg text-justify">
         {profile.summary}
       </p>
     </Reveal>
@@ -136,9 +136,12 @@ function SelectedProjects() {
             <p className="text-muted-foreground text-sm">
               {project.description}
             </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <div className="flex flex-wrap gap-2">
               {project.technologies?.map((tech, techIndex) => (
-                <span key={techIndex} className="label-mono text-muted-foreground">
+                <span
+                  key={techIndex}
+                  className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+                >
                   {tech}
                 </span>
               ))}
@@ -148,7 +151,7 @@ function SelectedProjects() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="mt-2 rounded-md label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background"
+                  className="mt-2 label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background"
                 >
                   View details
                   <ArrowRight className="h-4 w-4" />
