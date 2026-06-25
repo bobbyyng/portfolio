@@ -32,6 +32,10 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   title: "Bobby Yeung's Portfolio",
   description: "Bobby Yeung's Portfolio",
+  robots: {
+    index: false,
+    follow: false,
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
