@@ -3,6 +3,7 @@ import { isValidElement, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
+import { MermaidDiagram } from "@/components/mermaid-diagram";
 
 const tableShell =
   "overflow-x-auto my-6 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm";
@@ -274,11 +275,21 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         {children}
       </code>
     ),
-    pre: ({ children }) => (
-      <pre className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg overflow-x-auto mb-4">
-        {children}
-      </pre>
-    ),
+    pre: ({ children }) => {
+      // Detect ```mermaid fenced code blocks and render as diagram
+      if (isValidElement(children)) {
+        const child = children as React.ReactElement<{ className?: string; children?: ReactNode }>;
+        if (child.props.className?.includes("language-mermaid")) {
+          const chart = extractTextFromChildren(child.props.children);
+          return <MermaidDiagram chart={chart} />;
+        }
+      }
+      return (
+        <pre className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg overflow-x-auto mb-4">
+          {children}
+        </pre>
+      );
+    },
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-zinc-300 dark:border-zinc-600 pl-4 italic my-4 text-zinc-600 dark:text-zinc-400">
         {children}
