@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   getAllProjects,
   getProjectTagsByFrequency,
@@ -43,6 +44,9 @@ export default function ProjectsPage() {
     description: getProjectDescription(project),
     tags: project.metadata.tags ?? [],
     dateRange: formatDateRange(project),
+    startDate: project.metadata.startDate ?? null,
+    sorting: project.metadata.sorting ?? 0,
+    cover: typeof project.metadata.cover === "string" ? project.metadata.cover : null,
   }));
 
   return (
@@ -72,7 +76,9 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
-          <ProjectsFilter projects={projectsData} tagOptions={tagOptions} />
+          <Suspense>
+            <ProjectsFilter projects={projectsData} tagOptions={tagOptions} />
+          </Suspense>
         )}
       </div>
     </div>
