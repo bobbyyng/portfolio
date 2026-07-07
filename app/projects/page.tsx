@@ -1,15 +1,27 @@
-import { getAllProjects, type Project } from "@/lib/projects";
+import type { Metadata } from "next";
+import {
+  getAllProjects,
+  getProjectTagsByFrequency,
+  getProjectDescription,
+  type Project,
+} from "@/lib/projects";
 import { Reveal } from "@/components/motion";
 import { ProjectsFilter } from "@/components/projects-filter";
+import { createPageMetadata } from "@/lib/site";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Projects",
+  description:
+    "Selected work across AI/RAG agents, admission systems, e-commerce platforms, digital signage, and cloud infrastructure.",
+  path: "/projects",
+});
 
 function formatDateRange(project: Project): string | null {
-  // If startDate and endDate are provided, use them
   if (project.metadata.startDate) {
     const endDate = project.metadata.endDate || "Present";
     return `${project.metadata.startDate} - ${endDate}`;
   }
 
-  // Fallback to date or period if they exist
   if (typeof project.metadata.date === "string") {
     return project.metadata.date;
   }
@@ -23,11 +35,12 @@ function formatDateRange(project: Project): string | null {
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
+  const tagOptions = getProjectTagsByFrequency();
 
   const projectsData = projects.map((project) => ({
     slug: project.slug,
     title: project.metadata.title,
-    description: project.metadata.description,
+    description: getProjectDescription(project),
     tags: project.metadata.tags ?? [],
     dateRange: formatDateRange(project),
   }));
@@ -59,10 +72,9 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
-          <ProjectsFilter projects={projectsData} />
+          <ProjectsFilter projects={projectsData} tagOptions={tagOptions} />
         )}
       </div>
-
     </div>
   );
 }

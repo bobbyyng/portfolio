@@ -18,6 +18,11 @@ export interface Project {
   content: string;
 }
 
+export interface ProjectTagCount {
+  tag: string;
+  count: number;
+}
+
 const projectsDirectory = path.join(process.cwd(), "content/projects");
 
 export function titleToSlug(title: string): string {
@@ -214,9 +219,41 @@ export function getRelatedProjectsByTags(
 }
 
 /**
- * Get all unique tags from all projects
- * @returns Array of unique tags, sorted alphabetically
+ * Get all unique tags from all projects, sorted alphabetically.
  */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractDescriptionFromContent(content: string): string | undefined {
+  const backgroundMatch = content.match(
+    /#\s*Project Background\s*\n+([\s\S]*?)(?:\n#|\s*$)/
+  );
+  if (!backgroundMatch) return undefined;
+
+  const firstParagraph = backgroundMatch[1].trim().split(/\n\n/)[0];
+  if (!firstParagraph) return undefined;
+
+  const cleaned = stripMarkdown(firstParagraph);
+  if (!cleaned) return undefined;
+
+  return cleaned.length > 220 ? `${cleaned.slice(0, 217)}...` : cleaned;
+}
+
+export function getProjectDescription(project: Project): string | undefined {
+  const description = project.metadata.description;
+  if (typeof description === "string" && description.trim()) {
+    return description.trim();
+  }
+
+  return extractDescriptionFromContent(project.content);
+}
+
 export function getAllProjectTags(): string[] {
   const allProjects = getAllProjects();
   const tagsSet = new Set<string>();
@@ -232,4 +269,24 @@ export function getAllProjectTags(): string[] {
   });
 
   return Array.from(tagsSet).sort();
+}
+
+/**
+ * Get tags sorted by how many projects use them (most common first).
+ */
+export function getProjectTagsByFrequency(): ProjectTagCount[] {
+  const counts = new Map<string, number>();
+
+  getAllProjects().forEach((project) => {
+    (project.metadata.tags ?? []).forEach((tag) => {
+      const normalized = tag.trim();
+      if (normalized) {
+        counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+      }
+    });
+  });
+
+  return Array.from(counts.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }

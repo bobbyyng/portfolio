@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar } from "lucide-react";
-import { getProjectBySlug, getAllProjectSlugs } from "@/lib/projects";
+import {
+  getProjectBySlug,
+  getAllProjectSlugs,
+  getProjectDescription,
+} from "@/lib/projects";
 import { extractHeadings } from "@/lib/blog";
+import { createPageMetadata } from "@/lib/site";
 import { TableOfContents } from "@/components/table-of-contents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
@@ -21,6 +27,32 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = getProjectBySlug(slug);
+
+  if (!project) {
+    return {};
+  }
+
+  const { title, tags, images } = project.metadata;
+  const description = getProjectDescription(project) ?? title;
+  const image = Array.isArray(images)
+    ? images[0]
+    : typeof images === "string"
+      ? images
+      : undefined;
+
+  return createPageMetadata({
+    title,
+    description,
+    path: `/projects/${slug}`,
+    image,
+    imageAlt: title,
+    tags,
+  });
+}
+
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
@@ -36,6 +68,7 @@ export default async function ProjectPage({ params }: PageProps) {
     : [];
 
   const headings = extractHeadings(project.content);
+  const description = getProjectDescription(project);
 
   return (
     <div className="min-h-screen py-16 lg:py-20 px-4">
@@ -61,9 +94,9 @@ export default async function ProjectPage({ params }: PageProps) {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-5 leading-[1.05]">
             {project.metadata.title}
           </h1>
-          {project.metadata.description && (
+          {description && (
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 max-w-2xl">
-              {project.metadata.description}
+              {description}
             </p>
           )}
           {project.metadata.tags && project.metadata.tags.length > 0 && (
