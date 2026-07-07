@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import profile from "@/content/profile.json";
 import { Button } from "@/components/ui/button";
@@ -123,43 +124,76 @@ function SelectedProjects() {
         </Link>
       </Reveal>
       <RevealGroup className="divide-y divide-border">
-        {profile.selectedProjects?.map((project, index) => (
-          <RevealItem key={index} className="space-y-3 py-7 first:pt-0">
-            <div className="flex justify-between items-baseline gap-4">
-              <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                {project.title}
-              </h3>
-              <span className="label-mono text-muted-foreground whitespace-nowrap">
-                {project.category}
-              </span>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              {project.description}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies?.map((tech, techIndex) => (
-                <span
-                  key={techIndex}
-                  className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-            {project.slug && (
-              <Link href={`/projects/${project.slug}`}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-2 label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background"
-                >
-                  View details
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+        {profile.selectedProjects?.map((project, index) => {
+          const projectNum = project.slug?.match(/^(\d+)\./)?.[1];
+          const coverSrc = projectNum
+            ? `/projects/covers/project_${projectNum}_cover.png`
+            : null;
+          return (
+          <RevealItem key={index} className="py-7 first:pt-0 space-y-4">
+            {/* Mobile: cover on top; md+: side by side */}
+            {coverSrc && (
+              <div className="md:hidden w-full overflow-hidden rounded-lg border border-border aspect-video relative">
+                <Image
+                  src={coverSrc}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                />
+              </div>
             )}
+            <div className="flex gap-5 items-start">
+              <div className="flex-1 space-y-3 min-w-0">
+                <div className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1">
+                  <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                    {project.title}
+                  </h3>
+                  <span className="label-mono text-muted-foreground whitespace-nowrap">
+                    {project.category}
+                  </span>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies?.map((tech, techIndex) => (
+                    <span
+                      key={techIndex}
+                      className="label-mono rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                {project.slug && (
+                  <Link href={`/projects/${project.slug}`}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background"
+                    >
+                      View details
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              {coverSrc && (
+                <div className="hidden md:block shrink-0 w-44 lg:w-52 overflow-hidden rounded-lg border border-border aspect-video relative">
+                  <Image
+                    src={coverSrc}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 176px, 208px"
+                  />
+                </div>
+              )}
+            </div>
           </RevealItem>
-        ))}
+          );
+        })}
       </RevealGroup>
     </div>
   );
