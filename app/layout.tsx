@@ -33,7 +33,11 @@ const greatVibes = Great_Vibes({
 export const metadata = rootMetadata;
 
 export const viewport: Viewport = {
-  themeColor: "#f4f2ee",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f2ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#f4f2ee" },
+  ],
+  colorScheme: "light",
 };
 
 export default function RootLayout({
