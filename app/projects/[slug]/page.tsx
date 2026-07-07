@@ -71,6 +71,19 @@ export default async function ProjectPage({ params }: PageProps) {
   const headings = extractHeadings(project.content);
   const description = getProjectDescription(project);
 
+  const { title, startDate, endDate, tags } = project.metadata;
+  const dateRange = [startDate, endDate].filter(Boolean).join(" — ");
+  const fullMarkdown = [
+    dateRange && `*${dateRange}*`,
+    `# ${title}`,
+    description,
+    tags && tags.length > 0 && tags.map((t: string) => `\`${t}\``).join(" "),
+    "",
+    project.content,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
   return (
     <div className="min-h-screen py-16 lg:py-20 px-4">
       <div className="max-w-6xl mx-auto flex gap-8 items-start">
@@ -84,7 +97,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <ArrowLeft className="h-4 w-4" />
             All projects
           </Link>
-          <CopyButton markdown={project.content} title={project.metadata.title} />
+          <CopyButton markdown={fullMarkdown} title={project.metadata.title} />
         </div>
         <header className="mb-10 pb-10 border-b border-border">
           {(project.metadata.startDate || project.metadata.endDate) && (
