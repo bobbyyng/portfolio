@@ -20,28 +20,54 @@ export interface Project {
 
 const projectsDirectory = path.join(process.cwd(), "content/projects");
 
+export function titleToSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/['']/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getAllProjectFileNames(): string[] {
+  if (!fs.existsSync(projectsDirectory)) return [];
+  return fs
+    .readdirSync(projectsDirectory)
+    .filter((name) => name.endsWith(".mdx"));
+}
+
 export function getAllProjectSlugs(): string[] {
-  if (!fs.existsSync(projectsDirectory)) {
-    return [];
-  }
-  const fileNames = fs.readdirSync(projectsDirectory);
-  return fileNames
-    .filter((name) => name.endsWith(".mdx"))
-    .map((name) => name.replace(/\.mdx$/, ""))
-    .sort((a, b) => {
-      const sortingA = getProjectBySlug(a)?.metadata.sorting || 0;
-      const sortingB = getProjectBySlug(b)?.metadata.sorting || 0;
-      return sortingA - sortingB;
-    });
+  return getAllProjectFileNames()
+    .map((name) => {
+      const project = getProjectByFileName(name);
+      return project
+        ? { slug: titleToSlug(project.metadata.title), sorting: project.metadata.sorting || 0 }
+        : null;
+    })
+    .filter((item): item is { slug: string; sorting: number } => item !== null)
+    .sort((a, b) => a.sorting - b.sorting)
+    .map((item) => item.slug);
+}
+
+function getProjectByFileName(fileName: string): Project | null {
+  const slug = fileName.replace(/\.mdx$/, "");
+  const fullPath = path.join(projectsDirectory, fileName);
+  if (!fs.existsSync(fullPath)) return null;
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+  return parseProjectFile(slug, fileContents);
 }
 
 export function getProjectBySlug(slug: string): Project | null {
-  const fullPath = path.join(projectsDirectory, `${slug}.mdx`);
-  if (!fs.existsSync(fullPath)) {
-    return null;
+  const fileNames = getAllProjectFileNames();
+  for (const fileName of fileNames) {
+    const project = getProjectByFileName(fileName);
+    if (project && titleToSlug(project.metadata.title) === slug) {
+      return { ...project, slug };
+    }
   }
-  const fileContents = fs.readFileSync(fullPath, "utf8");
+  return null;
+}
 
+function parseProjectFile(slug: string, fileContents: string): Project | null {
   // Extract frontmatter - support both --- and ------ as opening and closing markers
   // Also handle cases where there's no content after frontmatter
   const frontmatterRegex = /^(?:---|------)\s*\n([\s\S]*?)\n(?:---|------)\s*(?:\n([\s\S]*))?$/;
