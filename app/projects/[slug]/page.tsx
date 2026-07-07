@@ -15,6 +15,7 @@ import { createMDXComponents } from "@/components/mdx-components";
 import remarkGfm from "remark-gfm";
 import { ProjectCarousel } from "@/components/project-carousel";
 import { Reveal } from "@/components/motion";
+import { CopyButton } from "@/components/copy-button";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -75,13 +76,16 @@ export default async function ProjectPage({ params }: PageProps) {
       <div className="max-w-6xl mx-auto flex gap-8 items-start">
       <Reveal className="flex-1 min-w-0">
       <article>
-        <Link
-          href="/projects"
-          className="label-mono inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          All projects
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/projects"
+            className="label-mono inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            All projects
+          </Link>
+          <CopyButton markdown={project.content} title={project.metadata.title} />
+        </div>
         <header className="mb-10 pb-10 border-b border-border">
           {(project.metadata.startDate || project.metadata.endDate) && (
             <p className="label-mono flex items-center gap-2 text-muted-foreground mb-4">
