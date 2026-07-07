@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getBlogPostBySlug, getAllBlogSlugs, extractHeadings } from "@/lib/blog";
+import { createPageMetadata } from "@/lib/site";
 import { TableOfContents } from "@/components/table-of-contents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
@@ -15,6 +17,28 @@ interface PageProps {
 export async function generateStaticParams() {
   const slugs = getAllBlogSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getBlogPostBySlug(slug);
+
+  if (!post) {
+    return {};
+  }
+
+  const { title, summary, date, tags, coverImage } = post.metadata;
+
+  return createPageMetadata({
+    title,
+    description: summary ?? title,
+    path: `/blog/${slug}`,
+    image: coverImage ?? undefined,
+    imageAlt: title,
+    type: "article",
+    publishedTime: date,
+    tags,
+  });
 }
 
 function formatDate(dateStr: string | undefined): string | null {

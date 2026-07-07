@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import { getAllBlogPosts } from "@/lib/blog";
 import { BlogFilter } from "@/components/blog-filter";
 import { Reveal } from "@/components/motion";
+import { createPageMetadata } from "@/lib/site";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Blog",
+  description:
+    "Study notes, learning journal, and technical insights on Java, AI/RAG, databases, and software engineering.",
+  path: "/blog",
+});
 
 function estimateReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length;

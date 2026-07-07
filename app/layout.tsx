@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import localFont from "next/font/local";
 import { Geist, Geist_Mono, Great_Vibes } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
@@ -6,6 +6,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { rootMetadata } from "@/lib/site";
 
 const brSegma = localFont({
   src: "./fonts/BRSegma-Regular.otf",
@@ -29,23 +30,7 @@ const greatVibes = Great_Vibes({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Bobby Yeung's Portfolio",
-  description: "Bobby Yeung's Portfolio",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Bobby Yeung",
-  },
-  icons: {
-    apple: "/icons/apple-touch-icon.png",
-  },
-};
+export const metadata = rootMetadata;
 
 export const viewport: Viewport = {
   themeColor: "#f4f2ee",
