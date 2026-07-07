@@ -33,7 +33,7 @@ export function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   const navLinks = [
-    { href: "/", label: "CV" },
+    { href: "/", label: "Home" },
     { href: "/projects", label: "Projects" },
     { href: "/blog", label: "Blog" },
   ];

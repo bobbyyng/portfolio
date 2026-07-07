@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Linkedin, Github, FileText } from "lucide-react";
+import { Mail, Phone, Linkedin, Github } from "lucide-react";
 import profile from "@/content/profile.json";
 
 export function ContactCard() {
@@ -32,16 +32,10 @@ export function ContactCard() {
     }
   };
 
-  const handleCVClick = () => {
-    if (contactInfo.cvUrl) {
-      window.open(contactInfo.cvUrl, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <Card className="mt-3 max-w-md border-2 py-4 px-0">
       <CardContent>
-        <div className="grid grid-cols-5 gap-4 justify-items-center">
+        <div className="grid grid-cols-4 gap-4 justify-items-center">
           <div className="flex flex-col items-center">
             <Button
               variant="outline"
@@ -89,18 +83,6 @@ export function ContactCard() {
               <Github className="size-6" />
             </Button>
             <span className="text-xs text-muted-foreground">GitHub</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Button
-              variant="default"
-              size="icon"
-              className="mb-1 rounded-full size-12 flex justify-center items-center bg-primary hover:bg-primary/90 transition-colors"
-              onClick={handleCVClick}
-              aria-label="下載我的 CV"
-            >
-              <FileText className="size-6" />
-            </Button>
-            <span className="text-xs text-muted-foreground">CV</span>
           </div>
         </div>
       </CardContent>

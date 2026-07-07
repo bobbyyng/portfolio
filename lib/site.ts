@@ -104,8 +104,12 @@ export const rootMetadata: Metadata = {
     images: [siteConfig.defaultOgImage],
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {

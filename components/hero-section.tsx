@@ -11,7 +11,6 @@ import {
   Mail,
   Linkedin,
   Github,
-  Download,
   MapPin,
   Briefcase,
   ArrowRight,
@@ -157,22 +156,7 @@ export function HeroSection() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button
-              variant="outline"
-              asChild
-              size="lg"
-              className="label-mono border-foreground/30 bg-transparent hover:bg-foreground hover:text-background px-6 w-full sm:w-auto"
-            >
-              <Link
-                href={profile.contact.cvUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="h-4 w-4" />
-                Download CV
-              </Link>
-            </Button>
-            <div className="flex items-center justify-center sm:justify-start gap-6 sm:gap-4 pt-2 sm:pt-0 sm:pl-2">
+            <div className="flex items-center justify-center sm:justify-start gap-6 sm:gap-4 pt-2 sm:pt-0">
               <Link
                 href={`mailto:${profile.contact.email}`}
                 aria-label="Email"
