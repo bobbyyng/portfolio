@@ -48,7 +48,7 @@
   "selectedProjects": [
     {
       "title": "AI RAG Agent for Personalized Health Insights",
-      "slug": "8.catalo-health-ai-agent",
+      "slug": "ai-rag-agent-for-personalized-health-insights",
       "category": "AI Agents",
       "description": "Built an AI RAG agent integrated with e-commerce and customer portal flows (questionnaire/report → structured health insights → personalized product recommendations → add-to-cart). Implemented knowledge-base ingestion (PDF/Word/image/CSV) with vector search and secure user/admin authentication. Deployed on AWS with IaC for scalable, production-grade delivery.",
       "technologies": [
@@ -67,7 +67,7 @@
     },
     {
       "title": "Digital Signage Management Web Application",
-      "slug": "7.prolite",
+      "slug": "digital-signage-management-web-application",
       "category": "B2B SaaS",
       "description": "Designed and implemented a backend platform for multi-location digital signage CMS. Delivered multi-level RBAC (Super/Regional/Corporate/Store Admin), multi-tenant style data access, audit logging, and low-latency content refresh (around 10 seconds) to IoT LCD displays, backed by optimized MySQL schema and indexes.",
       "technologies": [
@@ -83,7 +83,7 @@
     },
     {
       "title": "Education Centre Admission System",
-      "slug": "4.abc-pathway-admission-system",
+      "slug": "education-centre-admission-system",
       "category": "Education",
       "description": "Replaced the legacy admission system with a fully customized platform designed for strict multi-branch data separation. Implemented automation and APIs for inventory forecasting, mobile payments, appointment booking, digital assessments, e-certificate issuance, and parent-facing analytics, ensuring smooth migration from old business logic while maintaining stability and user experience.",
       "technologies": [
