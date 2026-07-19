@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
         pathname: "/projects/covers/**",
       },
       {
+        pathname: "/blog/**",
+      },
+      {
         pathname: "/profile.jpg",
       },
     ],

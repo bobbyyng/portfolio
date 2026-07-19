@@ -1,9 +1,75 @@
 import type { MDXComponents } from "mdx/types";
-import { isValidElement, type ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import { MermaidDiagram } from "@/components/mermaid-diagram";
+
+function MdxImage(props: {
+  alt?: string;
+  src?: string | { src?: string };
+  [key: string]: unknown;
+}) {
+  const alt = typeof props.alt === "string" ? props.alt : "";
+  const src =
+    typeof props.src === "string"
+      ? props.src
+      : props.src?.src ?? "";
+  // Phone screenshots under /blog/ — constrain width so tall UIs don't dominate the page
+  const isPhoneScreenshot = src.startsWith("/blog/");
+
+  return (
+    <figure
+      className={
+        isPhoneScreenshot
+          ? "my-8 flex flex-col items-center"
+          : "my-6"
+      }
+    >
+      <div
+        className={
+          isPhoneScreenshot
+            ? "w-full max-w-[260px] sm:max-w-[300px]"
+            : "w-full"
+        }
+      >
+        <Image
+          src={src}
+          alt={alt}
+          width={isPhoneScreenshot ? 390 : 1200}
+          height={isPhoneScreenshot ? 844 : 800}
+          sizes={
+            isPhoneScreenshot
+              ? "(max-width: 640px) 260px, 300px"
+              : "100vw"
+          }
+          className="rounded-xl border border-zinc-200 dark:border-zinc-700 w-full h-auto shadow-sm"
+        />
+      </div>
+      {alt ? (
+        <figcaption className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-2 italic max-w-md">
+          {alt}
+        </figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+/** Markdown wraps standalone images in <p>; MdxImage renders <figure> — unwrap to avoid invalid HTML. */
+function isParagraphOnlyMedia(children: ReactNode): boolean {
+  const nodes = Children.toArray(children).filter(
+    (node) => !(typeof node === "string" && node.trim() === "")
+  );
+  if (nodes.length === 0) return false;
+  return nodes.every((node) => {
+    if (!isValidElement(node)) return false;
+    if (node.type === MdxImage || node.type === "figure" || node.type === "img") {
+      return true;
+    }
+    const props = node.props as { src?: unknown };
+    return props.src != null;
+  });
+}
 
 const tableShell =
   "overflow-x-auto my-6 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm";
@@ -242,11 +308,16 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         </h4>
       );
     },
-    p: ({ children }) => (
-      <p className="mb-5 text-zinc-700 dark:text-zinc-300 leading-8">
-        {children}
-      </p>
-    ),
+    p: ({ children }) => {
+      if (isParagraphOnlyMedia(children)) {
+        return <>{children}</>;
+      }
+      return (
+        <p className="mb-5 text-zinc-700 dark:text-zinc-300 leading-8">
+          {children}
+        </p>
+      );
+    },
     a: ({ href, children }) => (
       <Link
         href={href || "#"}
@@ -295,29 +366,7 @@ export function createMDXComponents(components: MDXComponents = {}): MDXComponen
         {children}
       </blockquote>
     ),
-    img: (props) => {
-      const alt = typeof props.alt === "string" ? props.alt : "";
-      const src =
-        typeof props.src === "string"
-          ? props.src
-          : (props as { src?: { src?: string } }).src?.src ?? "";
-      return (
-        <figure className="my-6">
-          <Image
-            src={src}
-            alt={alt}
-            width={1200}
-            height={800}
-            className="rounded-lg border border-zinc-200 dark:border-zinc-700 w-full h-auto"
-          />
-          {alt && (
-            <figcaption className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-2 italic">
-              {alt}
-            </figcaption>
-          )}
-        </figure>
-      );
-    },
+    img: MdxImage,
     table: ({ children }) => (
       <div className={tableShell}>
         <table className={tableBase}>{children}</table>
