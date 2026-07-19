@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import type { Heading } from "@/lib/blog";
+import { useBlogLang } from "@/components/blog-lang";
 import { cn } from "@/lib/utils";
 
 interface TableOfContentsProps {
@@ -11,6 +12,7 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
+  const { lang } = useBlogLang();
   const [activeId, setActiveId] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
 
@@ -60,6 +62,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       <ul className="space-y-1 text-sm">
         {headings.map((heading) => {
           const isActive = activeId === heading.id;
+          const label =
+            lang === "zh"
+              ? heading.textZh || heading.textEn || heading.text
+              : heading.textEn || heading.text;
           return (
             <li
               key={heading.id}
@@ -76,7 +82,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                   isActive && "font-medium text-zinc-900 dark:text-zinc-100"
                 )}
               >
-                {heading.text}
+                {label}
               </Link>
             </li>
           );

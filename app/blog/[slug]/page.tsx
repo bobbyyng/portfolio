@@ -6,6 +6,8 @@ import { createPageMetadata } from "@/lib/site";
 import { TableOfContents } from "@/components/table-of-contents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { createMDXComponents } from "@/components/mdx-components";
+import { BlogLangToggle } from "@/components/blog-lang";
+import { BlogPostTitle } from "@/components/blog-post-title";
 import { Calendar, ArrowLeft, Clock } from "lucide-react";
 import remarkGfm from "remark-gfm";
 import { Reveal } from "@/components/motion";
@@ -89,18 +91,19 @@ export default async function BlogPostPage({ params }: PageProps) {
         <div className="max-w-6xl mx-auto flex gap-8 items-start">
           <Reveal className="flex-1 min-w-0">
           <article className="relative z-10">
-          <Link
-            href="/blog"
-            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors mb-10"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Blog
-          </Link>
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-3">
+            <Link
+              href="/blog"
+              className="label-mono inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Blog
+            </Link>
+            <BlogLangToggle />
+          </div>
 
           <header className="mb-10 pb-10 border-b border-foreground/20">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-5">
-              {post.metadata.title}
-            </h1>
+            <BlogPostTitle title={post.metadata.title} />
 
             {post.metadata.summary && (
               <p className="text-lg text-muted-foreground mb-6 max-w-2xl">

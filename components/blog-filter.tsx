@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Search, X } from "lucide-react";
 import { RevealGroup, RevealItem } from "@/components/motion";
+import { BlogLangToggle, useBlogLang } from "@/components/blog-lang";
+import { pickBilingualTitle } from "@/lib/blog-lang";
 
 interface BlogPostData {
   slug: string;
@@ -30,6 +32,9 @@ function formatDate(dateStr: string | undefined): string | null {
 }
 
 function PostCard({ post, index }: { post: BlogPostData; index: number }) {
+  const { lang } = useBlogLang();
+  const title = pickBilingualTitle(post.title, lang);
+
   return (
     <Link
       href={`/blog/${post.slug}`}
@@ -41,7 +46,7 @@ function PostCard({ post, index }: { post: BlogPostData; index: number }) {
 
       <div className="col-span-12 sm:col-span-8">
         <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-2 group-hover:underline underline-offset-4 decoration-2 line-clamp-2">
-          {post.title}
+          {title}
         </h2>
         {post.summary && (
           <p className="text-muted-foreground line-clamp-2 mb-3">
@@ -111,16 +116,21 @@ export function SearchInput({
 export function BlogFilter({ posts }: { posts: BlogPostData[] }) {
   const [query, setQuery] = useState("");
 
+  const { lang } = useBlogLang();
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return posts;
-    return posts.filter(
-      (post) =>
+    return posts.filter((post) => {
+      const localizedTitle = pickBilingualTitle(post.title, lang).toLowerCase();
+      return (
+        localizedTitle.includes(q) ||
         post.title.toLowerCase().includes(q) ||
         post.summary?.toLowerCase().includes(q) ||
         post.tags.some((tag) => tag.toLowerCase().includes(q))
-    );
-  }, [posts, query]);
+      );
+    });
+  }, [posts, query, lang]);
 
   if (posts.length === 0) {
     return (
@@ -132,11 +142,14 @@ export function BlogFilter({ posts }: { posts: BlogPostData[] }) {
 
   return (
     <div className="space-y-8">
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search posts by title or tag…"
-      />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder="Search posts by title or tag…"
+        />
+        <BlogLangToggle className="self-start sm:self-auto" />
+      </div>
       {filtered.length === 0 ? (
         <div className="border-t border-foreground/20 py-16 text-center">
           <p className="text-muted-foreground">

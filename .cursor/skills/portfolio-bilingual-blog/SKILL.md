@@ -4,31 +4,47 @@ description: >-
   Writes and edits MDX blog posts in this repo with English plus Traditional
   Chinese (Hong Kong). Use when creating or updating files in content/blog/,
   when the user asks for bilingual posts, zh-HK, or 繁體中文, or when aligning
-  posts with BilingualParagraph / BilingualSolutionList / Table patterns.
+  posts with BilingualParagraph / BilingualSolutionList / BilingualHeading /
+  Table patterns.
 ---
 
 # Portfolio bilingual blog (EN + zh-HK)
 
 ## Goal
 
-Every blog post in `content/blog/` should present **English** and **香港繁體中文** together: readers get full technical English plus accurate Hong Kong–style Traditional Chinese, using the MDX components already registered in `components/mdx-components.tsx`.
+Every blog post in `content/blog/` should support **English** and **香港繁體中文**.
+Readers switch language with the **EN | 中文** toggle on the blog list and post pages
+(default **EN**, persisted in `localStorage`). Content is stored bilingually in one MDX
+file; the UI shows one language at a time.
 
 ## Frontmatter
 
-- **title**: `English Title | 中文標題` (pipe separator; English first).
+- **title**: `English Title | 中文標題` (pipe separator; English first). List + post chrome pick one side by active lang.
 - **tags**: Include both English keywords and 中文 where natural (e.g. `RAG, LLM, 檢索增強生成`).
 - **date**: ISO date `YYYY-MM-DD`.
 
 ## Page title and headings
 
-- **H1 (`#`)**: `English · 中文` or `English | 中文` — match the tone of `rag-retrieval-augmented-generation.mdx`.
-- **H2 / H3**: Prefer `## English section · 中文小節` so the table of contents stays readable in both languages.
+- **Do not** put a markdown `#` H1 in the body — the post page already renders `metadata.title`.
+- **Prefer** `<BilingualHeading />` for H2/H3 (and H4 if needed):
+
+```mdx
+<BilingualHeading level={2} en="Why I built it" zh="為何要自己做" />
+```
+
+- Anchor `id` is derived from the **English** label (stable across language switch).
+- Legacy markdown `## English · 中文` still works (auto-split), but migrate to `BilingualHeading` when editing a post.
 
 ## MDX components to use
 
-### `<BilingualParagraph />`
+### `<BilingualHeading />`
 
-Use for narrative blocks (intro, takeaway, any paragraph that should appear in both languages).
+```mdx
+<BilingualHeading level={2} en="Section title" zh="小節標題" />
+<BilingualHeading level={3} en="Subsection" zh="子節" />
+```
+
+### `<BilingualParagraph />`
 
 ```mdx
 <BilingualParagraph
@@ -37,12 +53,7 @@ Use for narrative blocks (intro, takeaway, any paragraph that should appear in b
 />
 ```
 
-- `en`: primary (slightly stronger styling in the UI).
-- `zh`: secondary (muted); full sentence, not keywords only.
-
 ### `<BilingualSolutionList />`
-
-Use for bullet-style benefits, steps, or trade-offs with parallel EN/zh labels.
 
 ```mdx
 <BilingualSolutionList
@@ -59,11 +70,35 @@ Use for bullet-style benefits, steps, or trade-offs with parallel EN/zh labels.
 
 ### `<Table />` (DataTable)
 
-- **caption**: `English · 中文` or `English | 中文`.
-- **column headers**: Bilingual where helpful, e.g. `{ key: "action", header: "Stage · 階段" }`.
-- **Cell text**: Either separate columns for EN/zh, or **one column** with **English sentence first, then Chinese in the same string** (see `rag-retrieval-augmented-generation.mdx` Key Terms).
+Prefer explicit bilingual objects (best with the language toggle):
 
-Prefer one pattern per table for consistency.
+```mdx
+<Table
+  caption={{ en: "Core concepts", zh: "核心概念" }}
+  columns={[
+    { key: "term", header: { en: "Term", zh: "術語" } },
+    { key: "meaning", header: { en: "Meaning", zh: "含義" } },
+  ]}
+  data={[
+    {
+      term: { en: "RAG", zh: "檢索增強生成" },
+      meaning: {
+        en: "Retrieve documents, then generate.",
+        zh: "先檢索文件，再生成答案。",
+      },
+    },
+  ]}
+/>
+```
+
+Legacy strings still resolve when possible:
+
+- Labels: `English · 中文` or `English | 中文`
+- Prose cells: `English sentence. 中文句子。` (EN must end with `.!?…`, then CJK)
+
+When editing a post, migrate tables to `{ en, zh }` objects.
+
+Image alts may stay as `English · 中文`; the figcaption follows the active language.
 
 ## Language quality (zh-HK)
 
@@ -73,17 +108,18 @@ Prefer one pattern per table for consistency.
 
 ## When English-only sections are acceptable
 
-- Very long FAQ or legal-style tables: still add **zh-HK** in the same cell or a following `<BilingualParagraph>` summary.
+- Very long FAQ or legal-style tables: still add **zh-HK** via `{ en, zh }` or a following `<BilingualParagraph>` summary.
 - If the user explicitly asks for English-only, note the exception in the PR/summary — default remains bilingual.
 
 ## Checklist before finishing a post
 
-- [ ] `title` in frontmatter is bilingual.
-- [ ] H1 and major H2s include 中文 (or each section opens with `<BilingualParagraph>`).
-- [ ] No long stretches of English-only body without a zh-HK counterpart (components or inline).
-- [ ] Tables have bilingual `caption` or bilingual row content.
+- [ ] `title` in frontmatter is bilingual (`EN | 中文`).
+- [ ] No markdown `#` H1 in the body (page chrome shows title).
+- [ ] Major sections use `<BilingualHeading />` (or legacy `## EN · 中文`).
+- [ ] Narrative uses `<BilingualParagraph>` / `<BilingualSolutionList>`.
+- [ ] Tables use `{ en, zh }` for caption, headers, and cells (or legacy splitters).
 - [ ] MDX validates (no broken JSX props; string quotes escaped inside attributes).
 
 ## Reference post
 
-Use `content/blog/rag-retrieval-augmented-generation.mdx` as the canonical example for structure and component usage.
+Use `content/blog/building-my-bookkeeping-app.mdx` as the canonical example for language-toggle-ready structure.

@@ -1,10 +1,13 @@
 import fs from "fs";
 import path from "path";
+import { splitBilingualLabel } from "./blog-lang";
 import { slugify } from "./utils";
 
 export interface Heading {
   id: string;
   text: string;
+  textEn?: string;
+  textZh?: string;
   level: 2 | 3;
 }
 
@@ -25,25 +28,62 @@ export interface BlogPost {
 
 const blogDirectory = path.join(process.cwd(), "content/blog");
 
+function headingFromParts(
+  en: string,
+  zh: string | undefined,
+  level: 2 | 3
+): Heading | null {
+  const textEn = en.trim();
+  const textZh = zh?.trim() || undefined;
+  if (!textEn && !textZh) return null;
+
+  const idSource = textEn || textZh || "";
+  const id = slugify(idSource);
+  if (!id) return null;
+
+  const text = textZh ? `${textEn} · ${textZh}` : textEn;
+  return { id, text, textEn: textEn || undefined, textZh, level };
+}
+
+function parseBilingualHeadingAttrs(attrs: string): Heading | null {
+  const levelMatch = attrs.match(/\blevel=\{(\d)\}/);
+  const levelNum = levelMatch ? Number(levelMatch[1]) : 2;
+  if (levelNum !== 2 && levelNum !== 3) return null;
+
+  const enMatch = attrs.match(/\ben=["']([^"']+)["']/);
+  const zhMatch = attrs.match(/\bzh=["']([^"']+)["']/);
+  return headingFromParts(enMatch?.[1] ?? "", zhMatch?.[1], levelNum);
+}
+
 export function extractHeadings(content: string): Heading[] {
   const headings: Heading[] = [];
-  const lines = content.split("\n");
-  const headingRegex = /^(#{1,3})\s+(.+)$/;
+  const tokenRe =
+    /^(#{2,3})\s+(.+)$|<BilingualHeading\b([\s\S]*?)\/>/gm;
+  let match: RegExpExecArray | null;
 
-  for (const line of lines) {
-    const match = line.match(headingRegex);
-    if (!match) continue;
+  while ((match = tokenRe.exec(content)) !== null) {
+    if (match[1] && match[2]) {
+      const level = match[1].length === 2 ? (2 as const) : (3 as const);
+      const cleanText = match[2].replace(/\s*\{.*?\}\s*$/g, "").trim();
+      if (!cleanText) continue;
 
-    const [, hashes, text] = match;
-    // Project articles use single-# section headings; treat them as top-level
-    const level = hashes.length <= 2 ? (2 as const) : (3 as const);
-    const cleanText = text.replace(/\s*\{.*?\}\s*$/g, "").trim();
-    if (!cleanText) continue;
+      const split = splitBilingualLabel(cleanText);
+      if (split) {
+        const heading = headingFromParts(split.en, split.zh, level);
+        if (heading) headings.push(heading);
+        continue;
+      }
 
-    const id = slugify(cleanText);
-    if (!id) continue;
+      const id = slugify(cleanText);
+      if (!id) continue;
+      headings.push({ id, text: cleanText, textEn: cleanText, level });
+      continue;
+    }
 
-    headings.push({ id, text: cleanText, level });
+    if (match[3] != null) {
+      const heading = parseBilingualHeadingAttrs(match[3]);
+      if (heading) headings.push(heading);
+    }
   }
 
   return headings;
