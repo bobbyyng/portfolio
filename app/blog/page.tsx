@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getAllBlogPosts } from "@/lib/blog";
+import { Suspense } from "react";
+import { getAllBlogPosts, getBlogTagsByFrequency } from "@/lib/blog";
 import { BlogFilter } from "@/components/blog-filter";
 import { Reveal } from "@/components/motion";
 import { createPageMetadata } from "@/lib/site";
@@ -18,6 +19,7 @@ function estimateReadingTime(content: string): number {
 
 export default function BlogPage() {
   const posts = getAllBlogPosts();
+  const tagOptions = getBlogTagsByFrequency();
 
   const postsData = posts.map((post) => ({
     slug: post.slug,
@@ -44,9 +46,10 @@ export default function BlogPage() {
           </header>
         </Reveal>
 
-        <BlogFilter posts={postsData} />
+        <Suspense>
+          <BlogFilter posts={postsData} tagOptions={tagOptions} />
+        </Suspense>
       </div>
-
     </div>
   );
 }

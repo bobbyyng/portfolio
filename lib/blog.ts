@@ -169,3 +169,26 @@ export function getAllBlogTags(): string[] {
 
   return Array.from(tagsSet).sort();
 }
+
+export type BlogTagCount = {
+  tag: string;
+  count: number;
+};
+
+/** Tags sorted by how many posts use them (most common first). */
+export function getBlogTagsByFrequency(): BlogTagCount[] {
+  const counts = new Map<string, number>();
+
+  getAllBlogPosts().forEach((post) => {
+    (post.metadata.tags ?? []).forEach((tag) => {
+      const normalized = tag.trim();
+      if (normalized) {
+        counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+      }
+    });
+  });
+
+  return Array.from(counts.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
